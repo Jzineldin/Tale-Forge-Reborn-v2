@@ -399,17 +399,45 @@ const AdminContentPage: React.FC = () => {
     setReviewModalOpen(true);
   };
 
-  const handleContentAction = (contentId: string, action: 'approve' | 'remove' | 'warn') => {
-    // In a real app, this would make API calls
-    console.log(`${action} action for content:`, contentId);
-    
-    // Update content status locally
-    setContent(prev => prev.map(item => 
-      item.id === contentId 
-        ? { ...item, status: action === 'approve' ? 'published' : action === 'remove' ? 'removed' : item.status }
-        : item
-    ));
-    
+  const handleContentAction = async (contentId: string, action: 'approve' | 'remove' | 'warn') => {
+    console.log(`🔧 ${action} action for content:`, contentId);
+
+    try {
+      // Update story status in database
+      let updateData: any = {};
+
+      if (action === 'approve') {
+        updateData = { is_public: true };
+      } else if (action === 'remove') {
+        updateData = { is_public: false };
+      }
+      // For 'warn', we might add a warning flag in the future
+
+      if (Object.keys(updateData).length > 0) {
+        const { error } = await supabase
+          .from('stories')
+          .update(updateData)
+          .eq('id', contentId);
+
+        if (error) {
+          console.error('Error updating story:', error);
+          // Still update locally for UI feedback
+        } else {
+          console.log(`✅ Story ${action} action completed successfully`);
+        }
+      }
+
+      // Update content status locally
+      setContent(prev => prev.map(item =>
+        item.id === contentId
+          ? { ...item, status: action === 'approve' ? 'published' : action === 'remove' ? 'removed' : item.status }
+          : item
+      ));
+
+    } catch (error) {
+      console.error(`Error performing ${action} action:`, error);
+    }
+
     setReviewModalOpen(false);
     setSelectedContent(null);
   };
