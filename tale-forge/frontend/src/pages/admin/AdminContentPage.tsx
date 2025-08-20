@@ -231,20 +231,32 @@ const AdminContentPage: React.FC = () => {
           }
         }
 
-        // Get user profiles for author names
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, email, full_name');
+        // Get user profiles for author names using admin RPC
+        let profiles = [];
+        try {
+          const { data: adminProfiles, error: profileError } = await supabase
+            .rpc('get_all_profiles_for_admin');
+
+          if (profileError) {
+            console.error('Error fetching profiles via RPC:', profileError);
+          } else {
+            profiles = adminProfiles || [];
+          }
+        } catch (error) {
+          console.error('Error calling admin profiles RPC:', error);
+        }
 
         // Create profiles map for quick lookup
         const profilesMap = new Map();
-        profiles?.forEach(p => profilesMap.set(p.id, p));
+        profiles?.forEach((p: any) => profilesMap.set(p.id, p));
+
+        console.log(`📝 Processing ${stories?.length || 0} stories with ${profiles?.length || 0} user profiles`);
 
         // Transform stories to ContentItem format
         const transformedContent: ContentItem[] = (stories || []).map((story: any) => {
           const profile = profilesMap.get(story.user_id);
           const authorName = profile?.full_name || profile?.email?.split('@')[0] || `User ${story.user_id.substring(0, 8)}`;
-          
+
           // Simulate some stories having reports (for demo purposes)
           const hasReports = Math.random() < 0.05; // 5% of stories have reports
           const reportCount = hasReports ? Math.floor(Math.random() * 3) + 1 : 0;
