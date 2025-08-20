@@ -1,0 +1,49 @@
+# Supabase CLI configuration file
+# See: https://supabase.com/docs/guidelines-and-limitations
+
+[project]
+# Project ID is required for most CLI commands
+# Get this from your Supabase project dashboard
+project_id = "tale-forge"
+
+[functions]
+# Directory where your functions are located
+functions_dir = "functions"
+
+# Default function settings
+[functions.default]
+verify_jwt = true
+
+# Individual function configurations
+[functions."generate-story-segment"]
+verify_jwt = true
+
+[functions."generate-story-ending"]
+verify_jwt = true
+
+[functions."regenerate-image"]
+verify_jwt = true
+
+[functions."generate-audio"]
+verify_jwt = true
+
+[functions."regenerate-seeds"]
+verify_jwt = true
+
+[functions."stripe-create-checkout"]
+verify_jwt = false
+
+[functions."stripe-webhook"]
+verify_jwt = false
+
+[functions."customer-portal"]
+verify_jwt = true
+
+[functions."setup-prompts"]
+verify_jwt = true
+
+[functions."update-prompt"]
+verify_jwt = true
+
+[functions."get-prompt"]
+verify_jwt = true

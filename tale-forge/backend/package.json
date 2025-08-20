@@ -1,0 +1,26 @@
+{
+  "name": "tale-forge-backend",
+  "version": "1.0.0",
+  "description": "Supabase Edge Functions for Tale Forge",
+  "main": "index.js",
+  "scripts": {
+    "dev": "supabase functions serve",
+    "deploy": "supabase functions deploy",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "supabase",
+    "edge-functions",
+    "deno"
+  ],
+  "author": "Tale Forge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@supabase/functions-js": "^2.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  }
+}

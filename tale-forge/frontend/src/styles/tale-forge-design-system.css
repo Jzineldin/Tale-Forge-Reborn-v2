@@ -1,0 +1,216 @@
+/* ===================================
+   TALE FORGE DESIGN SYSTEM
+   ===================================
+   
+   This file contains all custom CSS classes for the Tale Forge application.
+   Organized by component type for easy maintenance.
+   
+   Table of Contents:
+   1. Typography Classes
+   2. Button Classes  
+   3. Glass Effects
+   4. Text Effects
+   5. Animations
+   
+   ================================= */
+
+/* ===================================
+   1. TYPOGRAPHY CLASSES
+   ================================= */
+
+/* Fantasy Heading - Main titles and CTAs */
+.fantasy-heading {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  color: #fbbf24;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 0 6px rgba(251, 191, 36, 0.3);
+}
+
+/* Usage Examples:
+   Main Title: fantasy-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl
+   Subtitle: fantasy-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl
+   Section Header: fantasy-heading text-2xl sm:text-3xl
+*/
+
+/* ===================================
+   2. BUTTON CLASSES
+   ================================= */
+
+/* Fantasy CTA Button - Primary action buttons */
+.fantasy-cta {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 25%, #b45309 50%, #d97706 75%, #f59e0b 100%);
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  box-shadow: 
+    0 4px 15px rgba(245, 158, 11, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  letter-spacing: 0.025em;
+  font-weight: 600;
+}
+
+.fantasy-cta:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 25%, #92400e 50%, #b45309 75%, #d97706 100%);
+  box-shadow: 
+    0 6px 20px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+/* Usage: fantasy-cta px-8 py-4 text-lg rounded-xl */
+
+/* Magical Button - Alternative button style with gradient */
+.btn-magical {
+  background: linear-gradient(45deg, #f59e0b, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 220ms cubic-bezier(0.4, 0, 0.2, 1),
+              background 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.btn-magical:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 35px rgba(0,0,0,0.12);
+}
+
+/* Usage: btn-magical px-6 py-3 text-base rounded-lg */
+
+/* ===================================
+   3. GLASS EFFECTS
+   ================================= */
+
+/* Glass - Basic glassmorphism effect */
+.glass {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass Hero Container - For hero sections */
+.glass-hero-container {
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Glass Card - Standard glassmorphism effect */
+.glass-card {
+  background: rgba(30, 41, 59, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Glass Enhanced - Stronger effect for important elements */
+.glass-enhanced {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-enhanced:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ===================================
+   4. TEXT EFFECTS
+   ================================= */
+
+/* Text Shadows for readability */
+.text-shadow-sm { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+.text-shadow-md { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
+.text-shadow-lg { text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+.text-shadow-xl { text-shadow: 0 8px 16px rgba(0, 0, 0, 0.8); }
+
+/* Golden text effects (legacy - use fantasy-heading instead) */
+.text-golden {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 8px rgba(251, 191, 36, 0.3);
+}
+
+/* ===================================
+   5. ANIMATIONS
+   ================================= */
+
+/* Magical Pulse - Subtle breathing effect */
+.magical-pulse {
+  animation: magical-pulse 2s infinite;
+}
+
+@keyframes magical-pulse {
+  0% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.02); opacity: 0.35; }
+  100% { transform: scale(1); opacity: 0.25; }
+}
+
+/* Magical Float - Gentle floating effect */
+.magical-float {
+  animation: magical-float 3s ease-in-out infinite;
+}
+
+@keyframes magical-float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ===================================
+   COMPONENT USAGE GUIDE
+   ===================================
+   
+   MAIN TITLE:
+   <h1 class="fantasy-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
+   
+   SUBTITLE:
+   <h2 class="fantasy-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 tracking-wide">
+   
+   PRIMARY CTA BUTTON:
+   <button class="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+
+   MAGICAL BUTTON:
+   <button class="btn-magical px-6 py-3 text-base rounded-lg">
+
+   SECONDARY BUTTON:
+   <button class="glass-card text-white border-2 border-amber-400/50 hover:border-amber-400 font-semibold px-8 py-4 text-lg rounded-xl backdrop-blur-md hover:bg-amber-400/10 transition-all duration-300">
+   
+   BASIC GLASS:
+   <div class="glass p-4 rounded-lg">
+
+   HERO GLASS CONTAINER:
+   <div class="glass-hero-container p-8 rounded-xl">
+
+   GLASS CARD:
+   <div class="glass-card p-6 rounded-lg">
+
+   ENHANCED GLASS:
+   <div class="glass-enhanced p-6">
+
+   TEXT WITH SHADOW:
+   <p class="text-white/90 text-shadow-lg">
+   
+   ================================= */

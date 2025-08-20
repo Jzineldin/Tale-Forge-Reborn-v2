@@ -1,0 +1,368 @@
+// Performance utilities for optimized data fetching and caching
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import cache, { CACHE_TTL } from './cache';
+import { supabase } from '@/lib/supabase';
+
+// API base URL (would be environment variable in real app)
+const API_BASE_URL = '/functions/v1';
+
+// Generic API fetcher with caching
+export const fetchWithCache = async <T,>(key: string, url: string, options?: RequestInit): Promise<T> => {
+  // Check if we have a cached value
+  const cachedValue = cache.get<T>(key);
+  if (cachedValue) {
+    return cachedValue;
+  }
+  
+  // Fetch from API
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers
+    },
+    ...options
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  const data = await response.json();
+  
+  // Cache the result
+  cache.set(key, data, CACHE_TTL.MEDIUM);
+  
+  return data;
+};
+
+// React Query hooks for common operations
+export const useStories = (userId: string | null) => {
+  return useQuery(
+    ['stories', userId],
+    async () => {
+      if (!userId) {
+        return [];
+      }
+      
+      console.log('Fetching stories for user:', userId);
+      
+      // Fetch from Supabase directly
+      const { data: stories, error } = await supabase
+        .from('stories')
+        .select('*')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching stories:', error);
+        throw new Error('Failed to fetch stories');
+      }
+      
+      console.log('Fetched stories:', stories);
+      
+      // Transform stories to match expected format
+      const transformedStories = stories?.map(story => ({
+        id: story.id,
+        title: story.title,
+        description: story.description || 'No description available',
+        genre: story.genre || 'fantasy',
+        age_group: story.target_age || 'All Ages',
+        status: story.is_completed ? 'published' : 'draft',
+        imageUrl: story.cover_image_url || story.thumbnail_url || '/images/placeholder-story.png',
+        created_at: story.created_at,
+        updated_at: story.updated_at
+      })) || [];
+      
+      return transformedStories;
+    },
+    {
+      enabled: !!userId,
+      staleTime: CACHE_TTL.SHORT,
+      cacheTime: CACHE_TTL.LONG
+    }
+  );
+};
+
+export const useStory = (storyId: string | null) => {
+  return useQuery(
+    ['story', storyId],
+    async () => {
+      if (!storyId) {
+        return null;
+      }
+      
+      // Fetch from Supabase backend
+      const response = await fetch(`${API_BASE_URL}/get-story`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ storyId })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch story');
+      }
+      
+      const data = await response.json();
+      return data.story || null;
+    },
+    {
+      enabled: !!storyId,
+      staleTime: CACHE_TTL.SHORT,
+      cacheTime: CACHE_TTL.LONG
+    }
+  );
+};
+
+export const useCreateStoryMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (storyData: any) => {
+      // Call the backend API to create a story
+      const response = await fetch(`${API_BASE_URL}/create-story`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify(storyData)
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create story');
+      }
+      
+      const data = await response.json();
+      return data.story;
+    },
+    {
+      onSuccess: (data) => {
+        // Invalidate and refetch stories query
+        queryClient.invalidateQueries(['stories', data.userId]);
+      }
+    }
+  );
+};
+
+export const useUpdateStory = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation(
+    async (storyData: any) => {
+      const { id, userId, ...updates } = storyData;
+      
+      if (!id || !userId) {
+        throw new Error('Story ID and User ID are required');
+      }
+      
+      // Call the backend API to update a story
+      const response = await fetch(`${API_BASE_URL}/update-story`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ storyId: id, updates })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update story');
+      }
+      
+      const data = await response.json();
+      return data.story;
+    },
+    {
+      onSuccess: (data) => {
+        // Invalidate and refetch story and stories queries
+        queryClient.invalidateQueries(['story', data.id]);
+        queryClient.invalidateQueries(['stories', data.userId]);
+      }
+    }
+  );
+};
+
+export const useDeleteStory = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation(
+    async ({ storyId, userId }: { storyId: string; userId: string }) => {
+      if (!storyId || !userId) {
+        throw new Error('Story ID and User ID are required');
+      }
+      
+      // Call the backend API to delete a story
+      const response = await fetch(`${API_BASE_URL}/delete-story`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ storyId })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete story');
+      }
+      
+      return storyId;
+    },
+    {
+      onSuccess: (data, variables) => {
+        // Invalidate stories query
+        queryClient.invalidateQueries(['stories', variables.userId]);
+      }
+    }
+  );
+};
+
+// AI service hooks
+export const useGenerateStorySegment = () => {
+  return useMutation(
+    async ({ storyId, choiceIndex }: { storyId: string; choiceIndex?: number }) => {
+      // Call the backend API to generate a story segment
+      const response = await fetch(`${API_BASE_URL}/generate-story-segment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ storyId, choiceIndex })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate story segment');
+      }
+      
+      const data = await response.json();
+      return data;
+    }
+  );
+};
+
+export const useGenerateStoryEnding = () => {
+  return useMutation(
+    async ({ storyId }: { storyId: string }) => {
+      // Call the backend API to generate a story ending
+      const response = await fetch(`${API_BASE_URL}/generate-story-ending`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ storyId })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate story ending');
+      }
+      
+      const data = await response.json();
+      return data;
+    }
+  );
+};
+
+export const useGenerateAudio = () => {
+  return useMutation(
+    async ({ storyId }: { storyId: string }) => {
+      // Call the backend API to generate audio narration
+      const response = await fetch(`${API_BASE_URL}/generate-audio`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ storyId })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate audio');
+      }
+      
+      const data = await response.json();
+      return data;
+    }
+  );
+};
+
+export const useRegenerateImage = () => {
+  return useMutation(
+    async ({ segmentId, imagePrompt }: { segmentId: string; imagePrompt: string }) => {
+      // Call the backend API to regenerate an image
+      const response = await fetch(`${API_BASE_URL}/regenerate-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+        },
+        body: JSON.stringify({ segmentId, imagePrompt })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to regenerate image');
+      }
+      
+      const data = await response.json();
+      return data;
+    }
+  );
+};
+
+// Image optimization utilities
+export const useOptimizedImage = (src: string, width?: number, height?: number) => {
+  // In a real app, this would use a service like Cloudinary or Imgix
+  // For now, we'll just return the src with some basic optimization hints
+  const optimizedSrc = width || height ? `${src}?w=${width}&h=${height}&fit=crop` : src;
+  
+  return {
+    src: optimizedSrc,
+    loading: 'lazy' as const,
+    decoding: 'async' as const
+  };
+};
+
+// Skeleton component for loading states
+export const Skeleton = ({ className }: { className?: string }) => {
+  return (
+    <div className={`animate-pulse bg-gray-200 rounded ${className}`}></div>
+  );
+};
+
+// Loading state component
+export const LoadingState = ({ message = 'Loading...' }: { message?: string }) => {
+  return (
+    <div className="flex justify-center items-center h-64">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">{message}</p>
+      </div>
+    </div>
+  );
+};
+
+// Error state component
+export const ErrorState = ({ message = 'Something went wrong' }: { message?: string }) => {
+  return (
+    <div className="flex justify-center items-center h-64">
+      <div className="text-center">
+        <div className="mx-auto mb-4">
+          <svg className="h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p className="text-gray-600">{message}</p>
+      </div>
+    </div>
+  );
+};

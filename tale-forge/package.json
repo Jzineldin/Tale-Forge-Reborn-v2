@@ -1,0 +1,35 @@
+{
+  "name": "tale-forge",
+  "version": "1.0.0",
+  "description": "AI-powered interactive storytelling platform for children aged 4-12, creating personalized, educational, and safe story experiences with AI-generated images and voice narration.",
+  "main": "index.js",
+  "scripts": {
+    "dev": " concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "storytelling",
+    "ai",
+    "children",
+    "interactive",
+    "education"
+  ],
+  "author": "Tale Forge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
