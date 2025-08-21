@@ -6,9 +6,32 @@ export interface Story {
   description: string;
   genre: string;
   age_group: string;
+  target_age?: number;
+  user_id: string;
   created_at: string;
   updated_at: string;
-  status: 'draft' | 'published' | 'archived';
+  status: 'draft' | 'published' | 'archived' | 'completed';
+  // Extended properties from generation_settings
+  theme?: string;
+  setting?: string;
+  characters?: Character[];
+  conflict?: string;
+  quest?: string;
+  moralLesson?: string;
+  additionalDetails?: string;
+  settingDescription?: string;
+  timePeriod?: string;
+  atmosphere?: string;
+  wordsPerChapter?: number;
+  childName?: string;
+}
+
+export interface Character {
+  id: string;
+  name: string;
+  description: string;
+  role: string;
+  traits: string[];
 }
 
 export interface StorySegment {

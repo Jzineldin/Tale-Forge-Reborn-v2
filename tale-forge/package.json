@@ -1,34 +1,68 @@
 {
   "name": "tale-forge",
+  "private": true,
   "version": "1.0.0",
-  "description": "AI-powered interactive storytelling platform for children aged 4-12, creating personalized, educational, and safe story experiences with AI-generated images and voice narration.",
-  "main": "index.js",
+  "type": "module",
+  "description": "AI-powered interactive storytelling platform for children aged 4-12",
   "scripts": {
-    "dev": " concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run dev",
-    "build": "npm run build:frontend",
-    "build:frontend": "cd frontend && npm run build",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "format": "prettier --write .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+    "format": "prettier --write src/",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:functions:serve": "supabase functions serve",
+    "supabase:functions:deploy": "supabase functions deploy",
+    "supabase:secrets:list": "supabase secrets list",
+    "ai:test": "node test-ai-pipeline.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.55.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-query": "^3.39.0",
+    "react-router-dom": "^6.26.0",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^0.34.6",
+    "@vitest/ui": "^0.34.6",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "jsdom": "^22.1.0",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0",
+    "vitest": "^0.34.6"
   },
   "keywords": [
     "storytelling",
-    "ai",
+    "ai", 
     "children",
     "interactive",
-    "education"
+    "education",
+    "supabase",
+    "react"
   ],
   "author": "Tale Forge Team",
   "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.0.0"
-  },
   "engines": {
     "node": ">=18.0.0"
   }
