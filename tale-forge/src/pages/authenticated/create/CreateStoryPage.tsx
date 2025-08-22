@@ -22,6 +22,7 @@ import {
   StoryValidationError
 } from '@/utils/storyValidation';
 import { type StoryTemplate } from '@/utils/storyTemplates';
+import { supabase } from '@/lib/supabase';
 
 interface Character {
   id: string;
@@ -205,14 +206,43 @@ const CreateStoryPage: React.FC = () => {
     createStory(
       storySubmissionData,
       {
-        onSuccess: (data: any) => {
+        onSuccess: async (data: any) => {
           console.log('Story creation response:', data);
           const storyId = data.story?.id || data.id;
           setStoryId(storyId);
+          
+          // Generate the first story segment
+          console.log('🎨 Generating first story segment...');
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          try {
+            const segmentResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-story-segment`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session?.access_token}`,
+                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+              },
+              body: JSON.stringify({
+                storyId: storyId,
+                previousChoice: null,
+                segmentNumber: 0
+              })
+            });
+            
+            if (segmentResponse.ok) {
+              console.log('✅ First segment generated successfully');
+            } else {
+              console.error('❌ Failed to generate first segment:', await segmentResponse.text());
+            }
+          } catch (error) {
+            console.error('❌ Error generating first segment:', error);
+          }
+          
           // Navigate to the story reader page
           setTimeout(() => {
             navigate(`/stories/${storyId}`);
-          }, 2000);
+          }, 3000); // Increased delay to allow segment generation
         },
         onError: (error: any) => {
           console.error('Error creating story:', error);

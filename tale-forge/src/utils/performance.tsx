@@ -92,26 +92,42 @@ export const useStory = (storyId: string | null) => {
       }
       
       // Get current session from Supabase
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('🔑 Session check:', { 
+        hasSession: !!session, 
+        hasToken: !!session?.access_token, 
+        tokenLength: session?.access_token?.length,
+        sessionError: sessionError?.message 
+      });
+      
       if (!session?.access_token) {
         throw new Error('No authentication session found');
       }
 
       // Fetch from Supabase backend
+      console.log('🔍 Fetching story:', storyId);
+      
       const response = await fetch(`${API_BASE_URL}/get-story`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ storyId })
       });
       
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch story');
+        const errorText = await response.text();
+        console.error('❌ Get-story error response:', errorText);
+        throw new Error(`Failed to fetch story: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
+      console.log('✅ Story fetched successfully:', data.success);
       return data.story || null;
     },
     {

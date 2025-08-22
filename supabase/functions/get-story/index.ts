@@ -29,7 +29,7 @@ serve(async (req) => {
     }
     
     // Use built-in anon key if available, fallback to manual one
-    const anonKey = supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWh5cGtpZ2JjbXN4eXZzZWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzM3NjAsImV4cCI6MjA2NjgwOTc2MH0.4LgZRIaUTuVG2_ddX8jbg-XGceWiTvmjoJ0T3GCmrkg';
+    const anonKey = supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWh5cGtpZ2JjbXN4eXZzZWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjE4NjQyNzcsImV4cCI6MjAzNzQ0MDI3N30.TuYKSNsAqJN7cgOABMw6AHV5iy86r5mTqFqL3Ftz8Z0';
 
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
