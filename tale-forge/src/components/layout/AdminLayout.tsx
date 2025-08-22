@@ -1,17 +1,13 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { PrimaryNavigation } from '@/components/navigation';
 import { SecondaryNavigation } from '@/components/navigation';
 import { MobileNavigation } from '@/components/navigation';
-import Text from '@/components/atoms/Text';
-
 interface AdminLayoutProps {
   children: React.ReactNode;
   showFooter?: boolean;
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, showFooter = true }) => {
-  const location = useLocation();
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
