@@ -19,7 +19,16 @@
    1. TYPOGRAPHY CLASSES
    ================================= */
 
-/* Refined Heading - Modern typography with amber colors */
+/* Cinzel Heading - Fantasy typography with amber colors for main titles */
+.fantasy-heading-cinzel {
+  font-family: 'Cinzel', 'Cinzel Variable', serif;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Refined Heading - Modern typography with amber colors for subtitles/sections */
 .fantasy-heading {
   font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
   color: #f59e0b;
@@ -38,9 +47,10 @@
 }
 
 /* Usage Examples:
-   Main Title: fantasy-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl
-   Subtitle: fantasy-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl
-   Section Header: fantasy-heading text-2xl sm:text-3xl
+   Main Title (Cinzel): fantasy-heading-cinzel text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl
+   Section Headers (Cinzel): fantasy-heading-cinzel text-2xl sm:text-3xl md:text-4xl
+   Subtitle (Inter): fantasy-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl
+   Body Headers (Inter): fantasy-heading text-lg sm:text-xl
 */
 
 /* ===================================
@@ -225,11 +235,14 @@
    COMPONENT USAGE GUIDE
    ===================================
    
-   MAIN TITLE:
-   <h1 class="fantasy-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
+   MAIN TITLE (Cinzel):
+   <h1 class="fantasy-heading-cinzel text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
    
-   SUBTITLE:
-   <h2 class="fantasy-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 tracking-wide">
+   SECTION HEADER (Cinzel):
+   <h2 class="fantasy-heading-cinzel text-2xl sm:text-3xl md:text-4xl font-bold mb-8 tracking-wide">
+   
+   SUBTITLE (Inter):
+   <h3 class="fantasy-heading text-xl sm:text-2xl md:text-3xl font-bold mb-6 tracking-wide">
    
    PRIMARY CTA BUTTON:
    <button class="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">

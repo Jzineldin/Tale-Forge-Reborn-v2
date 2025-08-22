@@ -53,7 +53,7 @@ interface StoryData {
 const CreateStoryPage: React.FC = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0); // Start at 0 for template selection
-  const [isGenerating, setIsGenerating] = useState(false);
+  // Removed duplicate isGenerating state - using isCreatingStory from hook instead
   const [storyId, setStoryId] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<StoryValidationError[]>([]);
   const [storyProgress, setStoryProgress] = useState(0);
@@ -178,7 +178,6 @@ const CreateStoryPage: React.FC = () => {
       return;
     }
 
-    setIsGenerating(true);
     setValidationErrors([]);
     
     // Prepare story data for submission - include ALL form data
@@ -251,7 +250,6 @@ const CreateStoryPage: React.FC = () => {
             message: 'Failed to create story. Please try again.',
             type: 'format'
           }]);
-          setIsGenerating(false);
         }
       }
     );
@@ -313,7 +311,7 @@ const CreateStoryPage: React.FC = () => {
             storyData={storyData}
             onSubmit={handleSubmit}
             onPrevious={usingTemplate ? () => setStep(0) : handlePrevious}
-            isGenerating={isGenerating || isCreatingStory}
+            isGenerating={isCreatingStory}
             usingTemplate={usingTemplate}
             onUpdateChildName={(name: string) => handleInputChange('childName', name)}
           />
@@ -354,19 +352,18 @@ const CreateStoryPage: React.FC = () => {
     <div className="min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" 
-              style={{ fontFamily: 'Cinzel, serif' }}
+        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-8 mb-8 text-center">
+          <h1 className="fantasy-heading-cinzel text-4xl md:text-5xl font-bold mb-4" 
               id="create-story-heading">
             Create Your Magical Story ✨
           </h1>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             Follow our step-by-step wizard to craft a personalized interactive adventure
           </p>
         </div>
 
         {/* Progress Bar */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6 mb-8">
+        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             {progressSteps.map((stepInfo, index) => {
               let stepNumber, isActive, isCompleted, isAccessible;
@@ -397,12 +394,12 @@ const CreateStoryPage: React.FC = () => {
                     <div 
                       className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300 ${
                         isCompleted
-                          ? 'bg-green-500 text-white shadow-lg shadow-green-500/25'
+                          ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/25'
                           : isActive
                           ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25 animate-pulse'
                           : isAccessible
-                          ? 'bg-white/20 text-white/80 border border-white/30'
-                          : 'bg-white/10 text-white/40'
+                          ? 'bg-slate-600/50 text-amber-200 border border-amber-400/30'
+                          : 'bg-slate-800/50 text-slate-400'
                       }`}
                       aria-current={isActive ? 'step' : undefined}
                     >
@@ -410,7 +407,7 @@ const CreateStoryPage: React.FC = () => {
                     </div>
                     <div className="mt-2 text-center">
                       <div className={`text-sm font-semibold ${
-                        isActive ? 'text-amber-400' : isCompleted ? 'text-green-400' : 'text-white/70'
+                        isActive ? 'text-amber-400' : isCompleted ? 'text-amber-300' : 'text-slate-300'
                       }`}>
                         {stepInfo.label}
                       </div>
@@ -421,7 +418,7 @@ const CreateStoryPage: React.FC = () => {
                   </div>
                   {index < progressSteps.length - 1 && (
                     <div className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${
-                      isCompleted ? 'bg-green-400 shadow-sm' : 'bg-white/20'
+                      isCompleted ? 'bg-amber-400 shadow-sm' : 'bg-slate-600/30'
                     }`}></div>
                   )}
                 </div>
@@ -477,14 +474,14 @@ const CreateStoryPage: React.FC = () => {
         </div>
         
         {/* Wizard Content */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl overflow-hidden">
+        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl overflow-hidden">
           <div className="p-8">
             {renderStep()}
           </div>
         </div>
 
         {/* Help Section */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6 mt-8">
+        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-6 mt-8">
           <div className="flex items-center justify-center space-x-6 text-white/70">
             <div className="flex items-center space-x-2">
               <span className="text-amber-400">💡</span>

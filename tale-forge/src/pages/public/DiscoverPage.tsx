@@ -206,7 +206,7 @@ const DiscoverPage: React.FC = () => {
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="glass-enhanced p-6 rounded-2xl">
-          <h1 className="fantasy-heading text-3xl font-bold mb-2">
+          <h1 className="fantasy-heading-cinzel text-3xl font-bold mb-2">
             🌟 Discover Stories
           </h1>
           <p className="text-white/70 text-lg">
@@ -219,7 +219,7 @@ const DiscoverPage: React.FC = () => {
       {featuredStories.length > 0 && (
         <div className="max-w-7xl mx-auto mb-8">
           <div className="glass-enhanced p-6 rounded-2xl">
-            <h2 className="fantasy-heading text-2xl font-bold mb-6">✨ Featured Stories</h2>
+            <h2 className="fantasy-heading-cinzel text-2xl font-bold mb-6">✨ Featured Stories</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredStories.slice(0, 3).map((story) => (
                 <div key={story.id} className="glass-card bg-amber-500/10 border border-amber-400/30 rounded-xl overflow-hidden hover:scale-105 transition-all duration-300">

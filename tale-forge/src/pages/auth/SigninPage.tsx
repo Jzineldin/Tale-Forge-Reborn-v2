@@ -74,7 +74,7 @@ const SigninPage: React.FC = () => {
         <div className="glass-enhanced p-8 rounded-2xl border border-amber-500/30">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="fantasy-heading text-3xl sm:text-4xl font-bold mb-2">
+            <h1 className="fantasy-heading-cinzel text-3xl sm:text-4xl font-bold mb-2">
               Welcome Back
             </h1>
             <p className="text-white/70 text-lg">

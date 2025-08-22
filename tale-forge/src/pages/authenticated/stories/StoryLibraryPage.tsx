@@ -155,7 +155,7 @@ const StoryLibraryPage: React.FC = () => {
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="glass-enhanced p-6 rounded-2xl">
-            <h1 className="fantasy-heading text-3xl font-bold mb-2">
+            <h1 className="fantasy-heading-cinzel text-3xl font-bold mb-2">
               📚 My Story Library
             </h1>
             <p className="text-white/70 text-lg">
@@ -191,7 +191,7 @@ const StoryLibraryPage: React.FC = () => {
         <div className="glass-enhanced p-6 rounded-2xl">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="fantasy-heading text-3xl font-bold mb-2">
+              <h1 className="fantasy-heading-cinzel text-3xl font-bold mb-2">
                 📚 My Story Library
               </h1>
               <p className="text-white/70 text-lg">

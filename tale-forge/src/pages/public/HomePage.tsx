@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
           {/* Refined Hero Container */}
           <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}
-            <h1 className="fantasy-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
+            <h1 className="fantasy-heading-cinzel text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
               TALE FORGE
             </h1>
 
@@ -126,7 +126,7 @@ const HomePage: React.FC = () => {
       <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
-            <h2 className="fantasy-heading text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="fantasy-heading-cinzel text-3xl md:text-4xl font-bold text-center mb-12">
               Featured Story Adventures
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

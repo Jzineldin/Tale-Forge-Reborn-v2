@@ -172,8 +172,7 @@ const DashboardPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Welcome Header */}
         <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" 
-              style={{ fontFamily: 'Cinzel, serif' }}>
+          <h1 className="fantasy-heading-cinzel text-4xl md:text-5xl font-bold mb-4">
             Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! ✨
           </h1>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
@@ -187,7 +186,7 @@ const DashboardPage: React.FC = () => {
             {/* Recent Stories */}
             <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'Cinzel, serif' }}>
+                <h2 className="fantasy-heading-cinzel text-2xl font-bold">
                   📚 Recent Stories
                 </h2>
                 <Link 
@@ -317,7 +316,7 @@ const DashboardPage: React.FC = () => {
           <div className="space-y-6">
             {/* Quick Actions */}
             <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
-              <h3 className="text-xl font-bold text-white mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
+              <h3 className="fantasy-heading-cinzel text-xl font-bold mb-6 text-center">
                 ⚡ Quick Actions
               </h3>
               <div className="space-y-4">
@@ -345,7 +344,7 @@ const DashboardPage: React.FC = () => {
             
             {/* Stats */}
             <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
-              <h3 className="text-xl font-bold text-white mb-6 text-center" style={{ fontFamily: 'Cinzel, serif' }}>
+              <h3 className="fantasy-heading-cinzel text-xl font-bold mb-6 text-center">
                 📊 Your Story Journey
               </h3>
               <div className="space-y-4">

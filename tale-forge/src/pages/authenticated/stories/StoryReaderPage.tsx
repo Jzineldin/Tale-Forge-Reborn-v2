@@ -430,6 +430,8 @@ const StoryReaderPage: React.FC = () => {
                     onSelect={handleChoiceSelect}
                     disabled={isGeneratingSegment}
                     loading={isGeneratingSegment}
+                    onEndStory={handleStoryEnding}
+                    segmentCount={story.segments?.length || 0}
                   />
                 </div>
               </>

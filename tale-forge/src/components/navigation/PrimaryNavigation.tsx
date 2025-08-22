@@ -32,11 +32,11 @@ const PrimaryNavigation: React.FC = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to={user ? '/dashboard' : '/'} className="flex items-center space-x-2">
-                <Icon name="tale-forge" size={32} animated={true} variation="default" />
-                <Text variant="h1" weight="bold" className="text-xl text-amber-400 font-bold">
+              <Link to={user ? '/dashboard' : '/'} className="flex items-center space-x-3">
+                <Icon name="tale-forge" size={36} animated={true} variation="default" />
+                <span className="fantasy-heading-cinzel text-2xl sm:text-3xl font-bold text-amber-400 tracking-wide">
                   Tale Forge
-                </Text>
+                </span>
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
