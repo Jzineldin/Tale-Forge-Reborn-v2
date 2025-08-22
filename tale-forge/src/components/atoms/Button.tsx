@@ -14,14 +14,14 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props
 }) => {
-  const baseClasses = 'font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95';
+  const baseClasses = 'font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-102 active:scale-98';
   
   const variantClasses = {
-    primary: 'bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500 focus:ring-offset-amber-100 shadow-md hover:shadow-lg',
-    secondary: 'bg-white/20 text-white border border-white/30 hover:bg-white/30 focus:ring-white/50 focus:ring-offset-white/10 backdrop-blur-sm shadow-md hover:shadow-lg',
-    danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 focus:ring-offset-red-100 shadow-md hover:shadow-lg',
-    magical: 'btn-magical shadow-lg hover:shadow-xl',
-    outline: 'bg-transparent border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white focus:ring-amber-500 focus:ring-offset-amber-100 shadow-md hover:shadow-lg',
+    primary: 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 focus:ring-amber-500 focus:ring-offset-amber-100 shadow-sm hover:shadow-md',
+    secondary: 'bg-white/5 text-amber-400 border border-amber-400/30 hover:bg-amber-400/10 hover:border-amber-400/50 focus:ring-amber-400/50 backdrop-blur-sm shadow-sm hover:shadow-md',
+    danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 focus:ring-offset-red-100 shadow-sm hover:shadow-md',
+    magical: 'bg-gradient-to-r from-amber-400 via-purple-500 to-amber-600 text-white hover:from-amber-500 hover:via-purple-600 hover:to-amber-700 shadow-sm hover:shadow-md',
+    outline: 'bg-transparent border border-amber-500 text-amber-500 hover:bg-amber-500/10 hover:border-amber-600 focus:ring-amber-500 focus:ring-offset-amber-100 shadow-sm hover:shadow-md',
   };
   
   const sizeClasses = {
@@ -30,10 +30,8 @@ const Button: React.FC<ButtonProps> = ({
     large: 'px-6 py-3 text-lg',
   };
   
-  // If it's the magical variant, we don't need additional size classes
-  const classes = variant === 'magical' 
-    ? `${variantClasses[variant]} ${className}`
-    : `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+  // All variants now use consistent structure
+  const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
   
   return (
     <button 

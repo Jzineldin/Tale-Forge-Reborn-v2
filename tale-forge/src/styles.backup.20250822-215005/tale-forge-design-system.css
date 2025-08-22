@@ -19,22 +19,15 @@
    1. TYPOGRAPHY CLASSES
    ================================= */
 
-/* Refined Heading - Modern typography with amber colors */
+/* Fantasy Heading - Main titles and CTAs */
 .fantasy-heading {
-  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
-  color: #f59e0b;
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  color: #fbbf24;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Legacy support - keep original class name but refined styling */
-.refined-heading {
-  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
-  color: #f59e0b;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.1em;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 0 6px rgba(251, 191, 36, 0.3);
 }
 
 /* Usage Examples:
@@ -47,43 +40,28 @@
    2. BUTTON CLASSES
    ================================= */
 
-/* Refined CTA Button - Professional amber styling */
+/* Fantasy CTA Button - Primary action buttons */
 .fantasy-cta {
-  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 25%, #b45309 50%, #d97706 75%, #f59e0b 100%);
   color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: -0.01em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  box-shadow: 
+    0 4px 15px rgba(245, 158, 11, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  letter-spacing: 0.025em;
   font-weight: 600;
 }
 
 .fantasy-cta:hover {
-  background: linear-gradient(135deg, #d97706, #b45309);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
-  transform: translateY(-1px);
-  border-color: rgba(251, 191, 36, 0.3);
-}
-
-/* New refined button class for modern usage */
-.refined-cta {
-  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.1);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: -0.01em;
-  font-weight: 600;
-}
-
-.refined-cta:hover {
-  background: linear-gradient(135deg, #d97706, #b45309);
-  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #d97706 0%, #b45309 25%, #92400e 50%, #b45309 75%, #d97706 100%);
+  box-shadow: 
+    0 6px 20px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.5);
 }
 
 /* Usage: fantasy-cta px-8 py-4 text-lg rounded-xl */
@@ -113,55 +91,42 @@
    3. GLASS EFFECTS
    ================================= */
 
-/* Refined Glass - Subtle glassmorphism effect */
+/* Glass - Basic glassmorphism effect */
 .glass {
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Refined Hero Container - Clean hero sections */
-.glass-hero-container {
-  background: rgba(15, 23, 42, 0.15);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Refined Card - Modern card styling */
-.glass-card {
-  background: rgba(30, 41, 59, 0.1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* Refined Enhanced - Strategic use for navigation/modals only */
-.glass-enhanced {
-  background: rgba(0, 0, 0, 0.2);
+/* Glass Hero Container - For hero sections */
+.glass-hero-container {
+  background: rgba(15, 23, 42, 0.3);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(245, 158, 11, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Professional card alternative - clean background */
-.refined-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 158, 11, 0.1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Glass Card - Standard glassmorphism effect */
+.glass-card {
+  background: rgba(30, 41, 59, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.refined-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(245, 158, 11, 0.2);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+/* Glass Enhanced - Stronger effect for important elements */
+.glass-enhanced {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .glass-enhanced:hover {

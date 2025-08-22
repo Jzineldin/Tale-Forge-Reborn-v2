@@ -29,32 +29,32 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Floating Cosmic Elements */}
+      {/* Refined Floating Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/40 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-purple-400/50 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-blue-400/40 rounded-full animate-pulse delay-2000"></div>
-        <div className="absolute top-1/3 right-2/3 w-1 h-1 bg-pink-400/50 rounded-full animate-pulse delay-3000"></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/20 rounded-full animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-amber-500/25 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-amber-300/15 rounded-full animate-pulse delay-2000"></div>
+        <div className="absolute top-1/3 right-2/3 w-1 h-1 bg-amber-600/20 rounded-full animate-pulse delay-3000"></div>
       </div>
 
       {/* Hero Section */}
       <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center max-w-6xl mx-auto">
-          {/* Glass Container for Hero Content */}
-          <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/15 rounded-2xl p-8 md:p-12 lg:p-16 shadow-lg">
+          {/* Refined Hero Container */}
+          <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}
             <h1 className="fantasy-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
               TALE FORGE
             </h1>
 
             {/* Subtitle */}
-            <h2 className="fantasy-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 sm:mb-12 tracking-wide text-white/95 text-center">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 sm:mb-12 text-slate-200 text-center">
               CREATE MAGICAL STORIES<br />
               TOGETHER!
             </h2>
 
             {/* Description */}
-            <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-shadow-md text-center">
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
               Transform your ideas into enchanting stories with AI-powered creativity.
               Perfect for families, educators, and storytellers of all ages!
             </p>
@@ -64,31 +64,31 @@ const HomePage: React.FC = () => {
               {user ? (
                 <>
                   <Link to="/create">
-                    <button className="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center">
-                      <Icon name="plus" size={20} className="mr-2" />
-                      Create New Story
-                    </button>
+                    <Button variant="primary" size="large" className="flex items-center space-x-2">
+                      <Icon name="plus" size={20} />
+                      <span>Create New Story</span>
+                    </Button>
                   </Link>
                   <Link to="/dashboard">
-                    <button className="glass-card text-white border-2 border-amber-400/50 hover:border-amber-400 font-semibold px-8 py-4 text-lg rounded-xl backdrop-blur-md hover:bg-amber-400/10 transition-all duration-300 flex items-center">
-                      <Icon name="user" size={20} className="mr-2" />
-                      Go to Dashboard
-                    </button>
+                    <Button variant="secondary" size="large" className="flex items-center space-x-2">
+                      <Icon name="user" size={20} />
+                      <span>Go to Dashboard</span>
+                    </Button>
                   </Link>
                 </>
               ) : (
                 <>
                   <Link to="/signup">
-                    <button className="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center">
-                      <Icon name="plus" size={20} className="mr-2" />
-                      Start Creating Stories
-                    </button>
+                    <Button variant="primary" size="large" className="flex items-center space-x-2">
+                      <Icon name="plus" size={20} />
+                      <span>Start Creating Stories</span>
+                    </Button>
                   </Link>
                   <Link to="/features">
-                    <button className="glass-card text-white border-2 border-amber-400/50 hover:border-amber-400 font-semibold px-8 py-4 text-lg rounded-xl backdrop-blur-md hover:bg-amber-400/10 transition-all duration-300 flex items-center">
-                      <Icon name="star" size={20} className="mr-2" />
-                      Learn More
-                    </button>
+                    <Button variant="secondary" size="large" className="flex items-center space-x-2">
+                      <Icon name="star" size={20} />
+                      <span>Learn More</span>
+                    </Button>
                   </Link>
                 </>
               )}
