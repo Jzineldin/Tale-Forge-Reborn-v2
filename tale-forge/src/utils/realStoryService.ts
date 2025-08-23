@@ -54,14 +54,15 @@ export const realStoryService = {
       });
 
       if (!response.ok) {
-        console.error('❌ HTTP Error Response:', {
+        console.error('🚨 CREATE-STORY FUNCTION FAILED:', {
           status: response.status,
           statusText: response.statusText,
           url: response.url
         });
         
         const errorText = await response.text();
-        console.error('❌ Error Response Body:', errorText);
+        console.error('🚨 CREATE-STORY ERROR DETAILS:', errorText);
+        console.error('🚨 This will trigger MOCK fallback - that\'s why you get fake choices!');
         
         // Check if this is an API key issue and fall back to mock
         if (errorText.includes('Missing required environment variables') || 

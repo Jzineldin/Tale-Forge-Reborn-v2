@@ -236,13 +236,10 @@ const CreateStoryPage: React.FC = () => {
           const storyId = data.story?.id || data.id;
           setStoryId(storyId);
           
-          console.log('✅ Story created with first segment - navigating to story reader');
+          console.log('✅ Story created - immediately navigating to story reader');
           
-          // Navigate to the story reader page
-          // No need to generate first segment - create-story already does this
-          setTimeout(() => {
-            navigate(`/stories/${storyId}`);
-          }, 1500); // Reduced delay since no extra generation needed
+          // 🚀 IMMEDIATE NAVIGATION: Remove unnecessary delay and multiple loading states
+          navigate(`/stories/${storyId}`);
         },
         onError: (error: any) => {
           console.error('Error creating story:', error);

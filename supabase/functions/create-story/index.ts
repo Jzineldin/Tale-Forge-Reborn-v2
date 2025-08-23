@@ -180,10 +180,16 @@ serve(async (req) => {
 
     console.log('✅ Story record created:', newStory.id);
 
-    // Generate first story segment using the new generate-story-segment function
-    console.log('🤖 Generating first story segment...');
+    // Generate first story segment using the optimized generate-story-segment function
+    console.log('🤖 Generating first story segment with single API call optimization...');
     
     try {
+      console.log('🔍 About to call generate-story-segment with:', {
+        url: `${supabaseUrl}/functions/v1/generate-story-segment`,
+        storyId: newStory.id,
+        hasAuthHeader: !!authHeader
+      });
+      
       const segmentResponse = await fetch(`${supabaseUrl}/functions/v1/generate-story-segment`, {
         method: 'POST',
         headers: {
@@ -191,20 +197,15 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: `Create the opening of a ${storyData.genre} story for age ${storyData.age_group}. 
-            Title: ${storyData.title}
-            Theme: ${storyData.theme}
-            Setting: ${storyData.setting}
-            Characters: ${storyData.characters?.map(c => `${c.name} (${c.description})`).join(', ')}
-            Conflict: ${storyData.conflict}
-            Quest: ${storyData.quest}
-            Moral lesson: ${storyData.moralLesson}`,
-          age: storyData.age_group,
-          genre: storyData.genre,
           storyId: newStory.id,
-          characters: storyData.characters,
-          skipImage: false
+          // choiceIndex is undefined for first segment (triggers first segment generation)
         })
+      });
+      
+      console.log('📡 Segment generation response:', {
+        status: segmentResponse.status,
+        statusText: segmentResponse.statusText,
+        ok: segmentResponse.ok
       });
 
       if (segmentResponse.ok) {
@@ -239,46 +240,47 @@ serve(async (req) => {
         });
 
       } else {
-        // Segment generation failed, but story was created
+        // Segment generation failed - this is a critical error
         const segmentError = await segmentResponse.text();
-        console.error('❌ Segment generation failed:', segmentError);
+        console.error('🚨 CRITICAL: Segment generation failed:', {
+          status: segmentResponse.status,
+          statusText: segmentResponse.statusText,
+          error: segmentError
+        });
+        
+        // Delete the story since we can't generate the first segment
+        await supabaseAdmin
+          .from('stories')
+          .delete()
+          .eq('id', newStory.id);
         
         return new Response(JSON.stringify({
-          success: true,
-          story: {
-            id: newStory.id,
-            title: newStory.title,
-            description: newStory.description,
-            genre: storyData.genre,
-            age_group: storyData.age_group,
-            created_at: newStory.created_at,
-            updated_at: newStory.updated_at
-          },
-          message: 'Story created, but first segment generation failed',
-          segmentError: segmentError
+          error: 'Failed to generate first story segment',
+          details: segmentError,
+          status: segmentResponse.status
         }), {
           headers: { "Content-Type": "application/json", ...corsHeaders },
-          status: 200
+          status: 500
         });
       }
     } catch (segmentError) {
-      console.error('❌ Error calling segment generation:', segmentError);
+      console.error('🚨 CRITICAL: Error calling segment generation:', {
+        message: segmentError.message,
+        stack: segmentError.stack
+      });
+      
+      // Delete the story since we can't generate the first segment  
+      await supabaseAdmin
+        .from('stories')
+        .delete()
+        .eq('id', newStory.id);
       
       return new Response(JSON.stringify({
-        success: true,
-        story: {
-          id: newStory.id,
-          title: newStory.title,
-          description: newStory.description,
-          genre: storyData.genre,
-          age_group: storyData.age_group,
-          created_at: newStory.created_at,
-          updated_at: newStory.updated_at
-        },
-        message: 'Story created, but segment generation service unavailable'
+        error: 'Segment generation service failed',
+        details: segmentError.message
       }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
-        status: 200
+        status: 500
       });
     }
 

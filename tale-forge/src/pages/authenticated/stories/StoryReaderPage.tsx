@@ -286,20 +286,9 @@ const StoryReaderPage: React.FC = () => {
   // Auto-refresh is now handled by react-query polling in performance.tsx
   // No need for manual refresh anymore
 
-  // Loading state
-  if (isStoryLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-md">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400 mx-auto mb-4"></div>
-          <h2 className="text-xl font-bold text-white mb-2">Loading your story...</h2>
-          <p className="text-white/70">Fetching your magical adventure</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
+  // 🚀 SIMPLIFIED LOADING STATES: Reduce multiple confusing screens
+  
+  // Error state - critical errors only
   if (storyError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -337,24 +326,7 @@ const StoryReaderPage: React.FC = () => {
     );
   }
 
-  // Story is still generating
-  if (story.status === 'generating') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-md">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400 mx-auto mb-4"></div>
-          <h2 className="text-xl font-bold text-white mb-2">Creating Your Story ✨</h2>
-          <p className="text-white/70 mb-4">Our AI is crafting your personalized adventure...</p>
-          <p className="text-white/50 text-sm">This usually takes 30-60 seconds</p>
-          <div className="mt-4 w-full bg-white/20 rounded-full h-2">
-            <div className="bg-amber-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Story generation failed
+  // Story generation failed - show error
   if (story.status === 'error') {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -383,34 +355,36 @@ const StoryReaderPage: React.FC = () => {
     );
   }
 
-  // Story has no content yet - show live loading state
-  if (!story.segments || story.segments.length === 0) {
+  // 🎯 UNIFIED LOADING STATE: Story still generating or no segments yet
+  if (isStoryLoading || story.status === 'generating' || !story.segments || story.segments.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="glass-enhanced p-8 rounded-2xl text-center max-w-lg">
           <div className="animate-bounce text-6xl mb-4 block">✨</div>
-          <h2 className="text-xl font-bold text-white mb-2">Creating Your Magical Story</h2>
-          <p className="text-white/70 mb-4">Your story "{story.title}" is being crafted by our AI...</p>
+          <h2 className="text-xl font-bold text-white mb-2">Your Story is Being Created</h2>
+          <p className="text-white/70 mb-4">
+            {story?.title ? `"${story.title}" is being crafted by AI...` : 'Loading your magical adventure...'}
+          </p>
           
           {/* Live progress indicator */}
           <div className="space-y-3 mb-6">
             <div className="flex items-center justify-center space-x-2">
               <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
-              <span className="text-white/80 text-sm">Generating story text</span>
+              <span className="text-white/80 text-sm">Generating story text & choices</span>
             </div>
             <div className="flex items-center justify-center space-x-2">
-              <div className="w-3 h-3 bg-white/30 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
               <span className="text-white/60 text-sm">Creating illustrations</span>
             </div>
           </div>
           
           {/* Progress bar */}
           <div className="w-full bg-white/20 rounded-full h-2 mb-4">
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full animate-pulse" style={{ width: '45%' }}></div>
+            <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
           </div>
           
-          <p className="text-white/50 text-sm mb-4">This usually takes 30-60 seconds</p>
-          <p className="text-white/40 text-xs">The page will automatically update when ready ⚡</p>
+          <p className="text-white/50 text-sm mb-4">This usually takes 15-30 seconds ⚡</p>
+          <p className="text-white/40 text-xs">Page will refresh automatically when ready</p>
         </div>
       </div>
     );

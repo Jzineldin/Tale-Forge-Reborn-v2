@@ -18,6 +18,15 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
   usingTemplate = false,
   onUpdateChildName
 }) => {
+  const [isNavigating, setIsNavigating] = React.useState(false);
+  
+  const handleSubmit = () => {
+    setIsNavigating(true);
+    onSubmit();
+  };
+  
+  // Button should be disabled during generation OR navigation
+  const isButtonDisabled = isGenerating || isNavigating;
   // Genre mapping for display with emojis
   const genreMap: Record<string, { name: string; emoji: string }> = {
     'bedtime': { name: 'Bedtime Stories', emoji: '🌙' },
@@ -219,9 +228,9 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
       <div className="flex justify-between pt-6">
         <button 
           onClick={onPrevious}
-          disabled={isGenerating}
+          disabled={isButtonDisabled}
           className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 ${
-            isGenerating 
+            isButtonDisabled 
               ? 'bg-white/10 text-white/40 cursor-not-allowed' 
               : 'bg-white/20 hover:bg-white/30 text-white'
           }`}
@@ -229,18 +238,18 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
           ← Back: Plot Elements
         </button>
         <button 
-          onClick={onSubmit}
-          disabled={isGenerating}
+          onClick={handleSubmit}
+          disabled={isButtonDisabled}
           className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
-            isGenerating
+            isButtonDisabled
               ? 'bg-amber-500/50 text-white/70 cursor-not-allowed'
               : 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-xl hover:scale-105'
           }`}
         >
-          {isGenerating ? (
+          {isButtonDisabled ? (
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white mr-3"></div>
-              Creating Your Story...
+              {isNavigating ? 'Launching Your Story...' : 'Creating Your Story...'}
             </div>
           ) : (
             <div className="flex items-center">
@@ -251,14 +260,19 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
         </button>
       </div>
 
-      {/* Progress Indicator for Generation */}
-      {isGenerating && (
+      {/* Progress Indicator for Generation and Navigation */}
+      {isButtonDisabled && (
         <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
           <div className="text-center">
             <div className="animate-pulse text-amber-400 text-2xl mb-4">✨ 🪄 ✨</div>
-            <h4 className="text-lg font-semibold text-white mb-2">Weaving Your Tale...</h4>
+            <h4 className="text-lg font-semibold text-white mb-2">
+              {isNavigating ? 'Launching Your Story...' : 'Weaving Your Tale...'}
+            </h4>
             <p className="text-white/80 mb-4">
-              The AI is crafting a personalized story just for {storyData.childName || 'your child'}
+              {isNavigating 
+                ? 'Story created successfully! Taking you to your adventure...'
+                : `The AI is crafting a personalized story just for ${storyData.childName || 'your child'}`
+              }
             </p>
             <div className="w-full bg-white/10 rounded-full h-2">
               <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
