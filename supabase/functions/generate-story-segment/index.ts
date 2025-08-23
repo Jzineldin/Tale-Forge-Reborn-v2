@@ -1,10 +1,19 @@
 // Tale Forge - Generate Story Segment Edge Function
-// This function generates a story segment using OVH AI (Llama-3.3-70B)
+// This function generates a story segment using OpenAI GPT-4o (primary) with OVH AI (fallback)
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.5.0';
 
-// OVH AI Configuration (based on official documentation)
+// OpenAI Configuration (Primary AI Provider)
+const OPENAI_CONFIG = {
+  baseUrl: 'https://api.openai.com/v1',
+  apiKey: Deno.env.get('OPENAI_API_KEY'),
+  model: 'gpt-4o',
+  maxTokens: 512,
+  temperature: 0.7
+};
+
+// OVH AI Configuration (Fallback AI Provider)
 const OVH_AI_CONFIG = {
   baseUrl: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
   accessToken: Deno.env.get('OVH_AI_ENDPOINTS_ACCESS_TOKEN'),
@@ -30,8 +39,8 @@ serve(async (req) => {
 
   try {
     // Validate environment variables
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     const ovhApiKey = Deno.env.get('OVH_AI_ENDPOINTS_ACCESS_TOKEN');
-    const ovhTextEndpoint = Deno.env.get('OVH_TEXT_ENDPOINT');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -39,10 +48,11 @@ serve(async (req) => {
       throw new Error('Missing required Supabase environment variables');
     }
     
-    // Check if we have valid API keys (not placeholders)
-    const hasValidApiKeys = ovhApiKey && !ovhApiKey.includes('placeholder');
+    // Check if we have valid API keys (not placeholders) for at least one provider
+    const hasOpenAI = openaiApiKey && !openaiApiKey.includes('placeholder');
+    const hasOVH = ovhApiKey && !ovhApiKey.includes('placeholder');
     
-    if (!hasValidApiKeys) {
+    if (!hasOpenAI && !hasOVH) {
       console.log('⚠️ No valid AI API keys found, returning error for frontend fallback');
       return new Response(
         JSON.stringify({ 
@@ -53,6 +63,12 @@ serve(async (req) => {
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
+    
+    console.log('🔍 AI Provider Status:', {
+      hasOpenAI: hasOpenAI,
+      hasOVH: hasOVH,
+      primaryProvider: hasOpenAI ? 'OpenAI' : 'OVH (fallback only)'
+    });
 
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
@@ -165,123 +181,187 @@ serve(async (req) => {
       }
     }
 
-    // Generate story segment using OVH AI (following official documentation)
-    const requestBody = {
-      model: OVH_AI_CONFIG.model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert children\'s story writer who creates engaging, age-appropriate stories with positive messages.'
+    // ✅ MULTI-PROVIDER AI SYSTEM: OpenAI (Primary) → OVH (Fallback) → Mock
+    // This implements the proper fallback chain as per architectural analysis
+    let segmentText = '';
+    let choicesText = '';
+    let usedProvider = '';
+    let usedSingleCall = false;
+
+    // Helper function to call any AI provider with structured JSON
+    const callAIProvider = async (providerName, config, apiKey) => {
+      console.log(`🤖 Attempting ${providerName} AI with single structured request...`);
+      
+      const structuredPrompt = `${prompt}
+
+IMPORTANT: Respond with valid JSON in this exact format:
+{
+  "story_text": "Your story segment here (2-3 short paragraphs)",
+  "choices": [
+    "Choice 1 (5-10 words)",
+    "Choice 2 (5-10 words)", 
+    "Choice 3 (5-10 words)"
+  ]
+}
+
+Make sure the story_text is engaging and age-appropriate, and the 3 choices continue the story in different directions.`;
+
+      const requestBody = {
+        model: config.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert children\'s story writer who creates engaging, age-appropriate stories with positive messages. Always respond with valid JSON in the specified format.'
+          },
+          {
+            role: 'user',
+            content: structuredPrompt
+          }
+        ],
+        max_tokens: (story.target_age === '4-6' ? 300 : story.target_age === '7-9' ? 400 : 500) + 200,
+        temperature: config.temperature
+      };
+
+      const authHeader = providerName === 'OpenAI' ? `Bearer ${apiKey}` : `Bearer ${apiKey}`;
+      
+      const response = await fetch(`${config.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authHeader,
         },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: story.target_age === '4-6' ? 100 : story.target_age === '7-9' ? 150 : 200,
-      temperature: OVH_AI_CONFIG.temperature
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ ${providerName} AI API error:`, response.status, errorText);
+        throw new Error(`${providerName} API error: ${response.status} - ${errorText}`);
+      }
+
+      const completion = await response.json();
+      const rawResponse = completion.choices[0].message.content?.trim() || '';
+      
+      console.log(`📥 ${providerName} raw response: ${rawResponse.substring(0, 200)}...`);
+      
+      // Parse JSON response
+      const parsedResponse = JSON.parse(rawResponse);
+      
+      if (!parsedResponse.story_text || !parsedResponse.choices || !Array.isArray(parsedResponse.choices)) {
+        throw new Error('Invalid JSON structure - missing story_text or choices');
+      }
+
+      return {
+        segmentText: parsedResponse.story_text.trim(),
+        choicesText: parsedResponse.choices.join('\n'),
+        provider: providerName
+      };
     };
 
-    console.log('Calling OVH AI for story segment generation...');
-
-    const aiResponse = await fetch(`${OVH_AI_CONFIG.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OVH_AI_CONFIG.accessToken}`,
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error('OVH AI API error:', aiResponse.status, errorText);
-      throw new Error(`OVH AI API error: ${aiResponse.status}`);
+    // Try providers in order: OpenAI → OVH
+    let lastError = null;
+    
+    // 1. Try OpenAI first (if available)
+    if (hasOpenAI) {
+      try {
+        console.log('🚀 PRIMARY: Attempting OpenAI GPT-4o...');
+        const result = await callAIProvider('OpenAI', OPENAI_CONFIG, openaiApiKey);
+        segmentText = result.segmentText;
+        choicesText = result.choicesText;
+        usedProvider = result.provider;
+        usedSingleCall = true;
+        console.log('✅ SUCCESS: OpenAI generated story and choices!');
+      } catch (error) {
+        console.log(`⚠️ OpenAI failed: ${error.message}`);
+        lastError = error;
+      }
     }
-
-    const completion = await aiResponse.json();
-    const segmentText = completion.choices[0].message.content?.trim() || '';
-
-    // Generate choices for the next segment
-    const choicesPrompt = `Based on the following story segment for a child aged ${story.age_group}, create 3 simple choices the child can make that would continue the story in different directions:\n\n${segmentText}\n\nEach choice should be a short phrase (5-10 words) that describes an action or decision. Return only the 3 choices, one per line.`;
-
-    const choicesRequestBody = {
-      model: OVH_AI_CONFIG.model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert children\'s story writer who creates engaging, age-appropriate stories with positive messages.'
-        },
-        {
-          role: 'user',
-          content: choicesPrompt
-        }
-      ],
-      max_tokens: 100,
-      temperature: 0.8
-    };
-
-    console.log('Calling OVH AI for choices generation...');
-
-    const choicesResponse = await fetch(`${OVH_AI_CONFIG.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OVH_AI_CONFIG.accessToken}`,
-      },
-      body: JSON.stringify(choicesRequestBody),
-    });
-
-    if (!choicesResponse.ok) {
-      const errorText = await choicesResponse.text();
-      console.error('OVH AI API error for choices:', choicesResponse.status, errorText);
-      throw new Error(`OVH AI API error for choices: ${choicesResponse.status}`);
+    
+    // 2. Try OVH if OpenAI failed or unavailable
+    if (!segmentText && hasOVH) {
+      try {
+        console.log('🔄 FALLBACK: Attempting OVH Llama-3.3-70B...');
+        const result = await callAIProvider('OVH', OVH_AI_CONFIG, ovhApiKey);
+        segmentText = result.segmentText;
+        choicesText = result.choicesText;
+        usedProvider = result.provider;
+        usedSingleCall = true;
+        console.log('✅ SUCCESS: OVH generated story and choices!');
+      } catch (error) {
+        console.log(`⚠️ OVH failed: ${error.message}`);
+        lastError = error;
+      }
     }
-
-    const choicesCompletion = await choicesResponse.json();
-    const choicesText = choicesCompletion.choices[0].message.content?.trim() || '';
+    
+    // 3. If all AI providers failed, throw the last error
+    if (!segmentText) {
+      console.error('🚨 CRITICAL: All AI providers failed!', {
+        hasOpenAI: hasOpenAI,
+        hasOVH: hasOVH,
+        lastError: lastError?.message
+      });
+      throw lastError || new Error('All AI providers are unavailable');
+    }
     
     console.log(`🔍 Original AI response length: ${choicesText.length} characters`);
     console.log(`🔍 Original AI response: "${choicesText}"`);
     
-    // Enhanced choice parsing with 4 fallback methods
+    // ULTRA-ROBUST choice parsing - catch ALL possible formats
     let rawChoices = [];
     
-    // Method 1: Plain newlines (current approach)
-    rawChoices = choicesText.split('\n')
+    console.log(`🔍 DEBUG: Raw AI response: "${choicesText}"`);
+    console.log(`🔍 DEBUG: Response length: ${choicesText.length} characters`);
+    
+    // Method 1: Split by any common separators and clean up
+    rawChoices = choicesText
+      .split(/[\n\r]+/) // Split by newlines/returns
       .map(text => text.trim())
-      .filter(text => text.length > 0)
+      .map(text => text.replace(/^\d+[\.\)\:]?\s*/, '')) // Remove numbering: "1.", "1)", "1:"
+      .map(text => text.replace(/^[A-Za-z][\.\)\:]\s+/, '')) // Remove lettering ONLY if followed by punctuation AND space: "A. ", "A) ", "A: "  
+      .map(text => text.replace(/^[-•*\.\+]\s*/, '')) // Remove bullets: "-", "•", "*", ".", "+"
+      .map(text => text.replace(/^["'`](.*)["'`]$/, '$1')) // Remove quotes
+      .map(text => text.trim())
+      .filter(text => text.length > 5) // Must be at least 5 characters
+      .filter(text => !text.match(/^\d+\.?\s*$/)) // Remove pure numbers
       .slice(0, 3);
     
-    console.log(`🔍 Method 1 (newlines) found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+    console.log(`🔍 Method 1 (enhanced splitting) found choices: ${rawChoices.length} [${rawChoices.join(' | ')}]`);
     
-    // Method 2: Numbered format (1., 2., 3.)
+    // Method 2: If we have less than 3, try sentence extraction
     if (rawChoices.length < 3) {
-      console.log('🔍 Trying Method 2: numbered patterns...');
-      const numberedMatches = choicesText.match(/^\d+\.\s*(.+?)(?=\n\d+\.|\n*$)/gm);
-      if (numberedMatches && numberedMatches.length > 0) {
-        rawChoices = numberedMatches.map(match => match.replace(/^\d+\.\s*/, '').trim()).slice(0, 3);
-        console.log(`✅ Method 2 found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+      console.log('🔍 Trying Method 2: sentence extraction...');
+      
+      // Look for sentences that sound like choices
+      const sentences = choicesText
+        .replace(/[\n\r]+/g, ' ') // Join lines
+        .split(/[.!?]+/) // Split by sentence endings
+        .map(s => s.trim())
+        .filter(s => s.length > 5)
+        .filter(s => s.length < 100) // Not too long
+        .slice(0, 3);
+        
+      if (sentences.length >= 3) {
+        rawChoices = sentences.slice(0, 3);
+        console.log(`✅ Method 2 found choices: ${rawChoices.length} [${rawChoices.join(' | ')}]`);
       }
     }
     
-    // Method 3: Lettered format (A., B., C.)
+    // Method 3: If still not enough, try any text extraction
     if (rawChoices.length < 3) {
-      console.log('🔍 Trying Method 3: lettered patterns...');
-      const letteredMatches = choicesText.match(/^[A-C]\.\s*(.+?)(?=\n[A-C]\.|\n*$)/gm);
-      if (letteredMatches && letteredMatches.length > 0) {
-        rawChoices = letteredMatches.map(match => match.replace(/^[A-C]\.\s*/, '').trim()).slice(0, 3);
-        console.log(`✅ Method 3 found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
-      }
-    }
-    
-    // Method 4: Bullet format (-, •, *)
-    if (rawChoices.length < 3) {
-      console.log('🔍 Trying Method 4: bullet patterns...');
-      const bulletMatches = choicesText.match(/^[-•*]\s*(.+?)(?=\n[-•*]|\n*$)/gm);
-      if (bulletMatches && bulletMatches.length > 0) {
-        rawChoices = bulletMatches.map(match => match.replace(/^[-•*]\s*/, '').trim()).slice(0, 3);
-        console.log(`✅ Method 4 found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+      console.log('🔍 Trying Method 3: word-based extraction...');
+      
+      // Split by common delimiters and take anything reasonable
+      const parts = choicesText
+        .split(/[,;\n\r\-\|]+/)
+        .map(text => text.trim())
+        .map(text => text.replace(/^\d+[\.\)\:]?\s*/, ''))
+        .map(text => text.replace(/^[A-Za-z][\.\)\:]?\s*/, ''))
+        .filter(text => text.length > 3 && text.length < 50)
+        .slice(0, 3);
+        
+      if (parts.length >= rawChoices.length) {
+        rawChoices = parts.slice(0, 3);
+        console.log(`✅ Method 3 found choices: ${rawChoices.length} [${rawChoices.join(' | ')}]`);
       }
     }
     
@@ -326,6 +406,19 @@ serve(async (req) => {
       text: text,
       next_segment_id: null
     }));
+    
+    // 📊 PERFORMANCE ANALYTICS: Log provider and method success
+    console.log(`📈 AI PROVIDER PERFORMANCE METRICS:`);
+    console.log(`   • Provider used: ${usedProvider || 'Unknown'}`);
+    console.log(`   • Method: ${usedSingleCall ? 'SINGLE STRUCTURED JSON CALL' : 'DUAL API CALLS'}`);
+    console.log(`   • API calls made: ${usedSingleCall ? '1' : '2'}`);
+    console.log(`   • Fallback triggered: ${usedProvider !== 'OpenAI' ? 'YES' : 'NO'}`);
+    console.log(`   • Story text length: ${segmentText.length} characters`);
+    console.log(`   • Choices generated: ${choices.length}`);
+    
+    if (usedProvider !== 'OpenAI') {
+      console.log(`⚠️ NOTICE: Primary OpenAI provider not used - using ${usedProvider} fallback`);
+    }
 
     // Get the next position for the segment
     const { data: segments, error: segmentsError } = await supabase
@@ -368,7 +461,16 @@ serve(async (req) => {
         success: true, 
         segment: newSegment,
         imagePrompt: imagePrompt,
-        message: 'Story segment generated successfully'
+        message: `Story segment generated successfully using ${usedProvider}`,
+        // AI Provider metrics for monitoring
+        aiMetrics: {
+          provider: usedProvider,
+          method: usedSingleCall ? 'single_structured_json' : 'dual_api_calls',
+          api_calls_made: usedSingleCall ? 1 : 2,
+          fallback_triggered: usedProvider !== 'OpenAI',
+          story_length: segmentText.length,
+          choices_count: choices.length
+        }
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
