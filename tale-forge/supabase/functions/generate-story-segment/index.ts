@@ -9,15 +9,15 @@ const AI_CONFIG = {
   openai: {
     baseUrl: 'https://api.openai.com/v1',
     apiKey: Deno.env.get('OPENAI_API_KEY'),
-    model: 'gpt-4o-mini', // Fast and cost-effective for story generation
-    maxTokens: 512,
+    model: 'gpt-4o', // Using full GPT-4o for high-quality choices and story consistency
+    maxTokens: 2048, // Increased for better story content
     temperature: 0.7
   },
   ovh: {
     baseUrl: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
     accessToken: Deno.env.get('OVH_AI_ENDPOINTS_ACCESS_TOKEN'),
     model: 'Meta-Llama-3_3-70B-Instruct',
-    maxTokens: 512,
+    maxTokens: 2048, // Increased to match OpenAI configuration
     temperature: 0.7
   }
 };
@@ -65,7 +65,7 @@ serve(async (req) => {
     }
 
     const useOpenAI = hasOpenAI;
-    console.log(`🤖 Using AI provider: ${useOpenAI ? 'OpenAI (gpt-4o-mini)' : 'OVH (Llama-3.3-70B)'}`);
+    console.log(`🤖 Using AI provider: ${useOpenAI ? 'OpenAI (gpt-4o)' : 'OVH (Llama-3.3-70B)'}`);
 
     // Select AI configuration
     const aiConfig = useOpenAI ? AI_CONFIG.openai : AI_CONFIG.ovh;
@@ -444,7 +444,7 @@ Return only the 3 choices, one per line, without numbers.`;
           content: choicesPrompt
         }
       ],
-      max_tokens: 100,
+      max_tokens: 200, // Increased for better choice quality
       temperature: 0.8
     };
 
