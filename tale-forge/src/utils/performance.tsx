@@ -148,12 +148,20 @@ export const useCreateStoryMutation = () => {
 
   return useMutation(
     async (storyData: any) => {
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+
       // Call the backend API to create a story
       const response = await fetch(`${API_BASE_URL}/create-story`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify(storyData)
       });
@@ -186,12 +194,20 @@ export const useUpdateStory = () => {
         throw new Error('Story ID and User ID are required');
       }
       
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+      
       // Call the backend API to update a story
       const response = await fetch(`${API_BASE_URL}/update-story`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ storyId: id, updates })
       });
@@ -223,12 +239,20 @@ export const useDeleteStory = () => {
         throw new Error('Story ID and User ID are required');
       }
       
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+      
       // Call the backend API to delete a story
       const response = await fetch(`${API_BASE_URL}/delete-story`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ storyId })
       });
@@ -253,12 +277,20 @@ export const useDeleteStory = () => {
 export const useGenerateStorySegment = () => {
   return useMutation(
     async ({ storyId, choiceIndex }: { storyId: string; choiceIndex?: number }) => {
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+
       // Call the backend API to generate a story segment
       const response = await fetch(`${API_BASE_URL}/generate-story-segment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ storyId, choiceIndex })
       });
@@ -277,12 +309,20 @@ export const useGenerateStorySegment = () => {
 export const useGenerateStoryEnding = () => {
   return useMutation(
     async ({ storyId }: { storyId: string }) => {
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+
       // Call the backend API to generate a story ending
       const response = await fetch(`${API_BASE_URL}/generate-story-ending`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ storyId })
       });
@@ -301,12 +341,20 @@ export const useGenerateStoryEnding = () => {
 export const useGenerateAudio = () => {
   return useMutation(
     async ({ storyId }: { storyId: string }) => {
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+
       // Call the backend API to generate audio narration
       const response = await fetch(`${API_BASE_URL}/generate-audio`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ storyId })
       });
@@ -325,12 +373,20 @@ export const useGenerateAudio = () => {
 export const useRegenerateImage = () => {
   return useMutation(
     async ({ segmentId, imagePrompt }: { segmentId: string; imagePrompt: string }) => {
+      // Get current session from Supabase
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No authentication session found');
+      }
+
       // Call the backend API to regenerate an image
       const response = await fetch(`${API_BASE_URL}/regenerate-image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
         },
         body: JSON.stringify({ segmentId, imagePrompt })
       });

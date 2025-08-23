@@ -34,9 +34,8 @@ interface Character {
 
 interface StoryData {
   childName: string;
-  targetAge: number;
+  difficulty: number; // 1-10 difficulty level
   wordsPerChapter: number;
-  ageGroup: string; // Keep for backward compatibility
   genre: string;
   theme: string;
   characters: Character[];
@@ -60,9 +59,8 @@ const CreateStoryPage: React.FC = () => {
   const [usingTemplate, setUsingTemplate] = useState(false);
   const [storyData, setStoryData] = useState<StoryData>({
     childName: '',
-    targetAge: 7,
+    difficulty: 5, // Default medium difficulty
     wordsPerChapter: 120,
-    ageGroup: '', // Keep for backward compatibility
     genre: '',
     theme: '',
     characters: [],
@@ -92,6 +90,16 @@ const CreateStoryPage: React.FC = () => {
     });
   };
 
+  // Helper to convert targetAge to difficulty level (1-10)
+  const ageToDifficulty = (age: number): number => {
+    // Convert age ranges to difficulty scale
+    if (age <= 4) return 2; // Very easy
+    if (age <= 6) return 4; // Easy
+    if (age <= 8) return 6; // Medium
+    if (age <= 10) return 8; // Hard
+    return 9; // Very hard
+  };
+
   // Handle template selection
   const handleTemplateSelect = (template: StoryTemplate) => {
     console.log('Selected template:', template.name);
@@ -99,9 +107,8 @@ const CreateStoryPage: React.FC = () => {
     // Apply template settings to story data
     const templateData: StoryData = {
       childName: '', // User can still customize this
-      targetAge: template.settings.targetAge,
+      difficulty: ageToDifficulty(template.settings.targetAge),
       wordsPerChapter: template.settings.wordsPerChapter,
-      ageGroup: template.settings.ageGroup,
       genre: template.settings.genre,
       theme: template.settings.theme,
       characters: template.settings.characters,
@@ -170,6 +177,16 @@ const CreateStoryPage: React.FC = () => {
     }
   };
 
+  // Helper to convert difficulty to age format for AI understanding
+  const difficultyToAgeFormat = (): string => {
+    // Convert difficulty level (1-10) to age format that AI understands
+    if (storyData.difficulty <= 2) return "3-4";   // Very easy
+    if (storyData.difficulty <= 4) return "4-6";   // Easy  
+    if (storyData.difficulty <= 6) return "7-9";   // Medium
+    if (storyData.difficulty <= 8) return "10-12"; // Hard
+    return "13-15"; // Very hard
+  };
+
   const handleSubmit = () => {
     // Final validation before submission
     if (!isStoryReadyForGeneration(storyData)) {
@@ -180,13 +197,16 @@ const CreateStoryPage: React.FC = () => {
 
     setValidationErrors([]);
     
+    const ageFormatForAI = difficultyToAgeFormat();
+    console.log(`🎯 Difficulty ${storyData.difficulty} → Age format: "${ageFormatForAI}" for AI understanding`);
+    
     // Prepare story data for submission - include ALL form data
     const storySubmissionData = {
       title: storyData.childName ? `${storyData.childName}'s Adventure` : 'My Magical Story',
       description: storyData.theme || 'A wonderful adventure awaits',
       genre: storyData.genre,
-      age_group: storyData.ageGroup,
-      target_age: storyData.targetAge,
+      age_group: ageFormatForAI,
+      target_age: ageFormatForAI,
       theme: storyData.theme,
       setting: storyData.location,
       characters: storyData.characters,

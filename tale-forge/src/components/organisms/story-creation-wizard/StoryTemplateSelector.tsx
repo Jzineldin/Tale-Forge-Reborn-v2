@@ -81,7 +81,7 @@ const StoryTemplateSelector: React.FC<StoryTemplateSelectorProps> = ({
             <div className="space-y-2 text-xs text-white/60">
               <div className="flex justify-between">
                 <span>Age:</span>
-                <span className="text-amber-400">{template.settings.ageGroup}</span>
+                <span className="text-amber-400">{template.settings.targetAge}</span>
               </div>
               <div className="flex justify-between">
                 <span>Genre:</span>

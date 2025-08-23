@@ -15,7 +15,8 @@ export interface Character {
 
 export interface StoryData {
   childName: string;
-  ageGroup: string;
+  difficulty: number; // 1-10 difficulty level
+  wordsPerChapter: number;
   genre: string;
   theme: string;
   characters: Character[];
@@ -33,10 +34,18 @@ export interface StoryData {
 export const validateStep1 = (storyData: StoryData): StoryValidationError[] => {
   const errors: StoryValidationError[] = [];
 
-  if (!storyData.ageGroup) {
+  if (!storyData.difficulty || storyData.difficulty < 1 || storyData.difficulty > 10) {
     errors.push({
-      field: 'ageGroup',
-      message: 'Please select an age group for your story',
+      field: 'difficulty',
+      message: 'Please select a difficulty level (1-10)',
+      type: 'required'
+    });
+  }
+
+  if (!storyData.wordsPerChapter || storyData.wordsPerChapter < 20 || storyData.wordsPerChapter > 500) {
+    errors.push({
+      field: 'wordsPerChapter',
+      message: 'Please select words per chapter (20-500)',
       type: 'required'
     });
   }

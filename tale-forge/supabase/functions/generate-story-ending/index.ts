@@ -74,7 +74,7 @@ serve(async (req) => {
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'Missing Authorization header' }),
-        { headers: { "Content-Type": "application/json" }, status: 401 }
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
       );
     }
 
@@ -91,7 +91,7 @@ serve(async (req) => {
     if (!storyId) {
       return new Response(
         JSON.stringify({ error: 'Missing storyId in request body' }),
-        { headers: { "Content-Type": "application/json" }, status: 400 }
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       );
     }
 
@@ -106,14 +106,14 @@ serve(async (req) => {
       console.error('Error fetching story:', storyError);
       return new Response(
         JSON.stringify({ error: 'Failed to fetch story' }),
-        { headers: { "Content-Type": "application/json" }, status: 500 }
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
 
     if (!story) {
       return new Response(
         JSON.stringify({ error: 'Story not found' }),
-        { headers: { "Content-Type": "application/json" }, status: 404 }
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
 
@@ -128,14 +128,14 @@ serve(async (req) => {
       console.error('Error fetching segments:', segmentsError);
       return new Response(
         JSON.stringify({ error: 'Failed to fetch story segments' }),
-        { headers: { "Content-Type": "application/json" }, status: 500 }
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
 
     // Extract generation settings from the story
     const settings = story.generation_settings || {};
-    const targetAge = story.target_age || settings.target_age || '7-9';
-    const wordsPerChapter = settings.words_per_chapter || 150;
+    const targetAge = story.target_age || settings.target_age || 7;
+    const wordsPerChapter = settings.words_per_chapter || story.words_per_chapter || 120;
     
     console.log('🎬 Creating story ending with settings:', {
       genre: story.genre,
@@ -148,13 +148,49 @@ serve(async (req) => {
     // Get the full story content
     const storyContent = segments.map(segment => segment.content).join('\n\n');
     
+    // Parse age from various formats (3-4, 7-12, 5, etc.) to determine complexity
+    const parseAge = (ageStr: string | number): number => {
+      if (typeof ageStr === 'number') return ageStr;
+      
+      const str = String(ageStr);
+      
+      // Handle range format (e.g., "7-12", "3-4")
+      if (str.includes('-')) {
+        const [start, end] = str.split('-').map(Number);
+        return !isNaN(start) && !isNaN(end) ? (start + end) / 2 : 7; // Default to 7 if parse fails
+      }
+      
+      // Handle single number (e.g., "5", "8")
+      const singleAge = parseInt(str);
+      if (!isNaN(singleAge)) return singleAge;
+      
+      // Default fallback
+      return 7;
+    };
+    
+    const effectiveAge = parseAge(targetAge);
+    
+    // Age-specific language guidelines for ending based on effective age
+    let vocabularyGuidelines = '';
+    if (effectiveAge <= 4) {
+      vocabularyGuidelines = 'Use very simple words (1-2 syllables), short sentences (5-8 words), and basic concepts. Focus on colors, animals, and familiar objects.';
+    } else if (effectiveAge <= 6) {
+      vocabularyGuidelines = 'Use simple vocabulary (2-3 syllables), short sentences (6-10 words), and clear cause-and-effect relationships.';
+    } else if (effectiveAge <= 9) {
+      vocabularyGuidelines = 'Use age-appropriate vocabulary with some challenging words, sentences of 8-12 words, and introduce basic problem-solving concepts.';
+    } else {
+      vocabularyGuidelines = 'Use varied vocabulary appropriate for the age group, with complex sentences and advanced concepts when suitable.';
+    }
+
     // Create comprehensive ending prompt using ALL custom settings
-    const prompt = `You are concluding an interactive children's story with these specific details:
+    const endingWords = Math.min(wordsPerChapter + 30, 200); // Slightly longer for satisfying ending
+    
+    const prompt = `You are writing the FINAL CONCLUSION of an interactive children's story. This must be a definitive, satisfying ending that wraps up everything.
 
 STORY CONTEXT:
 - Title: "${story.title}"
 - Genre: ${story.genre}
-- Target Age: ${targetAge}
+- Target Age: ${targetAge} years old
 - Theme: ${settings.theme || story.description || 'adventure'}
 - Setting: ${settings.setting || 'a magical place'}
 - Main Quest: ${settings.quest || 'overcome challenges'}
@@ -164,19 +200,31 @@ STORY CONTEXT:
 CURRENT STORY:
 ${storyContent}
 
-ENDING REQUIREMENTS:
-- Write approximately ${Math.min(wordsPerChapter + 50, 250)} words
-- Use age-appropriate vocabulary for ${targetAge} year olds
-- Create a satisfying conclusion that resolves the quest: "${settings.quest || 'overcome challenges'}"
+CRITICAL ENDING REQUIREMENTS:
+- Write approximately ${endingWords} words (around ${Math.floor(endingWords * 0.8)}-${Math.floor(endingWords * 1.2)} words is perfect)
+- Age: ${targetAge} years old - ${vocabularyGuidelines}
+- This is the ABSOLUTE FINAL segment - no more story after this
+- COMPLETELY resolve the quest: "${settings.quest || 'overcome challenges'}"
+- Provide closure for ALL characters and plot threads
+- End with characters back home, safe, or in a peaceful state
+- Include a clear "THE END" moment (characters reflecting, celebrating, or at peace)
 - Reinforce the moral lesson: "${settings.moral_lesson || 'friendship and courage'}"
-- Make it ${story.genre}-themed with positive, uplifting tone
-- Wrap up all story elements in a meaningful way
-- End with a sense of accomplishment and growth for the characters
-- Include a brief reflection on what was learned
-- Keep it educational and promote positive values
+- Use phrases like "finally", "at last", "from that day forward", "and they lived happily"
+- NO cliffhangers, NO unresolved mysteries, NO "to be continued" elements
+- NO new challenges or adventures introduced
+- End with warmth, satisfaction, and a sense of completion
+- Include what the characters learned and how they grew
+- Make it ${story.genre}-themed with positive, uplifting resolution
+- Keep the language appropriate for a ${targetAge}-year-old's comprehension level
+- IMPORTANT: Do NOT include the story title in your response
+- Start directly with the story content, not with a title or heading
+- Aim for natural story conclusion around ${endingWords} words for satisfying but appropriately-sized ending
 
-Create a heartwarming, complete ending that children will find satisfying and meaningful.`;
+Create a definitive, heartwarming finale that gives children complete closure and satisfaction.`;
 
+    // Calculate max_tokens based on ending word count (roughly 1.3 tokens per word)
+    const maxTokensForEnding = Math.ceil(endingWords * 1.3);
+    
     // Generate ending using selected AI provider
     const requestBody = {
       model: aiConfig.model,
@@ -190,7 +238,7 @@ Create a heartwarming, complete ending that children will find satisfying and me
           content: prompt
         }
       ],
-      max_tokens: aiConfig.maxTokens,
+      max_tokens: Math.min(Math.max(maxTokensForEnding, 50), 400), // Ensure reasonable bounds
       temperature: aiConfig.temperature
     };
 
@@ -239,10 +287,15 @@ Create a heartwarming, complete ending that children will find satisfying and me
             .from('story_segments')
             .insert({
               story_id: storyId,
+              segment_text: fallbackEndingText,
               content: fallbackEndingText,
               position: segments.length + 1,
+              segment_number: segments.length + 1,
               choices: [],
-              is_end: true
+              is_end: true,
+              word_count: fallbackEndingText.split(' ').length,
+              image_prompt: `Final illustration: ${fallbackEndingText.substring(0, 100)}...`,
+              created_at: new Date().toISOString()
             })
             .select()
             .single();
@@ -268,17 +321,26 @@ Create a heartwarming, complete ending that children will find satisfying and me
     }
 
     const completion = await aiResponse.json();
-    const endingText = completion.choices[0].message.content?.trim() || '';
+    let endingText = completion.choices[0].message.content?.trim() || '';
+    
+    // Post-process to remove story title if it appears at the beginning
+    const titlePattern = new RegExp(`^\\*\\*${story.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*\\s*`, 'i');
+    endingText = endingText.replace(titlePattern, '').trim();
 
     // Save the ending as a new segment
     const { data: endingSegment, error: segmentError } = await supabase
       .from('story_segments')
       .insert({
         story_id: storyId,
+        segment_text: endingText,
         content: endingText,
         position: segments.length + 1,
+        segment_number: segments.length + 1,
         choices: [],
-        is_end: true
+        is_end: true,
+        word_count: endingText.split(' ').length,
+        image_prompt: `Final illustration: ${endingText.substring(0, 100)}...`,
+        created_at: new Date().toISOString()
       })
       .select()
       .single();
@@ -307,13 +369,13 @@ Create a heartwarming, complete ending that children will find satisfying and me
         endingSegment,
         message: 'Story ending generated successfully'
       }),
-      { headers: { "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error('Error in generate-story-ending function:', error);
     return new Response(
       JSON.stringify({ error: error.message || 'Internal server error' }),
-      { headers: { "Content-Type": "application/json" }, status: 500 }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
 });

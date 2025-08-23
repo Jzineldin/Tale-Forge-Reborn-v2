@@ -78,7 +78,7 @@ export const realStoryService = {
               description: mockResult.story.description,
               user_id: userId,
               genre: mockResult.story.genre,
-              target_age: storyData.target_age || 8,
+              target_age: String(storyData.target_age || storyData.ageGroup || "7-9"),
               story_mode: 'interactive',
               is_completed: false,
               is_public: false,

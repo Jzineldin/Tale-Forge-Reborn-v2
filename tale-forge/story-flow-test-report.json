@@ -1,0 +1,24 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "success_rate": "0.0%",
+    "test_story_id": null,
+    "timestamp": "2025-08-23T00:10:13.388Z"
+  },
+  "results": [
+    {
+      "test": "Authentication",
+      "success": false,
+      "message": "Failed to create test session",
+      "details": {
+        "__isAuthError": true,
+        "name": "AuthApiError",
+        "status": 422,
+        "code": "anonymous_provider_disabled"
+      },
+      "timestamp": "2025-08-23T00:10:13.387Z"
+    }
+  ]
+}

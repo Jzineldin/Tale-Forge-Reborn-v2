@@ -15,6 +15,7 @@ import './App.css';
 // Lazy load optimized page components for faster initial loads
 // CORE PUBLIC PAGES (5 routes)
 const HomePage = lazy(() => import('@/pages/public/HomePage'));
+const DiscoverPage = lazy(() => import('@/pages/public/DiscoverPage'));
 const FeaturesPage = lazy(() => import('@/pages/public/FeaturesPage'));
 const HelpPage = lazy(() => import('@/pages/public/HelpPage'));
 const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'));
@@ -29,6 +30,7 @@ const AuthCallbackPage = lazy(() => import('@/pages/auth/AuthCallbackPage'));
 const DashboardPage = lazy(() => import('@/pages/authenticated/DashboardPage'));
 const StoriesHubPage = lazy(() => import('@/pages/authenticated/stories/StoriesHubPage'));
 const StoryReaderPage = lazy(() => import('@/pages/authenticated/stories/StoryReaderPage'));
+const StoryCompletePage = lazy(() => import('@/pages/authenticated/stories/StoryCompletePage'));
 const CreateStoryPage = lazy(() => import('@/pages/authenticated/create/CreateStoryPage'));
 const AccountPage = lazy(() => import('@/pages/authenticated/account/AccountPage'));
 const ProfilePage = lazy(() => import('@/pages/authenticated/account/ProfilePage'));
@@ -85,8 +87,9 @@ const AppContent = () => {
     <div className="App min-h-screen">
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          {/* CORE PUBLIC ROUTES (5 routes) */}
+          {/* CORE PUBLIC ROUTES (6 routes) */}
           <Route path="/" element={<HomePageWrapper />} />
+          <Route path="/discover" element={<MainLayout><DiscoverPage /></MainLayout>} />
           <Route path="/features" element={<MainLayout><FeaturesPage /></MainLayout>} />
           <Route path="/help" element={<MainLayout><HelpPage /></MainLayout>} />
           <Route path="/legal/privacy" element={<MainLayout><PrivacyPage /></MainLayout>} />
@@ -119,6 +122,11 @@ const AppContent = () => {
           <Route path="/stories/:id" element={
             <ProtectedRoute>
               <AuthenticatedLayout><StoryReaderPage /></AuthenticatedLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/stories/:id/complete" element={
+            <ProtectedRoute>
+              <AuthenticatedLayout><StoryCompletePage /></AuthenticatedLayout>
             </ProtectedRoute>
           } />
           <Route path="/create" element={

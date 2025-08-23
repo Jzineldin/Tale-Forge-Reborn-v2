@@ -10,7 +10,6 @@ export interface StoryTemplate {
   settings: {
     targetAge: number;
     wordsPerChapter: number;
-    ageGroup: string;
     genre: string;
     theme: string;
     characters: Array<{
@@ -41,7 +40,6 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     settings: {
       targetAge: 8,
       wordsPerChapter: 200,
-      ageGroup: '6-10',
       genre: 'Fantasy',
       theme: 'Friendship and Magic',
       characters: [
@@ -79,7 +77,6 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     settings: {
       targetAge: 9,
       wordsPerChapter: 250,
-      ageGroup: '7-12',
       genre: 'Science Fiction',
       theme: 'Exploration and Discovery',
       characters: [
@@ -117,7 +114,6 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     settings: {
       targetAge: 7,
       wordsPerChapter: 180,
-      ageGroup: '5-9',
       genre: 'Adventure',
       theme: 'Courage and Teamwork',
       characters: [
@@ -155,7 +151,6 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     settings: {
       targetAge: 6,
       wordsPerChapter: 150,
-      ageGroup: '4-8',
       genre: 'Adventure',
       theme: 'Animal Care and Environment',
       characters: [
@@ -193,7 +188,6 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     settings: {
       targetAge: 10,
       wordsPerChapter: 300,
-      ageGroup: '8-12',
       genre: 'Science Fiction',
       theme: 'History and Learning',
       characters: [
@@ -231,7 +225,6 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     settings: {
       targetAge: 7,
       wordsPerChapter: 200,
-      ageGroup: '5-10',
       genre: 'Fantasy',
       theme: 'Ocean Conservation and Friendship',
       characters: [

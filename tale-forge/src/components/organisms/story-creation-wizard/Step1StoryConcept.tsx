@@ -14,57 +14,18 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
   onNext,
   onPrevious
 }) => {
-  // Dynamic age system with appropriate categories
-  const getAgeDescription = (age: number) => {
-    if (age <= 4) return { label: 'Preschool Tales', description: 'Very simple words and gentle stories', complexity: 'Beginner' };
-    if (age <= 6) return { label: 'Early Readers', description: 'Short sentences and magical tales', complexity: 'Simple' };
-    if (age <= 8) return { label: 'Young Adventurers', description: 'Fun adventures with brave heroes', complexity: 'Easy' };
-    if (age <= 10) return { label: 'Story Enthusiasts', description: 'Engaging tales with meaningful choices', complexity: 'Intermediate' };
-    if (age <= 12) return { label: 'Advanced Readers', description: 'Complex stories with deeper themes', complexity: 'Advanced' };
-    return { label: 'Teen Readers', description: 'Sophisticated narratives and rich vocabulary', complexity: 'Expert' };
+  // Difficulty-based system (1-10 scale)
+  const getDifficultyDescription = (difficulty: number) => {
+    if (difficulty <= 2) return { label: 'Very Easy', description: 'Simple words, short sentences, basic concepts', complexity: 'Beginner' };
+    if (difficulty <= 4) return { label: 'Easy', description: 'Clear language, gentle adventures, straightforward plots', complexity: 'Simple' };
+    if (difficulty <= 6) return { label: 'Medium', description: 'Balanced vocabulary, engaging adventures, some challenges', complexity: 'Intermediate' };
+    if (difficulty <= 8) return { label: 'Hard', description: 'Rich vocabulary, complex plots, deeper themes', complexity: 'Advanced' };
+    return { label: 'Very Hard', description: 'Sophisticated language, intricate stories, advanced concepts', complexity: 'Expert' };
   };
 
-  const getWordCountRange = (age: number) => {
-    if (age <= 4) return { min: 30, max: 80, recommended: 50 };
-    if (age <= 6) return { min: 50, max: 120, recommended: 80 };
-    if (age <= 8) return { min: 80, max: 150, recommended: 120 };
-    if (age <= 10) return { min: 120, max: 200, recommended: 160 };
-    if (age <= 12) return { min: 150, max: 250, recommended: 200 };
-    return { min: 200, max: 350, recommended: 275 };
-  };
-
-  const currentAge = storyData.targetAge || 7;
-  const ageInfo = getAgeDescription(currentAge);
-  const wordRange = getWordCountRange(currentAge);
-  const currentWordsPerChapter = storyData.wordsPerChapter || wordRange.recommended;
-
-  // Convert targetAge to ageGroup string for validation and AI
-  const getAgeGroupString = (age: number): string => {
-    if (age <= 4) return "3-4 years (Toddlers)";
-    if (age <= 6) return "5-6 years (Preschool)";
-    if (age <= 8) return "7-8 years (Early Elementary)";
-    if (age <= 10) return "9-10 years (Elementary)";
-    if (age <= 12) return "11-12 years (Middle School)";
-    return "13-15 years (Young Teen)";
-  };
-
-  // Update ageGroup whenever targetAge changes
-  React.useEffect(() => {
-    const ageGroupString = getAgeGroupString(currentAge);
-    console.log(`DEBUG: Age ${currentAge} → ageGroup: "${ageGroupString}" (current: "${storyData.ageGroup}")`);
-    if (storyData.ageGroup !== ageGroupString) {
-      console.log(`Setting ageGroup to: "${ageGroupString}"`);
-      handleInputChange('ageGroup', ageGroupString);
-    }
-  }, [currentAge, storyData.ageGroup, handleInputChange]);
-
-  // Auto-sync word count when age changes
-  React.useEffect(() => {
-    const recommendedWords = wordRange.recommended;
-    // Always sync to recommended when age changes (user can manually adjust after)
-    console.log(`Auto-syncing words: Age ${currentAge} → ${recommendedWords} words`);
-    handleInputChange('wordsPerChapter', recommendedWords);
-  }, [currentAge]); // Only trigger when age changes
+  const currentDifficulty = storyData.difficulty || 5;
+  const difficultyInfo = getDifficultyDescription(currentDifficulty);
+  const currentWordsPerChapter = storyData.wordsPerChapter || 120;
 
   // Genre options with actual images from your assets
   const genres = [
@@ -134,7 +95,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
     }
   ];
 
-  const isValid = storyData.targetAge && storyData.genre && storyData.ageGroup;
+  const isValid = storyData.difficulty && storyData.wordsPerChapter && storyData.genre;
 
   return (
     <div className="space-y-8">
@@ -168,48 +129,48 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
         </p>
       </div>
 
-      {/* Dynamic Age Selection with Slider */}
+      {/* Difficulty and Words Selection */}
       <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
         <h3 className="text-xl font-bold text-white mb-6 text-center">
-          🎯 Target Age & Complexity
+          🎯 Story Difficulty & Length
         </h3>
         
         <div className="space-y-6">
-          {/* Age Slider */}
+          {/* Difficulty Slider */}
           <div>
             <div className="flex justify-between items-center mb-4">
-              <label className="text-white font-semibold">Target Age</label>
+              <label className="text-white font-semibold">Difficulty Level</label>
               <div className="glass-card bg-purple-500/20 border border-purple-400/30 px-4 py-2 rounded-lg">
-                <span className="text-purple-300 font-bold text-lg">{currentAge} years old</span>
+                <span className="text-purple-300 font-bold text-lg">{currentDifficulty}/10</span>
               </div>
             </div>
             
             <div className="relative px-3 py-2">
               <input
                 type="range"
-                min="3"
-                max="15"
+                min="1"
+                max="10"
                 step="1"
-                value={currentAge}
-                onChange={(e) => handleInputChange('targetAge', parseInt(e.target.value))}
+                value={currentDifficulty}
+                onChange={(e) => handleInputChange('difficulty', parseInt(e.target.value))}
                 className="w-full h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-xs text-white/60 mt-2">
+                <span>1</span>
                 <span>3</span>
-                <span>6</span>
-                <span>9</span>
-                <span>12</span>
-                <span>15</span>
+                <span>5</span>
+                <span>7</span>
+                <span>10</span>
               </div>
             </div>
           </div>
 
-          {/* Age Category Display */}
+          {/* Difficulty Description */}
           <div className="text-center p-6 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 rounded-xl border border-purple-500/30">
-            <h4 className="text-xl font-bold text-white mb-2">{ageInfo.label}</h4>
-            <p className="text-purple-100 mb-3">{ageInfo.description}</p>
+            <h4 className="text-xl font-bold text-white mb-2">{difficultyInfo.label}</h4>
+            <p className="text-purple-100 mb-3">{difficultyInfo.description}</p>
             <div className="inline-block bg-purple-500/20 border border-purple-400/50 px-3 py-1 rounded-full">
-              <span className="text-purple-300 text-sm font-medium">Complexity: {ageInfo.complexity}</span>
+              <span className="text-purple-300 text-sm font-medium">Complexity: {difficultyInfo.complexity}</span>
             </div>
           </div>
 
@@ -225,29 +186,29 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
             <div className="relative px-3 py-2">
               <input
                 type="range"
-                min={wordRange.min}
-                max={wordRange.max}
+                min="30"
+                max="400"
                 step="10"
                 value={currentWordsPerChapter}
                 onChange={(e) => handleInputChange('wordsPerChapter', parseInt(e.target.value))}
                 className="w-full h-3 bg-gradient-to-r from-green-500 to-emerald-400 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-xs text-white/60 mt-2">
-                <span>{wordRange.min}</span>
-                <span className="text-green-400 font-medium">Recommended: {wordRange.recommended}</span>
-                <span>{wordRange.max}</span>
+                <span>30</span>
+                <span className="text-green-400 font-medium">Recommended: 150</span>
+                <span>400</span>
               </div>
             </div>
             
             <div className="mt-3 text-center">
               <div className="inline-flex space-x-4 text-sm">
-                <span className={`${currentWordsPerChapter <= wordRange.min + 20 ? 'text-blue-400' : 'text-white/60'}`}>
+                <span className={`${currentWordsPerChapter <= 80 ? 'text-blue-400' : 'text-white/60'}`}>
                   📖 Quick Reads
                 </span>
-                <span className={`${currentWordsPerChapter >= wordRange.recommended - 20 && currentWordsPerChapter <= wordRange.recommended + 20 ? 'text-green-400' : 'text-white/60'}`}>
+                <span className={`${currentWordsPerChapter >= 120 && currentWordsPerChapter <= 180 ? 'text-green-400' : 'text-white/60'}`}>
                   ⭐ Recommended
                 </span>
-                <span className={`${currentWordsPerChapter >= wordRange.max - 20 ? 'text-purple-400' : 'text-white/60'}`}>
+                <span className={`${currentWordsPerChapter >= 300 ? 'text-purple-400' : 'text-white/60'}`}>
                   📚 Detailed Tales
                 </span>
               </div>
@@ -258,7 +219,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           <div className="text-center p-4 bg-indigo-900/30 rounded-lg border border-indigo-400/30">
             <Icon name="clock" size={20} className="inline-block text-indigo-400 mr-2" />
             <span className="text-indigo-300 text-sm">
-              Estimated reading time: {Math.ceil(currentWordsPerChapter / (currentAge <= 6 ? 30 : currentAge <= 10 ? 60 : 100))} minutes per chapter
+              Estimated reading time: {Math.ceil(currentWordsPerChapter / (currentDifficulty <= 3 ? 30 : currentDifficulty <= 6 ? 60 : 100))} minutes per chapter
             </span>
           </div>
         </div>
@@ -364,13 +325,13 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
       </div>
 
       {/* Validation Helper */}
-      {(!storyData.targetAge || !storyData.genre || !storyData.ageGroup) && (
+      {(!storyData.difficulty || !storyData.genre || !storyData.wordsPerChapter) && (
         <div className="text-center">
           <p className="text-amber-400 text-sm">
-            Please set the target age and select a genre to continue ✨
+            Please set the difficulty level, words per chapter, and select a genre to continue ✨
           </p>
           <p className="text-xs text-white/60 mt-1">
-            Debug: Age={storyData.targetAge}, Genre={storyData.genre ? 'selected' : 'missing'}, AgeGroup="{storyData.ageGroup}"
+            Debug: Difficulty={storyData.difficulty}, Words={storyData.wordsPerChapter}, Genre={storyData.genre ? 'selected' : 'missing'}
           </p>
         </div>
       )}

@@ -24,7 +24,10 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
   onEndStory,
   segmentCount = 0
 }) => {
-  if (choices.length === 0) {
+  // Filter out choices with empty or invalid text
+  const validChoices = choices.filter(choice => choice && choice.text && choice.text.trim().length > 0);
+  
+  if (validChoices.length === 0) {
     return (
       <div className="text-center py-6">
         <Text variant="p" className="mb-4">
@@ -48,7 +51,7 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
       
       {/* Continue story choices */}
       <div className="grid grid-cols-1 gap-3">
-        {choices.map((choice) => (
+        {validChoices.map((choice, index) => (
           <Button
             key={choice.id}
             variant="primary"
@@ -59,7 +62,7 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
             <div className="flex items-center">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center mr-3">
                 <Text variant="span" weight="semibold" className="text-slate-800">
-                  {String.fromCharCode(65 + choices.indexOf(choice))}
+                  {String.fromCharCode(65 + index)}
                 </Text>
               </div>
               <Text variant="p" className="flex-grow text-left text-white">

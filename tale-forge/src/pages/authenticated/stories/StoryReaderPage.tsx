@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Text from '@/components/atoms/Text';
 import Button from '@/components/atoms/Button';
 import StoryImage from '@/components/atoms/StoryImage';
@@ -11,6 +11,7 @@ import { LoadingState, ErrorState } from '@/utils/performance.tsx';
 
 const StoryReaderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
   const [fontSize, setFontSize] = useState('medium');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -89,10 +90,9 @@ const StoryReaderPage: React.FC = () => {
       { storyId: story.id },
       {
         onSuccess: (data) => {
-          // In a real app, we would update the story state with the ending
-          // For now, we'll just simulate moving to the ending
-          setCurrentSegmentIndex(currentSegmentIndex + 1);
+          // Story ending generated successfully - the story will refresh and detect completion
           setIsGenerating(false);
+          // Don't manually increment - let the story refresh handle the new segment
         },
         onError: (error) => {
           console.error('Error generating ending:', error);
@@ -101,6 +101,25 @@ const StoryReaderPage: React.FC = () => {
       }
     );
   };
+
+  // Check if story is completed and redirect to completion page
+  useEffect(() => {
+    if (!story || !story.segments || story.segments.length === 0) return;
+    
+    // Check if current segment is an ending
+    const currentSegment = story.segments[currentSegmentIndex];
+    if (currentSegment && currentSegment.is_end === true) {
+      // Story is completed, redirect to completion page after a brief moment
+      const timer = setTimeout(() => {
+        navigate(`/stories/${story.id}/complete`, { 
+          replace: true,
+          state: { story, currentSegment } 
+        });
+      }, 2000); // 2 second delay to show the ending
+      
+      return () => clearTimeout(timer);
+    }
+  }, [story, currentSegmentIndex, navigate]);
   
   // Handle audio generation
   const handleGenerateAudio = () => {
@@ -297,8 +316,33 @@ const StoryReaderPage: React.FC = () => {
   // Get current segment
   const currentSegment = story.segments?.[currentSegmentIndex] || null;
   
+  // Clean the segment content to remove embedded story title if it exists
+  const cleanSegmentContent = (content: string, storyTitle: string) => {
+    if (!content || !storyTitle) return content;
+    
+    // Remove title patterns: **Title**, Title at start, etc.
+    const titlePatterns = [
+      new RegExp(`^\\*\\*${storyTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*\\s*`, 'i'),
+      new RegExp(`^${storyTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'i'),
+      new RegExp(`^\\*\\*${storyTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*\\s*(.*)`, 'i')
+    ];
+    
+    let cleanContent = content;
+    titlePatterns.forEach(pattern => {
+      cleanContent = cleanContent.replace(pattern, '').trim();
+    });
+    
+    return cleanContent;
+  };
+  
+  // Clean current segment content
+  const cleanedSegment = currentSegment ? {
+    ...currentSegment,
+    content: cleanSegmentContent(currentSegment.content, story.title)
+  } : null;
+  
   // Prepare choices for the StoryChoices component
-  const formattedChoices = currentSegment?.choices?.map((choice: any, index: number) => ({
+  const formattedChoices = cleanedSegment?.choices?.map((choice: any, index: number) => ({
     id: choice.id || `choice-${index}`,
     text: choice.text
   })) || [];
@@ -381,10 +425,10 @@ const StoryReaderPage: React.FC = () => {
         {/* Story Content Card */}
         <div className="glass-enhanced rounded-2xl overflow-hidden mb-6 transition-all duration-300 hover:transform hover:scale-[1.01]">
           {/* Story Image - Show placeholder while loading */}
-          {currentSegment?.image_url ? (
+          {cleanedSegment?.image_url ? (
             <div className="relative">
               <StoryImage 
-                src={currentSegment.image_url} 
+                src={cleanedSegment.image_url} 
                 alt={`Illustration for segment ${currentSegmentIndex + 1}`} 
                 className="w-full h-64 md:h-80 object-cover"
                 onImageError={() => console.log('Image failed to load')}
@@ -415,25 +459,41 @@ const StoryReaderPage: React.FC = () => {
                   Our AI is crafting your personalized adventure
                 </p>
               </div>
-            ) : currentSegment ? (
+            ) : cleanedSegment ? (
               <>
                 <div 
                   className={`${fontSizeClasses[fontSize as keyof typeof fontSizeClasses]} ${lineHeightClasses[fontSize as keyof typeof lineHeightClasses]} text-white mb-8 font-serif leading-relaxed text-shadow-sm`}
                 >
-                  {currentSegment.content}
+                  {cleanedSegment.content}
                 </div>
                 
-                {/* Story Choices */}
-                <div className="mt-8">
-                  <StoryChoices
-                    choices={formattedChoices}
-                    onSelect={handleChoiceSelect}
-                    disabled={isGeneratingSegment}
-                    loading={isGeneratingSegment}
-                    onEndStory={handleStoryEnding}
-                    segmentCount={story.segments?.length || 0}
-                  />
-                </div>
+                {/* Check if this is the ending segment */}
+                {cleanedSegment.is_end ? (
+                  <div className="mt-8 text-center">
+                    <div className="glass-enhanced p-8 rounded-2xl mb-6">
+                      <div className="text-6xl mb-4">🎉</div>
+                      <h2 className="fantasy-heading text-3xl mb-4">Story Complete!</h2>
+                      <p className="text-white/80 text-lg mb-4">
+                        What an amazing adventure! Redirecting you to celebrate your story...
+                      </p>
+                      <div className="flex justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Story Choices for non-ending segments
+                  <div className="mt-8">
+                    <StoryChoices
+                      choices={formattedChoices}
+                      onSelect={handleChoiceSelect}
+                      disabled={isGeneratingSegment}
+                      loading={isGeneratingSegment}
+                      onEndStory={handleStoryEnding}
+                      segmentCount={story.segments?.length || 0}
+                    />
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-12">
@@ -460,6 +520,7 @@ const StoryReaderPage: React.FC = () => {
                 totalSegments={story.segments.length}
                 currentSegmentIndex={currentSegmentIndex}
                 onSegmentClick={handleSegmentClick}
+                isStoryComplete={cleanedSegment?.is_end === true || (cleanedSegment?.choices && cleanedSegment.choices.length === 0)}
               />
             </div>
           </div>

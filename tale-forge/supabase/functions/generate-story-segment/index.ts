@@ -177,10 +177,25 @@ serve(async (req) => {
       // This is not fatal, we can continue without character context
     }
 
+    // Fetch existing story segments for context (needed before prompt generation)
+    const { data: segments, error: segmentsError } = await supabase
+      .from('story_segments')
+      .select('*')
+      .eq('story_id', storyId)
+      .order('position', { ascending: true });
+
+    if (segmentsError) {
+      console.error('Error fetching segments:', segmentsError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch story segments' }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
+    }
+
     // Extract generation settings from the story
     const settings = story.generation_settings || {};
-    const targetAge = story.target_age || settings.target_age || '7-9';
-    const wordsPerChapter = settings.words_per_chapter || 150;
+    const targetAge = story.target_age || settings.target_age || 7;
+    const wordsPerChapter = settings.words_per_chapter || story.words_per_chapter || 120;
     
     console.log('📋 Using story settings:', {
       genre: story.genre,
@@ -231,25 +246,75 @@ CHARACTERS:`;
       prompt += `\n\nADDITIONAL STORY ELEMENTS:\n${settings.additional_details}`;
     }
 
+    // Parse age from various formats (3-4, 7-12, 5, etc.) to determine complexity
+    const parseAge = (ageStr: string | number): number => {
+      if (typeof ageStr === 'number') return ageStr;
+      
+      const str = String(ageStr);
+      
+      // Handle range format (e.g., "7-12", "3-4")
+      if (str.includes('-')) {
+        const [start, end] = str.split('-').map(Number);
+        return !isNaN(start) && !isNaN(end) ? (start + end) / 2 : 7; // Default to 7 if parse fails
+      }
+      
+      // Handle single number (e.g., "5", "8")
+      const singleAge = parseInt(str);
+      if (!isNaN(singleAge)) return singleAge;
+      
+      // Default fallback
+      return 7;
+    };
+    
+    const effectiveAge = parseAge(targetAge);
+    
+    // Age-specific language guidelines based on effective age
+    let vocabularyGuidelines = '';
+    if (effectiveAge <= 4) {
+      vocabularyGuidelines = 'Use very simple words (1-2 syllables), short sentences (5-8 words), and basic concepts. Focus on colors, animals, and familiar objects.';
+    } else if (effectiveAge <= 6) {
+      vocabularyGuidelines = 'Use simple vocabulary (2-3 syllables), short sentences (6-10 words), and clear cause-and-effect relationships.';
+    } else if (effectiveAge <= 9) {
+      vocabularyGuidelines = 'Use age-appropriate vocabulary with some challenging words, sentences of 8-12 words, and introduce basic problem-solving concepts.';
+    } else {
+      vocabularyGuidelines = 'Use varied vocabulary appropriate for the age group, with complex sentences and advanced concepts when suitable.';
+    }
+
     prompt += `\n\nWRITING INSTRUCTIONS:
-- Write approximately ${wordsPerChapter} words
-- Use age-appropriate vocabulary for ${targetAge} year olds
+- Write approximately ${wordsPerChapter} words (around ${Math.floor(wordsPerChapter * 0.8)}-${Math.floor(wordsPerChapter * 1.2)} words is perfect)
+- Age: ${targetAge} years old - ${vocabularyGuidelines}
 - Make it ${story.genre}-themed with ${settings.atmosphere || 'positive'} atmosphere
 - Focus on the theme of "${settings.theme || 'adventure'}"
 - Advance the quest: "${settings.quest || 'overcome challenges'}"
 - Incorporate the moral lesson: "${settings.moral_lesson || 'friendship and courage'}"
 - End with an engaging moment that leads to meaningful choices
-- Keep the language simple but engaging
-- Make it educational and promote positive values`;
+- Keep the language appropriate for a ${targetAge}-year-old's comprehension level
+- Make it educational and promote positive values
+- IMPORTANT: Do NOT include the story title in your response
+- Start directly with the story content, not with a title or heading
+- Aim for natural storytelling flow around ${wordsPerChapter} words rather than forcing exact count`;
     
-    // Add previous segment context if available
-    if (previousSegment) {
-      prompt += `\n\nPrevious story segment: ${previousSegment.content}`;
-      if (choiceIndex !== undefined && previousSegment.choices[choiceIndex]) {
-        prompt += `\n\nUser chose: ${previousSegment.choices[choiceIndex].text}`;
+    // Add comprehensive story context for continuity
+    if (segments && segments.length > 0) {
+      prompt += `\n\nSTORY CONTEXT FOR CONTINUITY:`;
+      
+      // Include the last 2-3 segments for better context
+      const contextSegments = segments.slice(-3);
+      contextSegments.forEach((segment, index) => {
+        const segmentNumber = segments.length - contextSegments.length + index + 1;
+        prompt += `\n\nChapter ${segmentNumber}: ${segment.content}`;
+      });
+      
+      // Add the user's choice that led to this segment
+      if (previousSegment && choiceIndex !== undefined && previousSegment.choices[choiceIndex]) {
+        prompt += `\n\nUser's choice that leads to this new chapter: "${previousSegment.choices[choiceIndex].text}"`;
+        prompt += `\nContinue the story directly from this choice, maintaining character consistency and story flow.`;
       }
     }
 
+    // Calculate max_tokens based on words_per_chapter (roughly 1.3 tokens per word)
+    const maxTokensForWords = Math.ceil(wordsPerChapter * 1.3);
+    
     // Generate story segment using selected AI provider
     const requestBody = {
       model: aiConfig.model,
@@ -263,7 +328,7 @@ CHARACTERS:`;
           content: prompt
         }
       ],
-      max_tokens: story.target_age === '4-6' ? 100 : story.target_age === '7-9' ? 150 : 200,
+      max_tokens: Math.min(Math.max(maxTokensForWords, 50), 500), // Ensure reasonable bounds
       temperature: aiConfig.temperature
     };
 
@@ -314,7 +379,11 @@ CHARACTERS:`;
     }
 
     const completion = await aiResponse.json();
-    const segmentText = completion.choices[0].message.content?.trim() || '';
+    let segmentText = completion.choices[0].message.content?.trim() || '';
+    
+    // Post-process to remove story title if it appears at the beginning
+    const titlePattern = new RegExp(`^\\*\\*${story.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*\\s*`, 'i');
+    segmentText = segmentText.replace(titlePattern, '').trim();
 
     // Generate choices for the next segment using story context
     const choicesPrompt = `Based on the following story segment, create 3 meaningful choices that advance the story:
@@ -374,21 +443,38 @@ Return only the 3 choices, one per line, without numbers.`;
 
     const choicesCompletion = await choicesResponse.json();
     const choicesText = choicesCompletion.choices[0].message.content?.trim() || '';
-    const choices = choicesText.split('\n').map((text, index) => ({
-      id: `choice-${Date.now()}-${index}`,
-      text: text.trim(),
-      next_segment_id: null
-    }));
+    
+    // Split choices and filter out empty ones
+    const rawChoices = choicesText.split('\n')
+      .map(text => text.trim())
+      .filter(text => text.length > 0)
+      .slice(0, 3); // Limit to 3 choices
+    
+    // Ensure we have exactly 3 choices
+    const fallbackChoices = [
+      'Continue the adventure',
+      'Explore a different path',
+      'Make a brave decision'
+    ];
+    
+    const choices = [];
+    for (let i = 0; i < 3; i++) {
+      choices.push({
+        id: `choice-${Date.now()}-${i}`,
+        text: rawChoices[i] || fallbackChoices[i] || 'Continue the story',
+        next_segment_id: null
+      });
+    }
 
     // Get the next position for the segment
-    const { data: segments, error: segmentsError } = await supabase
+    const { data: positionData, error: positionError } = await supabase
       .from('story_segments')
       .select('position')
       .eq('story_id', storyId)
       .order('position', { ascending: false })
       .limit(1);
 
-    const nextPosition = segments && segments.length > 0 ? segments[0].position + 1 : 1;
+    const nextPosition = positionData && positionData.length > 0 ? positionData[0].position + 1 : 1;
 
     // Save the new segment using authenticated client
     const supabaseWithAuth = createClient(

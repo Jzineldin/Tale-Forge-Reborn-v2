@@ -6,17 +6,44 @@ export class MockAIService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  private static generateMockStorySegment(genre: string, theme: string, childName: string) {
+  private static generateMockStorySegment(genre: string, theme: string, childName: string, settings: any = {}) {
+    // Extract settings with defaults
+    const wordsPerChapter = settings.words_per_chapter || 120;
+    const setting = settings.setting || 'a magical place';
+    const quest = settings.quest || 'discover something amazing';
+    const atmosphere = settings.atmosphere || 'exciting and positive';
+    const moralLesson = settings.moral_lesson || 'friendship and courage';
+    const characters = settings.characters || [];
+    const mainCharacter = characters[0]?.name || childName || 'a brave young adventurer';
+    const companion = characters[1]?.name || 'a helpful friend';
+    
+    // Generate age-appropriate vocabulary based on target_age
+    const parseAge = (ageStr: string): number => {
+      if (!ageStr) return 7;
+      if (typeof ageStr === 'number') return ageStr;
+      const str = String(ageStr);
+      if (str.includes('-')) {
+        const [start, end] = str.split('-').map(Number);
+        return !isNaN(start) && !isNaN(end) ? (start + end) / 2 : 7;
+      }
+      const singleAge = parseInt(str);
+      return !isNaN(singleAge) ? singleAge : 7;
+    };
+    
+    const effectiveAge = parseAge(settings.target_age || settings.age_group);
+    const useSimpleVocabulary = effectiveAge <= 6;
+    
+    // Generate story based on settings
     const segments = {
       fantasy: [
-        `Once upon a time, ${childName || 'a brave young adventurer'} discovered a magical portal hidden behind an old oak tree. The portal shimmered with rainbow colors, and mysterious whispers could be heard from the other side. As ${childName || 'they'} approached, the portal began to glow brighter, revealing glimpses of an enchanted realm filled with floating islands and gentle dragons.`,
+        `${useSimpleVocabulary ? 'One day' : 'Once upon a time'}, ${mainCharacter} found something special in ${setting}. ${useSimpleVocabulary ? 'It was magic!' : 'The air shimmered with mysterious magic.'} ${mainCharacter} wanted to ${quest}, and knew this was the start of an amazing adventure. ${companion ? `With ${companion} by their side, ` : ''}they ${useSimpleVocabulary ? 'felt brave and happy' : 'felt courage growing in their heart'}.`,
         
-        `${childName || 'The young hero'} stepped through the portal and found themselves in a magnificent crystal cave. Tiny fairy lights danced around glowing crystals, and in the center stood a wise old wizard with a long silver beard. "Welcome, ${childName || 'young one'}," he said warmly. "I have been waiting for someone brave enough to help save our magical kingdom."`
+        `${mainCharacter} ${useSimpleVocabulary ? 'walked carefully' : 'stepped forward with determination'} into ${setting}. The ${atmosphere} feeling made everything seem possible. "${useSimpleVocabulary ? 'We can do this!' : 'Together, we shall overcome any challenge!'}" ${companion ? `said ${companion}` : 'they whispered to themselves'}. Their goal was to ${quest}, and they remembered the important lesson about ${moralLesson}.`
       ],
       adventure: [
-        `${childName || 'A curious explorer'} was hiking through the misty mountains when they stumbled upon an ancient treasure map tucked inside a hollow tree. The map showed the location of the legendary Golden Compass, said to guide its owner to their greatest treasure. With excitement building, ${childName || 'our hero'} decided to follow the mysterious trail marked on the weathered parchment.`,
+        `${useSimpleVocabulary ? 'One day' : 'On a bright morning'}, ${mainCharacter} was ${useSimpleVocabulary ? 'walking in' : 'exploring'} ${setting} when they ${useSimpleVocabulary ? 'saw' : 'discovered'} something amazing. It was ${useSimpleVocabulary ? 'a special map' : 'an ancient treasure map'}! The ${useSimpleVocabulary ? 'map showed' : 'parchment revealed'} where to ${quest}. ${mainCharacter} ${useSimpleVocabulary ? 'felt excited' : 'felt their heart race with excitement'} and decided to start this ${atmosphere} adventure.`,
         
-        `Following the map led ${childName || 'the adventurer'} to the edge of a rushing river where an old rope bridge swayed in the wind. On the other side, they could see the entrance to a cave marked with ancient symbols. The bridge looked sturdy enough, but the water below was deep and fast-moving. ${childName || 'They'} had to make an important decision about how to proceed.`
+        `${useSimpleVocabulary ? 'Next' : 'Following the map carefully'}, ${mainCharacter} ${useSimpleVocabulary ? 'walked to' : 'journeyed toward'} ${setting}. ${companion ? `${companion} ${useSimpleVocabulary ? 'came too' : 'accompanied them on this quest'}.` : ''} They ${useSimpleVocabulary ? 'wanted to' : 'were determined to'} ${quest} and ${useSimpleVocabulary ? 'learn about' : 'discover the true meaning of'} ${moralLesson}. ${useSimpleVocabulary ? 'What should they do?' : 'Now they faced an important decision.'}`
       ],
       mystery: [
         `${childName || 'A young detective'} was walking home from school when they noticed something strange. The old library's lights were on, even though it was supposed to be closed. Through the window, they could see books floating through the air by themselves! ${childName || 'They'} knew this was definitely not normal and decided to investigate this peculiar mystery.`,
@@ -37,7 +64,46 @@ export class MockAIService {
 
     const genreSegments = segments[genre as keyof typeof segments] || segments.fantasy;
     const randomIndex = Math.floor(Math.random() * genreSegments.length);
-    return genreSegments[randomIndex];
+    const selectedSegment = genreSegments[randomIndex];
+    
+    // Adjust to target word count (with natural variance)
+    return this.trimToWordCount(selectedSegment, wordsPerChapter);
+  }
+
+  private static trimToWordCount(text: string, targetWords: number): string {
+    const words = text.split(' ');
+    
+    // Allow 20% variance (±20%) around target word count for natural feel
+    const minWords = Math.floor(targetWords * 0.8);
+    const maxWords = Math.floor(targetWords * 1.2);
+    
+    // If already in good range, return as is
+    if (words.length >= minWords && words.length <= maxWords) {
+      return text;
+    }
+    
+    // If too long, trim to max range
+    if (words.length > maxWords) {
+      let trimmed = words.slice(0, maxWords).join(' ');
+      
+      // Try to end at a sentence for natural flow
+      const lastPeriod = trimmed.lastIndexOf('.');
+      const lastExclamation = trimmed.lastIndexOf('!');
+      const lastQuestion = trimmed.lastIndexOf('?');
+      const lastSentenceEnd = Math.max(lastPeriod, lastExclamation, lastQuestion);
+      
+      if (lastSentenceEnd > trimmed.length * 0.7) { // If sentence end is in last 30%
+        trimmed = trimmed.substring(0, lastSentenceEnd + 1);
+      } else {
+        // Add natural ending
+        trimmed += '...';
+      }
+      
+      return trimmed;
+    }
+    
+    // If too short, return as is (will be naturally shorter)
+    return text;
   }
 
   private static generateMockChoices(genre: string) {
@@ -79,12 +145,24 @@ export class MockAIService {
 
   static async createMockStory(storyData: any) {
     console.log('🎭 Using Mock AI Service for story creation');
+    console.log('📋 Mock service received settings:', {
+      genre: storyData.genre,
+      theme: storyData.theme,
+      target_age: storyData.target_age,
+      words_per_chapter: storyData.words_per_chapter,
+      setting: storyData.setting,
+      characters: storyData.characters?.length || 0,
+      quest: storyData.quest,
+      moral_lesson: storyData.moral_lesson
+    });
+    
     await this.delay(2000); // Simulate AI processing time
 
     const mockStorySegment = this.generateMockStorySegment(
       storyData.genre,
       storyData.theme,
-      storyData.child_name || storyData.childName
+      storyData.child_name || storyData.childName,
+      storyData
     );
 
     const mockChoices = this.generateMockChoices(storyData.genre);

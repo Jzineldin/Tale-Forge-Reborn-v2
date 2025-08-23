@@ -14,10 +14,12 @@ const PrimaryNavigation: React.FC = () => {
         { name: 'Home', path: '/', icon: 'home' },
         { name: 'Dashboard', path: '/dashboard', icon: 'user' },
         { name: 'Stories', path: '/stories', icon: 'book' },
+        { name: 'Discover', path: '/discover', icon: 'search' },
         { name: 'Create', path: '/create', icon: 'plus' },
       ]
     : [
         { name: 'Home', path: '/', icon: 'home' },
+        { name: 'Discover', path: '/discover', icon: 'search' },
         { name: 'Features', path: '/features', icon: 'star' },
         { name: 'Help', path: '/help', icon: 'help-circle' },
       ];
