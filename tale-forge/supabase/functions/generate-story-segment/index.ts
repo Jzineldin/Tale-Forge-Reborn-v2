@@ -430,7 +430,13 @@ Create 3 choices that:
 - Use simple language (5-10 words each)
 - Start with action verbs
 
-Return only the 3 choices, one per line, without numbers.`;
+CRITICAL: Return ONLY the 3 choices, each on a separate line, with NO numbers, NO formatting, NO extra text.
+Example format:
+Ask the captain about the mission
+Check the control panels
+Look out the window
+
+Your response:`;
 
     const choicesRequestBody = {
       model: aiConfig.model,
@@ -462,11 +468,16 @@ Return only the 3 choices, one per line, without numbers.`;
     if (!choicesResponse.ok) {
       const errorText = await choicesResponse.text();
       console.error(`${aiProvider} API error for choices:`, choicesResponse.status, errorText);
+      console.error('❌ CHOICES GENERATION FAILED - this causes generic fallback choices');
+      console.error('❌ Request body was:', JSON.stringify(choicesRequestBody, null, 2));
       throw new Error(`${aiProvider} API error for choices: ${choicesResponse.status}`);
     }
 
     const choicesCompletion = await choicesResponse.json();
     const choicesText = choicesCompletion.choices[0].message.content?.trim() || '';
+    
+    console.log('🔍 Raw choices AI response:', choicesText);
+    console.log('🔍 Raw choices AI response length:', choicesText.length);
     
     // Helper function to strip markdown formatting
     const stripMarkdown = (text: string): string => {
@@ -480,26 +491,151 @@ Return only the 3 choices, one per line, without numbers.`;
         .trim();
     };
 
-    // Split choices and filter out empty ones
-    const rawChoices = choicesText.split('\n')
+    // Enhanced choice parsing with multiple fallback patterns
+    let rawChoices = [];
+    
+    // Method 1: Split by newlines (current approach)
+    let candidateChoices = choicesText.split('\n')
       .map(text => stripMarkdown(text.trim()))
       .filter(text => text.length > 0)
-      .slice(0, 3); // Limit to 3 choices
+      .slice(0, 3);
+    
+    console.log('🔍 Method 1 (newlines) found choices:', candidateChoices.length, candidateChoices);
+    
+    // Method 2: If Method 1 fails, try numbered patterns (1., 2., 3.)
+    if (candidateChoices.length < 3) {
+      console.log('🔍 Trying Method 2: numbered patterns...');
+      const numberedMatches = choicesText.match(/^\d+\.\s*(.+?)(?=\d+\.|$)/gm);
+      if (numberedMatches && numberedMatches.length >= 3) {
+        candidateChoices = numberedMatches.slice(0, 3).map(match => 
+          stripMarkdown(match.replace(/^\d+\.\s*/, '').trim())
+        );
+        console.log('✅ Method 2 found choices:', candidateChoices);
+      }
+    }
+    
+    // Method 3: If still insufficient, try lettered patterns (A., B., C.)
+    if (candidateChoices.length < 3) {
+      console.log('🔍 Trying Method 3: lettered patterns...');
+      const letteredMatches = choicesText.match(/^[A-C]\.\s*(.+?)(?=[A-C]\.|$)/gim);
+      if (letteredMatches && letteredMatches.length >= 3) {
+        candidateChoices = letteredMatches.slice(0, 3).map(match => 
+          stripMarkdown(match.replace(/^[A-C]\.\s*/i, '').trim())
+        );
+        console.log('✅ Method 3 found choices:', candidateChoices);
+      }
+    }
+    
+    // Method 4: If still insufficient, try bullet points or dashes
+    if (candidateChoices.length < 3) {
+      console.log('🔍 Trying Method 4: bullet/dash patterns...');
+      const bulletMatches = choicesText.match(/^[-•*]\s*(.+?)(?=^[-•*]|$)/gm);
+      if (bulletMatches && bulletMatches.length >= 3) {
+        candidateChoices = bulletMatches.slice(0, 3).map(match => 
+          stripMarkdown(match.replace(/^[-•*]\s*/, '').trim())
+        );
+        console.log('✅ Method 4 found choices:', candidateChoices);
+      }
+    }
+    
+    rawChoices = candidateChoices;
     
     console.log('🎯 Generated choices:', rawChoices);
+    console.log('🎯 Generated choices count:', rawChoices.length);
     
-    // Ensure we have exactly 3 choices
-    const fallbackChoices = [
-      'Continue the adventure',
-      'Explore a different path',
-      'Make a brave decision'
-    ];
+    // If AI choices are empty or insufficient, try to create contextual choices from the story content
+    if (rawChoices.length < 3) {
+      console.log(`⚠️ FALLBACK TRIGGERED: Only got ${rawChoices.length} choices from AI`);
+      console.log(`⚠️ Original AI response length: ${choicesText.length} characters`);
+      console.log(`⚠️ Original AI response: "${choicesText}"`);
+      console.log(`⚠️ Parsed choices: ${JSON.stringify(rawChoices)}`);
+      console.log('⚠️ Creating contextual fallbacks...');
+      
+      // Analyze the story content to create more contextual choices
+      const storyLower = segmentText.toLowerCase();
+      let contextualChoices = [];
+      
+      // Extract key elements to create better choices
+      if (storyLower.includes('captain') && storyLower.includes('space')) {
+        contextualChoices = [
+          'Check the ship\'s systems',
+          'Contact the space station',
+          'Investigate the signals'
+        ];
+      } else if (storyLower.includes('forest') || storyLower.includes('woods') || storyLower.includes('trees')) {
+        contextualChoices = [
+          'Follow the forest path',
+          'Climb up for a better view',
+          'Listen for sounds nearby'
+        ];
+      } else if (storyLower.includes('castle') || storyLower.includes('kingdom') || storyLower.includes('palace')) {
+        contextualChoices = [
+          'Approach the main entrance',
+          'Ask the guards for help',
+          'Look for another way in'
+        ];
+      } else if (storyLower.includes('magical') || storyLower.includes('magic') || storyLower.includes('spell')) {
+        contextualChoices = [
+          'Try using magic to help',
+          'Search for magical items',
+          'Ask about the magic here'
+        ];
+      } else if (storyLower.includes('dragon') || storyLower.includes('monster') || storyLower.includes('creature')) {
+        contextualChoices = [
+          'Try to communicate peacefully',
+          'Look for a safe hiding spot',
+          'Find a way around carefully'
+        ];
+      } else {
+        // Try to create more contextual choices based on story content
+        if (storyLower.includes('door') || storyLower.includes('entrance') || storyLower.includes('path')) {
+          contextualChoices = [
+            'Go through the door',
+            'Look for another way',
+            'Wait and listen first'
+          ];
+        } else if (storyLower.includes('character') || storyLower.includes('person') || storyLower.includes('friend')) {
+          contextualChoices = [
+            'Talk to them',
+            'Follow them quietly',
+            'Ask for their help'
+          ];
+        } else if (storyLower.includes('forest') || storyLower.includes('woods') || storyLower.includes('trees')) {
+          contextualChoices = [
+            'Explore deeper into the forest',
+            'Climb a tree to look around',
+            'Follow the forest path'
+          ];
+        } else if (storyLower.includes('magic') || storyLower.includes('spell') || storyLower.includes('enchant')) {
+          contextualChoices = [
+            'Use magic to help',
+            'Be careful with the magic',
+            'Ask about the magic'
+          ];
+        } else {
+          // Last resort - improved generic fallbacks
+          console.log('🚨 USING FINAL GENERIC FALLBACKS - AI parsing completely failed');
+          contextualChoices = [
+            'Continue the adventure',
+            'Look around for clues',
+            'Make a brave choice'
+          ];
+        }
+      }
+      
+      console.log('🎯 Created contextual choices:', contextualChoices);
+      
+      // Fill in missing choices with contextual ones
+      while (rawChoices.length < 3 && contextualChoices.length > 0) {
+        rawChoices.push(contextualChoices.shift());
+      }
+    }
     
     const choices = [];
     for (let i = 0; i < 3; i++) {
       choices.push({
         id: `choice-${Date.now()}-${i}`,
-        text: rawChoices[i] || fallbackChoices[i] || 'Continue the story',
+        text: rawChoices[i] || 'Continue the story',
         next_segment_id: null
       });
     }

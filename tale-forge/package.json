@@ -46,6 +46,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
     "jsdom": "^22.1.0",
+    "playwright": "^1.55.0",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4",
@@ -54,7 +55,7 @@
   },
   "keywords": [
     "storytelling",
-    "ai", 
+    "ai",
     "children",
     "interactive",
     "education",

@@ -139,12 +139,25 @@ export const useStory = (storyId: string | null) => {
         if (!data) {
           return 2000; // Very frequent polling while fetching initial data
         }
-        // CRITICAL FIX: Only poll for stories with 'generating' status
-        // Never poll for stories with existing segments to prevent auto-generation
-        if (data.status === 'generating' || (data.segments && data.segments.length === 0)) {
-          return 2000; // Very frequent polling (2 seconds) for generating stories
+        
+        // CRITICAL FIX: Poll while story or images are generating
+        const isStoryGenerating = data.status === 'generating' || (data.segments && data.segments.length === 0);
+        
+        // Check if any segment has images still generating
+        const hasGeneratingImages = data.segments?.some((segment: any) => 
+          segment.is_image_generating === true || 
+          segment.image_generation_status === 'generating' ||
+          (!segment.image_url && segment.image_prompt) // Has prompt but no URL yet
+        ) || false;
+        
+        // Poll if story is generating OR images are still being generated
+        if (isStoryGenerating || hasGeneratingImages) {
+          console.log(`🔄 Polling story ${data.id}: storyGenerating=${isStoryGenerating}, imagesGenerating=${hasGeneratingImages}`);
+          return 2000; // Poll every 2 seconds
         }
-        return false; // Stop polling for completed stories or stories with content
+        
+        console.log(`⏹️ Stopping poll for story ${data.id}: story complete and all images ready`);
+        return false; // Stop polling for completed stories with all images ready
       },
       refetchIntervalInBackground: true, // Allow background polling
       refetchOnWindowFocus: true, // Aggressive refetch when returning to tab
@@ -286,6 +299,8 @@ export const useDeleteStory = () => {
 
 // AI service hooks
 export const useGenerateStorySegment = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation(
     async ({ storyId, choiceIndex }: { storyId: string; choiceIndex?: number }) => {
       // Get current session from Supabase
@@ -312,12 +327,23 @@ export const useGenerateStorySegment = () => {
       }
       
       const data = await response.json();
-      return data;
+      return { ...data, storyId }; // Include storyId for cache invalidation
+    },
+    {
+      onSuccess: (data) => {
+        console.log('🔄 New segment generated - invalidating story cache for:', data.storyId);
+        // CRITICAL FIX: Invalidate the story cache to trigger refetch with new segment
+        queryClient.invalidateQueries(['story', data.storyId]);
+        // Also invalidate the stories list cache
+        queryClient.invalidateQueries(['stories']);
+      }
     }
   );
 };
 
 export const useGenerateStoryEnding = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation(
     async ({ storyId }: { storyId: string }) => {
       console.log('🎬 useGenerateStoryEnding called with storyId:', storyId);
@@ -359,7 +385,15 @@ export const useGenerateStoryEnding = () => {
       
       const data = await response.json();
       console.log('✅ generate-story-ending success:', data);
-      return data;
+      return { ...data, storyId }; // Include storyId for cache invalidation
+    },
+    {
+      onSuccess: (data) => {
+        console.log('🔄 Story ending generated - invalidating story cache for:', data.storyId);
+        // CRITICAL FIX: Invalidate the story cache to trigger refetch with new ending segment
+        queryClient.invalidateQueries(['story', data.storyId]);
+        queryClient.invalidateQueries(['stories']);
+      }
     }
   );
 };

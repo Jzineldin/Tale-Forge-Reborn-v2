@@ -31,6 +31,7 @@ const StoryReaderPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [imageRenderKey, setImageRenderKey] = useState(0);
   
   // Get story data
   const { data: story, isLoading: isStoryLoading, error: storyError, refetch: refetchStory } = useStory(id || null);
@@ -135,12 +136,31 @@ const StoryReaderPage: React.FC = () => {
     
     setIsGenerating(true);
     
-    // Find the choice index based on ID
+    // Find the choice index - handle both string choices and object choices
     const currentSegment = story.segments?.[currentSegmentIndex];
-    const choiceIndex = currentSegment?.choices?.findIndex((choice: any) => choice.id === choiceId) ?? -1;
+    let choiceIndex = -1;
+    
+    if (currentSegment?.choices) {
+      // Check if choices are objects or strings
+      if (typeof currentSegment.choices[0] === 'string') {
+        // Choices are strings - extract index from choice ID (e.g., "choice-0" -> 0)
+        const match = choiceId.match(/choice-(\d+)/);
+        choiceIndex = match ? parseInt(match[1]) : -1;
+      } else {
+        // Choices are objects - find by ID
+        choiceIndex = currentSegment.choices.findIndex((choice: any) => choice.id === choiceId);
+      }
+    }
+    
+    console.log('🎯 Choice selection:', {
+      choiceId,
+      choiceIndex,
+      choicesType: currentSegment?.choices ? typeof currentSegment.choices[0] : 'none',
+      totalChoices: currentSegment?.choices?.length || 0
+    });
     
     if (choiceIndex === -1) {
-      console.error('Choice not found');
+      console.error('❌ Choice not found:', { choiceId, availableChoices: currentSegment?.choices });
       setIsGenerating(false);
       return;
     }
@@ -149,13 +169,20 @@ const StoryReaderPage: React.FC = () => {
       { storyId: story.id, choiceIndex },
       {
         onSuccess: (data) => {
-          // In a real app, we would update the story state with the new segment
-          // For now, we'll just simulate moving to the next segment
-          setCurrentSegmentIndex(currentSegmentIndex + 1);
+          console.log('✅ Segment generated successfully:', data);
+          // CRITICAL FIX: Don't manually increment index - let React Query refetch handle it
+          // The useGenerateStorySegment hook will invalidate the story cache,
+          // causing useStory to refetch with the new segment data
+          // React Query will then automatically re-render with the latest segment
           setIsGenerating(false);
+          
+          // Auto-navigate to the new segment once data is refreshed
+          setTimeout(() => {
+            setCurrentSegmentIndex(currentSegmentIndex + 1);
+          }, 1000); // Give React Query time to refetch
         },
         onError: (error) => {
-          console.error('Error generating segment:', error);
+          console.error('❌ Error generating segment:', error);
           setIsGenerating(false);
         }
       }
@@ -507,6 +534,9 @@ const StoryReaderPage: React.FC = () => {
                 src={cleanedSegment.image_url} 
                 alt={`Illustration for segment ${currentSegmentIndex + 1}`} 
                 className="w-full h-64 md:h-80 object-cover"
+                onImageLoad={() => {
+                  console.log('🖼️ Parent: Image loaded');
+                }}
                 onImageError={() => console.log('Image failed to load')}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>

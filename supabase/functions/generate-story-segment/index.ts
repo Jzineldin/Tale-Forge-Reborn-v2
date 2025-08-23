@@ -240,9 +240,90 @@ serve(async (req) => {
 
     const choicesCompletion = await choicesResponse.json();
     const choicesText = choicesCompletion.choices[0].message.content?.trim() || '';
-    const choices = choicesText.split('\n').map((text, index) => ({
+    
+    console.log(`🔍 Original AI response length: ${choicesText.length} characters`);
+    console.log(`🔍 Original AI response: "${choicesText}"`);
+    
+    // Enhanced choice parsing with 4 fallback methods
+    let rawChoices = [];
+    
+    // Method 1: Plain newlines (current approach)
+    rawChoices = choicesText.split('\n')
+      .map(text => text.trim())
+      .filter(text => text.length > 0)
+      .slice(0, 3);
+    
+    console.log(`🔍 Method 1 (newlines) found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+    
+    // Method 2: Numbered format (1., 2., 3.)
+    if (rawChoices.length < 3) {
+      console.log('🔍 Trying Method 2: numbered patterns...');
+      const numberedMatches = choicesText.match(/^\d+\.\s*(.+?)(?=\n\d+\.|\n*$)/gm);
+      if (numberedMatches && numberedMatches.length > 0) {
+        rawChoices = numberedMatches.map(match => match.replace(/^\d+\.\s*/, '').trim()).slice(0, 3);
+        console.log(`✅ Method 2 found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+      }
+    }
+    
+    // Method 3: Lettered format (A., B., C.)
+    if (rawChoices.length < 3) {
+      console.log('🔍 Trying Method 3: lettered patterns...');
+      const letteredMatches = choicesText.match(/^[A-C]\.\s*(.+?)(?=\n[A-C]\.|\n*$)/gm);
+      if (letteredMatches && letteredMatches.length > 0) {
+        rawChoices = letteredMatches.map(match => match.replace(/^[A-C]\.\s*/, '').trim()).slice(0, 3);
+        console.log(`✅ Method 3 found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+      }
+    }
+    
+    // Method 4: Bullet format (-, •, *)
+    if (rawChoices.length < 3) {
+      console.log('🔍 Trying Method 4: bullet patterns...');
+      const bulletMatches = choicesText.match(/^[-•*]\s*(.+?)(?=\n[-•*]|\n*$)/gm);
+      if (bulletMatches && bulletMatches.length > 0) {
+        rawChoices = bulletMatches.map(match => match.replace(/^[-•*]\s*/, '').trim()).slice(0, 3);
+        console.log(`✅ Method 4 found choices: ${rawChoices.length} [${rawChoices.join(', ')}]`);
+      }
+    }
+    
+    // If we still don't have 3 choices, use contextual fallbacks
+    if (rawChoices.length < 3) {
+      console.log(`⚠️ FALLBACK TRIGGERED: Only got ${rawChoices.length} choices from AI`);
+      console.log(`⚠️ Original AI response: "${choicesText}"`);
+      console.log(`⚠️ Parsed choices: ${JSON.stringify(rawChoices)}`);
+      
+      const storyLower = segmentText.toLowerCase();
+      let fallbacks = [];
+      
+      // Context-aware fallbacks based on story content
+      if (storyLower.includes('door') || storyLower.includes('entrance')) {
+        fallbacks = ['Go through the door', 'Look for another way', 'Wait and listen first'];
+      } else if (storyLower.includes('magic') || storyLower.includes('spell')) {
+        fallbacks = ['Use magic to help', 'Be careful with the magic', 'Ask about the magic'];
+      } else if (storyLower.includes('forest') || storyLower.includes('woods')) {
+        fallbacks = ['Follow the forest path', 'Look for hidden trails', 'Call out for help'];
+      } else if (storyLower.includes('castle') || storyLower.includes('tower')) {
+        fallbacks = ['Explore the castle', 'Find another entrance', 'Look for a way up'];
+      } else if (storyLower.includes('dragon') || storyLower.includes('creature')) {
+        fallbacks = ['Approach carefully', 'Try to communicate', 'Find a safe distance'];
+      } else if (storyLower.includes('treasure') || storyLower.includes('chest')) {
+        fallbacks = ['Open the treasure', 'Check for traps first', 'Look around more'];
+      } else {
+        // Final generic fallbacks
+        console.log('🚨 USING FINAL GENERIC FALLBACKS - AI parsing completely failed');
+        fallbacks = ['Continue the adventure', 'Look around carefully', 'Make a thoughtful choice'];
+      }
+      
+      // Fill missing choices with fallbacks
+      while (rawChoices.length < 3 && fallbacks.length > 0) {
+        rawChoices.push(fallbacks.shift());
+      }
+      
+      console.log(`✅ Added fallback choices: ${JSON.stringify(rawChoices)}`);
+    }
+    
+    const choices = rawChoices.map((text, index) => ({
       id: `choice-${Date.now()}-${index}`,
-      text: text.trim(),
+      text: text,
       next_segment_id: null
     }));
 

@@ -37,11 +37,31 @@ function stripMarkdown(text: string): string {
 
 // AI Provider with fallback logic
 async function generateStoryWithAI(prompt: string, systemPrompt: string) {
+  console.log('🔑 Environment check:', {
+    hasOpenAIKey: !!OPENAI_CONFIG.apiKey,
+    openAIKeyLength: OPENAI_CONFIG.apiKey?.length,
+    openAIKeyStart: OPENAI_CONFIG.apiKey?.substring(0, 10),
+    isPlaceholder: OPENAI_CONFIG.apiKey?.includes('placeholder'),
+    hasOVHKey: !!OVH_AI_CONFIG.accessToken,
+    ovhKeyLength: OVH_AI_CONFIG.accessToken?.length,
+    ovhKeyStart: OVH_AI_CONFIG.accessToken?.substring(0, 10)
+  });
+  
   // Try OpenAI first (primary provider)
   if (OPENAI_CONFIG.apiKey && !OPENAI_CONFIG.apiKey.includes('placeholder')) {
     console.log('🚀 Attempting story generation with OpenAI GPT-4o...');
     
     try {
+      console.log('📡 Making OpenAI API call...');
+      console.log('📡 Request details:', {
+        url: `${OPENAI_CONFIG.baseUrl}/chat/completions`,
+        model: OPENAI_CONFIG.textModel,
+        maxTokens: OPENAI_CONFIG.maxTokens,
+        temperature: OPENAI_CONFIG.temperature,
+        promptLength: prompt.length,
+        systemPromptLength: systemPrompt.length
+      });
+
       const openaiResponse = await fetch(`${OPENAI_CONFIG.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -59,9 +79,14 @@ async function generateStoryWithAI(prompt: string, systemPrompt: string) {
         }),
       });
 
+      console.log('📡 OpenAI Response status:', openaiResponse.status);
+      console.log('📡 OpenAI Response headers:', Object.fromEntries(openaiResponse.headers.entries()));
+
       if (openaiResponse.ok) {
         const openaiData = await openaiResponse.json();
         console.log('✅ Story generated successfully with OpenAI');
+        console.log('📊 Usage:', openaiData.usage);
+        console.log('📝 Response preview:', openaiData.choices[0].message.content?.substring(0, 200) + '...');
         return {
           success: true,
           content: openaiData.choices[0].message.content,
@@ -71,10 +96,12 @@ async function generateStoryWithAI(prompt: string, systemPrompt: string) {
         };
       } else {
         const errorText = await openaiResponse.text();
-        console.log('⚠️ OpenAI request failed:', openaiResponse.status, errorText);
+        console.log('❌ OpenAI request failed:', openaiResponse.status);
+        console.log('❌ OpenAI error details:', errorText);
       }
     } catch (error) {
-      console.log('⚠️ OpenAI request error:', error);
+      console.log('❌ OpenAI request exception:', error.message);
+      console.log('❌ OpenAI error stack:', error.stack);
     }
   } else {
     console.log('⚠️ OpenAI API key not configured, skipping primary provider');
@@ -326,6 +353,9 @@ IMPORTANT FORMATTING:
     const systemPrompt = 'You are an expert children\'s story writer who creates engaging, age-appropriate stories with positive educational messages. Write for TTS narration (no transition phrases like "What will they do next?"). Always include exactly 3 choices that reference only characters/elements from your story content.';
     
     console.log('🤖 Generating story with AI provider system...');
+    console.log('📋 Request data:', JSON.stringify(storyData, null, 2));
+    console.log('📋 Prompt preview:', storyPrompt.substring(0, 300) + '...');
+    
     const aiStartTime = Date.now();
     
     // Add timeout to AI generation to prevent hanging
@@ -338,14 +368,23 @@ IMPORTANT FORMATTING:
     
     const aiResult = await Promise.race([aiPromise, timeoutPromise]).catch(error => {
       console.error('❌ AI generation failed or timed out:', error);
+      console.error('❌ Error stack:', error.stack);
       return { success: false, error: error.message };
     });
     
     const aiDuration = Date.now() - aiStartTime;
     console.log(`🤖 AI generation completed in ${aiDuration}ms (timeout was ${AI_TIMEOUT}ms)`);
+    console.log('🤖 AI result:', { success: aiResult.success, error: aiResult.error, hasContent: !!aiResult.content });
 
     if (!aiResult.success) {
       console.log('🎭 All AI providers failed, creating simple story manually...');
+      console.log('❌ AI Result Error Details:', {
+        success: aiResult.success,
+        error: aiResult.error,
+        hasOpenAI: hasOpenAI,
+        hasOVH: hasOVH,
+        requestData: JSON.stringify(storyData, null, 2)
+      });
       
       const fallbackContent = generateFallbackStory(storyData);
       const choices = [
@@ -565,15 +604,34 @@ Return exactly 3 choices, each starting with an action verb, formatted as:
         const choicesText = choicesResult.content;
         console.log('🎯 Separate choices AI response:', choicesText);
         
-        const choiceMatches = choicesText.match(/\d+\.\s*(.+?)(?=\d+\.|$)/g);
+        // Try multiple regex patterns to extract choices
+        let choiceMatches = choicesText.match(/^\d+\.\s*(.+?)(?=\n\d+\.|\n*$)/gm);
         
-        if (choiceMatches) {
+        if (!choiceMatches || choiceMatches.length === 0) {
+          // Try alternative pattern - numbered list with any whitespace
+          choiceMatches = choicesText.match(/\d+\.\s*(.+?)(?=\d+\.|$)/gs);
+        }
+        
+        if (!choiceMatches || choiceMatches.length === 0) {
+          // Try splitting by lines and finding numbered items
+          const lines = choicesText.split('\n').filter(line => line.trim().match(/^\d+\./));
+          choiceMatches = lines;
+        }
+        
+        console.log('🔍 Raw choice matches:', choiceMatches);
+        
+        if (choiceMatches && choiceMatches.length > 0) {
           console.log('✅ Successfully parsed separate choices:', choiceMatches);
-          choices = choiceMatches.slice(0, 3).map((choice, index) => ({
-            id: `choice-${Date.now()}-${index}`,
-            text: stripMarkdown(choice.replace(/^\d+\.\s*/, '')),
-            next_segment_id: null
-          }));
+          choices = choiceMatches.slice(0, 3).map((choice, index) => {
+            // Clean up the choice text
+            let cleanText = choice.replace(/^\d+\.\s*/, '').trim();
+            cleanText = stripMarkdown(cleanText);
+            return {
+              id: `choice-${Date.now()}-${index}`,
+              text: cleanText,
+              next_segment_id: null
+            };
+          });
         } else {
           console.log('❌ Failed to parse separate choices from AI response');
         }
