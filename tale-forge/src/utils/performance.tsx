@@ -132,13 +132,24 @@ export const useStory = (storyId: string | null) => {
     },
     {
       enabled: !!storyId,
-      staleTime: 0, // Always fetch fresh data for live updates
-      cacheTime: CACHE_TTL.SHORT,
-      refetchInterval: 3000, // Poll every 3 seconds for content updates
-      refetchIntervalInBackground: true, // Keep polling even when tab is not focused
-      refetchOnWindowFocus: true, // Refetch when user returns to tab
+      staleTime: 30000, // Cache for 30 seconds to prevent excessive requests
+      cacheTime: CACHE_TTL.LONG,
+      refetchInterval: (data) => {
+        // Only poll if story is actively being generated (not for existing stories)
+        if (!data) {
+          return 2000; // Very frequent polling while fetching initial data
+        }
+        // CRITICAL FIX: Only poll for stories with 'generating' status
+        // Never poll for stories with existing segments to prevent auto-generation
+        if (data.status === 'generating' || (data.segments && data.segments.length === 0)) {
+          return 2000; // Very frequent polling (2 seconds) for generating stories
+        }
+        return false; // Stop polling for completed stories or stories with content
+      },
+      refetchIntervalInBackground: true, // Allow background polling
+      refetchOnWindowFocus: true, // Aggressive refetch when returning to tab
       refetchOnMount: true,
-      retry: 3
+      retry: 2
     }
   );
 };
@@ -309,12 +320,17 @@ export const useGenerateStorySegment = () => {
 export const useGenerateStoryEnding = () => {
   return useMutation(
     async ({ storyId }: { storyId: string }) => {
+      console.log('🎬 useGenerateStoryEnding called with storyId:', storyId);
+      
       // Get current session from Supabase
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
+        console.error('❌ No authentication session found');
         throw new Error('No authentication session found');
       }
+
+      console.log('🔑 Session found, calling generate-story-ending API...');
 
       // Call the backend API to generate a story ending
       const response = await fetch(`${API_BASE_URL}/generate-story-ending`, {
@@ -327,12 +343,22 @@ export const useGenerateStoryEnding = () => {
         body: JSON.stringify({ storyId })
       });
       
+      console.log('📡 generate-story-ending response status:', response.status);
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to generate story ending');
+        const errorText = await response.text();
+        console.error('❌ generate-story-ending API error:', response.status, errorText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText };
+        }
+        throw new Error(errorData.message || `API error: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('✅ generate-story-ending success:', data);
       return data;
     }
   );

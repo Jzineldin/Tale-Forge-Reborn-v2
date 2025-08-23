@@ -329,10 +329,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signInWithGitHub
   };
 
-  console.log('AuthProvider: Rendering with loading:', loading, 'user:', user, 'isAuthenticated:', value.isAuthenticated);
-
   if (loading) {
-    console.log('AuthProvider: Returning loading state');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="text-center">
@@ -342,8 +339,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       </div>
     );
   }
-
-  console.log('AuthProvider: Rendering children with context value:', value);
   return (
     <AuthContext.Provider value={value}>
       {children}
@@ -352,13 +347,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 export const useAuth = () => {
-  console.log('useAuth: Called');
   const context = useContext(AuthContext);
-  console.log('useAuth: Context value:', context);
   if (context === undefined) {
-    console.error('useAuth: Context is undefined, throwing error');
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  console.log('useAuth: Returning context');
   return context;
 };

@@ -200,6 +200,9 @@ const CreateStoryPage: React.FC = () => {
     const ageFormatForAI = difficultyToAgeFormat();
     console.log(`🎯 Difficulty ${storyData.difficulty} → Age format: "${ageFormatForAI}" for AI understanding`);
     
+    // Debug: Check all story data before submission
+    console.log('📋 Full story data before submission:', storyData);
+    
     // Prepare story data for submission - include ALL form data
     const storySubmissionData = {
       title: storyData.childName ? `${storyData.childName}'s Adventure` : 'My Magical Story',
@@ -221,6 +224,9 @@ const CreateStoryPage: React.FC = () => {
       child_name: storyData.childName
     };
     
+    // Debug: Check what we're sending to the API
+    console.log('🚀 Story submission data:', storySubmissionData);
+    
     // Call the create story mutation
     createStory(
       storySubmissionData,
@@ -230,38 +236,13 @@ const CreateStoryPage: React.FC = () => {
           const storyId = data.story?.id || data.id;
           setStoryId(storyId);
           
-          // Generate the first story segment
-          console.log('🎨 Generating first story segment...');
-          const { data: { session } } = await supabase.auth.getSession();
-          
-          try {
-            const segmentResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-story-segment`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session?.access_token}`,
-                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
-              },
-              body: JSON.stringify({
-                storyId: storyId,
-                previousChoice: null,
-                segmentNumber: 0
-              })
-            });
-            
-            if (segmentResponse.ok) {
-              console.log('✅ First segment generated successfully');
-            } else {
-              console.error('❌ Failed to generate first segment:', await segmentResponse.text());
-            }
-          } catch (error) {
-            console.error('❌ Error generating first segment:', error);
-          }
+          console.log('✅ Story created with first segment - navigating to story reader');
           
           // Navigate to the story reader page
+          // No need to generate first segment - create-story already does this
           setTimeout(() => {
             navigate(`/stories/${storyId}`);
-          }, 3000); // Increased delay to allow segment generation
+          }, 1500); // Reduced delay since no extra generation needed
         },
         onError: (error: any) => {
           console.error('Error creating story:', error);

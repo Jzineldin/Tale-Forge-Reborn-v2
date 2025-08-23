@@ -241,9 +241,9 @@ export const getStepValidationMessage = (stepNumber: number, errors: StoryValida
 // Progress calculation
 export const calculateStoryProgress = (storyData: StoryData): number => {
   let completedFields = 0;
-  const totalRequiredFields = 7; // ageGroup, genre, location, timePeriod, atmosphere, conflict, quest
+  const totalRequiredFields = 7; // difficulty, genre, location, timePeriod, atmosphere, conflict, quest
 
-  if (storyData.ageGroup) completedFields++;
+  if (storyData.difficulty) completedFields++;
   if (storyData.genre) completedFields++;
   if (storyData.location) completedFields++;
   if (storyData.timePeriod) completedFields++;

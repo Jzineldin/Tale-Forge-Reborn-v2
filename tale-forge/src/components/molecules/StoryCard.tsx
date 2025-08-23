@@ -3,6 +3,20 @@ import Text from '@/components/atoms/Text';
 import Button from '@/components/atoms/Button';
 import { useOptimizedImage } from '@/utils/performance';
 
+// Helper function to convert age format to difficulty display
+const getDifficultyDisplay = (ageGroup: string): string => {
+  if (!ageGroup) return 'Medium';
+  
+  // Convert age ranges to difficulty labels
+  if (ageGroup.includes('3-4') || ageGroup.includes('3') || ageGroup.includes('4')) return 'Very Easy';
+  if (ageGroup.includes('4-6') || ageGroup.includes('5') || ageGroup.includes('6')) return 'Easy';
+  if (ageGroup.includes('7-9') || ageGroup.includes('7') || ageGroup.includes('8') || ageGroup.includes('9')) return 'Medium';
+  if (ageGroup.includes('10-12') || ageGroup.includes('10') || ageGroup.includes('11') || ageGroup.includes('12')) return 'Hard';
+  if (ageGroup.includes('13-15') || ageGroup.includes('13') || ageGroup.includes('14') || ageGroup.includes('15')) return 'Very Hard';
+  
+  return 'Medium'; // Default fallback
+};
+
 interface StoryCardProps {
   title: string;
   description: string;
@@ -70,9 +84,9 @@ const StoryCard: React.FC<StoryCardProps> = ({
           </span>
           <span 
             className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-500/10 text-slate-300 border border-slate-400/20"
-            aria-label={`Age group: ${ageGroup}`}
+            aria-label={`Difficulty: ${getDifficultyDisplay(ageGroup)}`}
           >
-            Age {ageGroup}
+            {getDifficultyDisplay(ageGroup)}
           </span>
         </div>
         <div className="flex space-x-3">

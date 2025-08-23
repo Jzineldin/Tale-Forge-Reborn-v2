@@ -125,3 +125,4 @@ typings/
 .idea/
 *.swp
 *.swo
+.vercel

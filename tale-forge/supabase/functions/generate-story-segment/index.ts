@@ -88,18 +88,23 @@ serve(async (req) => {
 
     // Validate authentication and get user
     let user = null;
-    let userId = 'test-user-id';
+    let userId = null;
     
     if (authHeader) {
       console.log('🔐 Attempting to validate auth header...');
       try {
+        // Extract the JWT token from Bearer header
+        const token = authHeader.replace('Bearer ', '');
+        
+        // Use anon key client with the JWT token to get user
+        const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
         const supabaseWithAuth = createClient(
           supabaseUrl,
-          supabaseServiceKey,
+          supabaseAnonKey,
           { global: { headers: { Authorization: authHeader } } }
         );
         
-        const { data: { user: authUser }, error: userError } = await supabaseWithAuth.auth.getUser();
+        const { data: { user: authUser }, error: userError } = await supabaseWithAuth.auth.getUser(token);
         console.log('👤 Auth result:', { hasUser: !!authUser, error: userError?.message });
         
         if (authUser) {
@@ -107,11 +112,19 @@ serve(async (req) => {
           userId = authUser.id;
           console.log('✅ User authenticated:', userId);
         } else {
-          console.log('⚠️ Auth failed, proceeding without user');
+          console.log('⚠️ Auth failed - no user found');
         }
       } catch (authError) {
         console.log('❌ Auth validation error:', authError);
       }
+    }
+
+    // Require authentication
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
+      );
     }
 
     // Get request body
@@ -307,8 +320,12 @@ CHARACTERS:`;
       
       // Add the user's choice that led to this segment
       if (previousSegment && choiceIndex !== undefined && previousSegment.choices[choiceIndex]) {
-        prompt += `\n\nUser's choice that leads to this new chapter: "${previousSegment.choices[choiceIndex].text}"`;
-        prompt += `\nContinue the story directly from this choice, maintaining character consistency and story flow.`;
+        const selectedChoice = previousSegment.choices[choiceIndex].text;
+        prompt += `\n\nUSER'S CHOSEN ACTION: "${selectedChoice}"`;
+        prompt += `\n\nCRITICAL INSTRUCTION: You MUST show the characters actually performing this chosen action: "${selectedChoice}"`;
+        prompt += `\nStart the new chapter by showing the characters following through on this specific choice.`;
+        prompt += `\nDo NOT ignore the choice or have characters do something completely different.`;
+        prompt += `\nThe entire chapter should be a direct consequence of: "${selectedChoice}".`;
       }
     }
 
@@ -399,12 +416,19 @@ STORY CONTEXT:
 CURRENT SEGMENT:
 ${segmentText}
 
+CRITICAL CHARACTER CONSISTENCY RULES:
+- ONLY reference characters that are ALREADY MENTIONED in the current segment above
+- Do NOT introduce new characters (no wizards, owls, fairies, etc. unless already in the story)
+- Do NOT reference places not established in the story content
+- Base choices on what the existing characters can actually do with what's available
+
 Create 3 choices that:
 - Are age-appropriate for ${targetAge} year olds
 - Advance the quest: "${settings.quest || 'overcome challenges'}"
 - Fit the ${story.genre} genre and ${settings.atmosphere || 'positive'} atmosphere
-- Offer different paths related to the theme: "${settings.theme || 'adventure'}"
+- Only involve characters and elements already present in the story
 - Use simple language (5-10 words each)
+- Start with action verbs
 
 Return only the 3 choices, one per line, without numbers.`;
 
@@ -444,11 +468,25 @@ Return only the 3 choices, one per line, without numbers.`;
     const choicesCompletion = await choicesResponse.json();
     const choicesText = choicesCompletion.choices[0].message.content?.trim() || '';
     
+    // Helper function to strip markdown formatting
+    const stripMarkdown = (text: string): string => {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/__(.*?)__/g, '$1')
+        .replace(/_(.*?)_/g, '$1')
+        .replace(/`(.*?)`/g, '$1')
+        .replace(/~~(.*?)~~/g, '$1')
+        .trim();
+    };
+
     // Split choices and filter out empty ones
     const rawChoices = choicesText.split('\n')
-      .map(text => text.trim())
+      .map(text => stripMarkdown(text.trim()))
       .filter(text => text.length > 0)
       .slice(0, 3); // Limit to 3 choices
+    
+    console.log('🎯 Generated choices:', rawChoices);
     
     // Ensure we have exactly 3 choices
     const fallbackChoices = [

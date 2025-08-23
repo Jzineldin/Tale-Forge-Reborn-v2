@@ -30,6 +30,6 @@
     }
   },
   "include": ["src", "shared"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/*.backup.*/**"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

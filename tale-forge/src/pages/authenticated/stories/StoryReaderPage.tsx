@@ -9,6 +9,20 @@ import AudioPlayer from '@/components/molecules/AudioPlayer';
 import { useStory, useGenerateStorySegment, useGenerateStoryEnding, useGenerateAudio, useRegenerateImage } from '@/utils/performance.tsx';
 import { LoadingState, ErrorState } from '@/utils/performance.tsx';
 
+// Helper function to convert age format back to difficulty display
+const getDifficultyDisplay = (ageGroup: string): string => {
+  if (!ageGroup) return 'Medium Difficulty';
+  
+  // Convert age ranges to difficulty labels
+  if (ageGroup.includes('3-4') || ageGroup.includes('3') || ageGroup.includes('4')) return 'Very Easy';
+  if (ageGroup.includes('4-6') || ageGroup.includes('5') || ageGroup.includes('6')) return 'Easy';
+  if (ageGroup.includes('7-9') || ageGroup.includes('7') || ageGroup.includes('8') || ageGroup.includes('9')) return 'Medium';
+  if (ageGroup.includes('10-12') || ageGroup.includes('10') || ageGroup.includes('11') || ageGroup.includes('12')) return 'Hard';
+  if (ageGroup.includes('13-15') || ageGroup.includes('13') || ageGroup.includes('14') || ageGroup.includes('15')) return 'Very Hard';
+  
+  return 'Medium'; // Default fallback
+};
+
 const StoryReaderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -19,13 +33,81 @@ const StoryReaderPage: React.FC = () => {
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   
   // Get story data
-  const { data: story, isLoading: isStoryLoading, error: storyError } = useStory(id || null);
+  const { data: story, isLoading: isStoryLoading, error: storyError, refetch: refetchStory } = useStory(id || null);
+  
+  // Aggressive tab switching fix - multiple event listeners and interval backup
+  useEffect(() => {
+    let visibilityInterval: NodeJS.Timeout | null = null;
+    let focusInterval: NodeJS.Timeout | null = null;
+    
+    const forceRefreshDuringGeneration = () => {
+      if (story && (!story.segments || story.segments.length === 0)) {
+        console.log('👁️ Forcing story refresh - story still generating');
+        refetchStory();
+      }
+    };
+    
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('👁️ Tab became visible');
+        forceRefreshDuringGeneration();
+        
+        // Start aggressive polling for a few seconds after becoming visible
+        if (focusInterval) clearInterval(focusInterval);
+        focusInterval = setInterval(forceRefreshDuringGeneration, 1000);
+        
+        setTimeout(() => {
+          if (focusInterval) {
+            clearInterval(focusInterval);
+            focusInterval = null;
+          }
+        }, 5000); // Stop aggressive polling after 5 seconds
+      }
+    };
+
+    const handleFocus = () => {
+      console.log('👁️ Window focused');
+      forceRefreshDuringGeneration();
+    };
+
+    // Multiple event listeners for maximum compatibility
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    
+    // Backup interval that runs even when tab is hidden (browsers may throttle this)
+    if (story && (!story.segments || story.segments.length === 0)) {
+      visibilityInterval = setInterval(() => {
+        if (!document.hidden) { // Only when tab is visible
+          forceRefreshDuringGeneration();
+        }
+      }, 3000);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+      if (visibilityInterval) clearInterval(visibilityInterval);
+      if (focusInterval) clearInterval(focusInterval);
+    };
+  }, [story, refetchStory]);
   
   // AI service hooks
   const { mutate: generateSegment, isLoading: isGeneratingSegment } = useGenerateStorySegment();
   const { mutate: generateEnding, isLoading: isGeneratingEnding } = useGenerateStoryEnding();
   const { mutate: generateAudio, isLoading: isGeneratingAudio } = useGenerateAudio();
   const { mutate: regenerateImage, isLoading: isRegeneratingImage } = useRegenerateImage();
+
+  // Debug: Log the story data only when it changes (moved before conditional returns)
+  React.useEffect(() => {
+    if (story?.id) {
+      console.log('🔍 Story data updated:', {
+        storyId: story.id,
+        title: story.title,
+        segmentCount: story.segments?.length || 0,
+        hasSegments: !!story.segments,
+      });
+    }
+  }, [story?.id, story?.segments?.length]);
   
   // Font size classes for immersive reading
   const fontSizeClasses = {
@@ -82,21 +164,28 @@ const StoryReaderPage: React.FC = () => {
   
   // Handle story ending
   const handleStoryEnding = () => {
-    if (!story) return;
+    if (!story) {
+      console.log('❌ No story found for ending generation');
+      return;
+    }
     
+    console.log('🎬 Starting story ending generation for:', story.id);
     setIsGenerating(true);
     
     generateEnding(
       { storyId: story.id },
       {
         onSuccess: (data) => {
+          console.log('✅ Story ending generated successfully:', data);
           // Story ending generated successfully - the story will refresh and detect completion
           setIsGenerating(false);
           // Don't manually increment - let the story refresh handle the new segment
         },
         onError: (error) => {
-          console.error('Error generating ending:', error);
+          console.error('❌ Error generating ending:', error);
           setIsGenerating(false);
+          // Show user-friendly error message
+          alert('Failed to generate story ending. Please try again.');
         }
       }
     );
@@ -267,19 +356,6 @@ const StoryReaderPage: React.FC = () => {
     );
   }
 
-  // Debug: Log the story data to see what we're getting
-  console.log('🔍 Story data in reader:', {
-    storyId: story?.id,
-    title: story?.title,
-    hasSegments: !!story?.segments,
-    segmentCount: story?.segments?.length || 0,
-    segments: story?.segments,
-    hasContent: story?.has_content,
-    segmentCountMeta: story?.segment_count,
-    status: story?.status,
-    fullStory: story
-  });
-
   // Story has no content yet - show live loading state
   if (!story.segments || story.segments.length === 0) {
     return (
@@ -359,7 +435,7 @@ const StoryReaderPage: React.FC = () => {
                   {story.title}
                 </h1>
                 <p className="text-amber-400 text-lg">
-                  {story.genre} • Age {story.age_group}
+                  {story.genre} • {getDifficultyDisplay(story.age_group)}
                 </p>
               </div>
         
@@ -491,6 +567,7 @@ const StoryReaderPage: React.FC = () => {
                       loading={isGeneratingSegment}
                       onEndStory={handleStoryEnding}
                       segmentCount={story.segments?.length || 0}
+                      isGeneratingEnding={isGenerating}
                     />
                   </div>
                 )}

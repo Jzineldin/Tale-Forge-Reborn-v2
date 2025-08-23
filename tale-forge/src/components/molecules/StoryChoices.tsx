@@ -14,6 +14,7 @@ interface StoryChoicesProps {
   loading?: boolean;
   onEndStory?: () => void;
   segmentCount?: number;
+  isGeneratingEnding?: boolean;
 }
 
 const StoryChoices: React.FC<StoryChoicesProps> = ({ 
@@ -22,7 +23,8 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
   disabled = false,
   loading = false,
   onEndStory,
-  segmentCount = 0
+  segmentCount = 0,
+  isGeneratingEnding = false
 }) => {
   // Filter out choices with empty or invalid text
   const validChoices = choices.filter(choice => choice && choice.text && choice.text.trim().length > 0);
@@ -97,15 +99,22 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
           <Button
             variant="secondary"
             className="w-full py-4 px-5 glass-card bg-gradient-to-r from-green-600/20 to-blue-600/20 border border-green-400/30 hover:from-green-600/30 hover:to-blue-600/30 transition-all duration-200"
-            onClick={onEndStory}
-            disabled={disabled || loading}
+            onClick={() => {
+              console.log('🎬 End Story button clicked');
+              onEndStory?.();
+            }}
+            disabled={disabled || loading || isGeneratingEnding}
           >
             <div className="flex items-center justify-center">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-400 flex items-center justify-center mr-3">
-                <span className="text-slate-800 font-bold">✨</span>
+                {isGeneratingEnding ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-800"></div>
+                ) : (
+                  <span className="text-slate-800 font-bold">✨</span>
+                )}
               </div>
               <Text variant="p" className="text-white font-semibold">
-                End Story & Create Finale
+                {isGeneratingEnding ? 'Creating Finale...' : 'End Story & Create Finale'}
               </Text>
             </div>
           </Button>

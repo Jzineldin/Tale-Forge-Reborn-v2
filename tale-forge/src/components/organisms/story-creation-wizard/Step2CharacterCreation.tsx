@@ -13,7 +13,7 @@ interface Character {
 
 interface Step2CharacterCreationProps {
   storyData: any;
-  handleInputChange: (field: string, value: string) => void;
+  handleInputChange: (field: string, value: string | number | Character[]) => void;
   onNext: () => void;
   onPrevious: () => void;
 }
