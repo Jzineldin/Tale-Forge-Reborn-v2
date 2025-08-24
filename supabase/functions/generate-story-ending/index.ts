@@ -1,7 +1,7 @@
 // Tale Forge - Generate Story Ending Edge Function
 // This function generates a satisfying conclusion for a story using AI
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.5.0';
 
 // AI Configuration - OpenAI primary, OVH fallback
@@ -42,9 +42,9 @@ serve(async (req) => {
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     const ovhApiKey = Deno.env.get('OVH_AI_ENDPOINTS_ACCESS_TOKEN');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !supabaseAnonKey) {
       throw new Error('Missing required Supabase environment variables');
     }
 
@@ -78,11 +78,14 @@ serve(async (req) => {
       );
     }
 
-    // Create Supabase client
+    // Create Supabase client (SECURITY FIXED: Using anon key)
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      supabaseUrl,
+      supabaseAnonKey,
+      { 
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false } // Edge Functions are stateless
+      }
     );
 
     // Get request body

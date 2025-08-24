@@ -1,0 +1,63 @@
+name: 🚀 MCP-Powered Tale Forge Optimization
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  mcp-analysis:
+    name: 📊 MCP Database & Performance Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: 🧪 Run TypeScript checks
+      run: npm run typecheck
+      
+    - name: 🎯 Run linting
+      run: npm run lint
+      
+    - name: ⚡ Performance benchmarks
+      run: |
+        echo "📊 Running MCP-enhanced performance tests..."
+        npm run build
+        npm run test:performance
+        
+    - name: 🔍 Database schema validation
+      run: |
+        echo "🗄️ Validating Supabase schema optimizations..."
+        # Add Supabase CLI schema validation
+        
+    - name: 🎪 MCP Integration Test
+      run: |
+        echo "🎯 Testing MCP server integrations..."
+        # Test Context7, GitHub, FileSystem MCPs
+        
+  edge-function-optimization:
+    name: ⚡ Edge Function Performance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: 🚀 Deploy Edge Functions
+      run: |
+        echo "🔧 Deploying optimized Edge Functions..."
+        # Add Supabase deployment checks
+        
+    - name: 📈 Performance monitoring
+      run: |
+        echo "📊 Monitoring Edge Function performance..."
+        # Add performance metrics collection

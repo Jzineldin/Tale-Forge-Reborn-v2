@@ -1,0 +1,265 @@
+/* Import Tale Forge Design System */
+@import './styles/tale-forge-design-system.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Background with Main Astronaut */
+html, body {
+  background:
+    url('/images/backgrounds/main-astronaut.png'),
+    linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Ensure root element is transparent */
+#root {
+  min-height: 100vh;
+  background: transparent;
+  width: 100%;
+}
+
+/* Mobile optimization for background */
+@media (max-width: 768px) {
+  html, body {
+    background-attachment: scroll; /* Fixed backgrounds can cause performance issues on mobile */
+  }
+}
+
+/* Override Tailwind background utilities that might interfere */
+.bg-gray-50, .bg-white, .bg-gray-100 {
+  background: transparent !important;
+}
+
+/* Ensure main content areas don't override background */
+main, .main-content {
+  background: transparent !important;
+}
+
+/* Design Tokens (extended) */
+:root {
+  /* Brand palette (light) */
+  --tf-primary-50: #fffbeb;
+  --tf-primary-100: #fef3c7;
+  --tf-primary-200: #fde68a;
+  --tf-primary-300: #fcd34d;
+  --tf-primary-400: #fbbf24;
+  --tf-primary-500: #f59e0b;
+  --tf-primary-600: #d97706;
+  --tf-primary-700: #b45309;
+  --tf-primary-800: #92400e;
+  --tf-primary-900: #78350f;
+
+  --tf-secondary-50: #eef2ff;
+  --tf-secondary-100: #e0e7ff;
+  --tf-secondary-200: #c7d2fe;
+  --tf-secondary-300: #a5b4fc;
+  --tf-secondary-400: #818cf8;
+  --tf-secondary-500: #6366f1;
+  --tf-secondary-600: #4f46e5;
+  --tf-secondary-700: #4338ca;
+  --tf-secondary-800: #3730a3;
+  --tf-secondary-900: #312e81;
+
+  --tf-accent-50: #f5f3ff;
+  --tf-accent-100: #ede9fe;
+  --tf-accent-200: #ddd6fe;
+  --tf-accent-300: #c4b5fd;
+  --tf-accent-400: #a78bfa;
+  --tf-accent-500: #8b5cf6;
+  --tf-accent-600: #7c3aed;
+  --tf-accent-700: #6d28d9;
+  --tf-accent-800: #5b21b6;
+  --tf-accent-900: #4c1d95;
+
+  /* Neutral palette */
+  --tf-gray-50: #f9fafb;
+  --tf-gray-100: #f3f4f6;
+  --tf-gray-200: #e5e7eb;
+  --tf-gray-300: #d1d5db;
+  --tf-gray-400: #9ca3af;
+  --tf-gray-500: #6b7280;
+  --tf-gray-600: #4b5563;
+  --tf-gray-700: #374151;
+  --tf-gray-800: #1f2937;
+  --tf-gray-900: #111827;
+
+  /* Semantic palette */
+  --tf-success-500: #10b981;
+  --tf-warning-500: #f59e0b;
+  --tf-danger-500: #ef4444;
+  --tf-info-500: #3b82f6;
+
+  /* Semantics (adapted for astronaut background) */
+  --tf-bg: rgba(15, 23, 42, 0.8);
+  --tf-bg-soft: rgba(30, 41, 59, 0.6);
+  --tf-surface: rgba(255, 255, 255, 0.1);
+  --tf-surface-2: rgba(255, 255, 255, 0.15);
+  --tf-surface-3: rgba(255, 255, 255, 0.2);
+  --tf-border: rgba(255, 255, 255, 0.2);
+  --tf-ring: var(--tf-secondary-500);
+
+  --tf-text: #ffffff;
+  --tf-text-muted: rgba(255, 255, 255, 0.8);
+  --tf-primary: var(--tf-primary-500);
+  --tf-primary-foreground: #ffffff;
+
+  /* Typography */
+  --tf-font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --tf-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --tf-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --tf-text-xs: 0.75rem;
+  --tf-text-sm: 0.875rem;
+  --tf-text-base: 1rem;
+  --tf-text-lg: 1.125rem;
+  --tf-text-xl: 1.25rem;
+  --tf-text-2xl: 1.5rem;
+  --tf-text-3xl: 1.875rem;
+  --tf-text-4xl: 2.25rem;
+
+  --tf-leading-tight: 1.25;
+  --tf-leading-normal: 1.5;
+  --tf-leading-relaxed: 1.625;
+
+  /* Spacing scale (px) */
+  --tf-space-0: 0px;
+  --tf-space-1: 4px;
+  --tf-space-2: 8px;
+  --tf-space-3: 12px;
+  --tf-space-4: 16px;
+  --tf-space-5: 20px;
+  --tf-space-6: 24px;
+  --tf-space-8: 32px;
+  --tf-space-10: 40px;
+  --tf-space-12: 48px;
+  --tf-space-16: 64px;
+  --tf-space-20: 80px;
+  --tf-space-24: 96px;
+
+  /* Radii */
+  --tf-radius-sm: 6px;
+  --tf-radius-md: 10px;
+  --tf-radius-lg: 14px;
+  --tf-radius-xl: 18px;
+  --tf-radius-full: 9999px;
+
+  /* Shadows */
+  --tf-shadow-sm: 0 4px 10px rgba(0,0,0,0.06);
+  --tf-shadow-md: 0 10px 20px rgba(0,0,0,0.08);
+  --tf-shadow-lg: 0 18px 35px rgba(0,0,0,0.12);
+
+  /* Transitions */
+  --tf-transition-fast: 150ms;
+  --tf-transition: 220ms;
+  --tf-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Glass + blur (subtle for astronaut background) */
+  --tf-glass-bg: rgba(0, 0, 0, 0.2);
+  --tf-glass-hero: rgba(15, 23, 42, 0.3);
+  --tf-glass-card: rgba(30, 41, 59, 0.25);
+  --tf-blur-sm: 4px;
+  --tf-blur-md: 6px;
+  --tf-blur-lg: 8px;
+
+  /* Z-index scale */
+  --tf-z-nav: 50;
+  --tf-z-modal: 100;
+  --tf-z-popover: 60;
+}
+
+/* Optional manual theme toggle via data-theme="dark" */
+:root[data-theme="dark"] {
+  --tf-bg: #0b0f1a;
+  --tf-bg-soft: #0f172a;
+  --tf-surface: #0f172a;
+  --tf-surface-2: #0b1222;
+  --tf-surface-3: #0a0f1f;
+  --tf-border: #1f2937;
+  --tf-ring: var(--tf-secondary-600);
+
+  --tf-text: #e5e7eb;
+  --tf-text-muted: #9ca3af;
+  --tf-primary: var(--tf-primary-400);
+  --tf-primary-foreground: #0b0f1a;
+
+  --tf-glass-bg: rgba(15, 23, 42, 0.65);
+  --tf-glass-hero: rgba(67, 56, 202, 0.70);
+
+  --tf-shadow-sm: 0 4px 10px rgba(0,0,0,0.35);
+  --tf-shadow-md: 0 10px 20px rgba(0,0,0,0.45);
+  --tf-shadow-lg: 0 18px 35px rgba(0,0,0,0.55);
+}
+
+/* Respect system preference as well */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tf-bg: #0b0f1a;
+    --tf-bg-soft: #0f172a;
+    --tf-surface: #0f172a;
+    --tf-surface-2: #0b1222;
+    --tf-surface-3: #0a0f1f;
+    --tf-border: #1f2937;
+    --tf-ring: var(--tf-secondary-600);
+
+    --tf-text: #e5e7eb;
+    --tf-text-muted: #9ca3af;
+    --tf-primary: var(--tf-primary-400);
+    --tf-primary-foreground: #0b0f1a;
+
+    --tf-glass-bg: rgba(15, 23, 42, 0.65);
+    --tf-glass-hero: rgba(67, 56, 202, 0.70);
+
+    --tf-shadow-sm: 0 4px 10px rgba(0,0,0,0.35);
+    --tf-shadow-md: 0 10px 20px rgba(0,0,0,0.45);
+    --tf-shadow-lg: 0 18px 35px rgba(0,0,0,0.55);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Improved card hover effects */
+.hover\:shadow-xl:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Smooth transitions */
+.transition-shadow {
+  transition-property: box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Sticky navigation */
+.sticky { position: sticky; }
+.top-0 { top: 0; }
+.z-50 { z-index: 50; }
+
+/* Backdrop blur for modern browsers */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.bg-white\/90 { background-color: rgba(255, 255, 255, 0.9); }
+
+.border-b { border-bottom-width: 1px; }
+.border-gray-100 { border-color: #f3f4f6; }

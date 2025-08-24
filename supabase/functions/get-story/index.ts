@@ -1,7 +1,7 @@
 // Tale Forge - Get Story Edge Function (PROPERLY REFACTORED)
 // Uses working shared services approach that actually deploys correctly
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 // Import working shared utilities (within function directory)
 import {

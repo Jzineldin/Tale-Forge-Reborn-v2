@@ -1,0 +1,1 @@
+// Account pages index file

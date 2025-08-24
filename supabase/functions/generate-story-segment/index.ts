@@ -2,7 +2,7 @@
 // Clean service-orchestrated architecture for better maintainability and testability
 // OpenAI GPT-4o (primary) with OVH AI (fallback) + robust fallback systems
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.5.0';
 
 // Import refactored services
@@ -13,7 +13,7 @@ import { promptBuilder } from './services/prompt-builder.ts';
 import { validation } from './services/validation-service.ts';
 import { CORS_HEADERS } from './types/interfaces.ts';
 
-console.log("Generate Story Segment function started (REFACTORED)");
+console.log("Generate Story Segment function started (REFACTORED + 2025 STREAMING)");
 
 serve(async (req) => {
   // Handle CORS preflight requests
