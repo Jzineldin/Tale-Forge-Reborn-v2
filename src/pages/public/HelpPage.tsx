@@ -1,5 +1,4 @@
 import React from 'react';
-import Text from '@/components/atoms/Text';
 
 const HelpPage: React.FC = () => {
   const faqs = [
@@ -29,9 +28,15 @@ const HelpPage: React.FC = () => {
     }
   ];
 
+  const quickLinks = [
+    { title: "Getting Started", description: "Learn the basics of Tale Forge", anchor: "#getting-started" },
+    { title: "Story Creation", description: "Tips for creating great stories", anchor: "#story-creation" },
+    { title: "Account Management", description: "Subscription and billing help", anchor: "#account-management" }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Refined Floating Elements */}
+      {/* Refined Floating Elements - Same as HomePage */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/20 rounded-full animate-pulse"></div>
         <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-amber-500/25 rounded-full animate-pulse delay-1000"></div>
@@ -39,92 +44,80 @@ const HelpPage: React.FC = () => {
         <div className="absolute top-1/3 right-2/3 w-1 h-1 bg-amber-600/20 rounded-full animate-pulse delay-3000"></div>
       </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="fantasy-heading-cinzel text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Help Center
-          </h1>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Find answers to common questions and learn how to make the most of Tale Forge
-          </p>
-        </div>
-        
-        {/* Quick Links Section */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-12">
-          <h2 className="fantasy-heading text-xl font-semibold text-amber-300 mb-6 text-center">
-            Quick Links
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="#getting-started" className="glass-card bg-white/5 border border-white/10 p-6 rounded-xl hover:transform hover:scale-105 hover:border-amber-400/30 transition-all duration-300 group">
-              <h3 className="fantasy-heading text-lg font-semibold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                Getting Started
-              </h3>
-              <p className="text-white/70 text-sm leading-relaxed">
-                Learn the basics of Tale Forge
-              </p>
-            </a>
-            <a href="#story-creation" className="glass-card bg-white/5 border border-white/10 p-6 rounded-xl hover:transform hover:scale-105 hover:border-amber-400/30 transition-all duration-300 group">
-              <h3 className="fantasy-heading text-lg font-semibold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                Story Creation
-              </h3>
-              <p className="text-white/70 text-sm leading-relaxed">
-                Tips for creating great stories
-              </p>
-            </a>
-            <a href="#account-management" className="glass-card bg-white/5 border border-white/10 p-6 rounded-xl hover:transform hover:scale-105 hover:border-amber-400/30 transition-all duration-300 group">
-              <h3 className="fantasy-heading text-lg font-semibold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                Account Management
-              </h3>
-              <p className="text-white/70 text-sm leading-relaxed">
-                Subscription and billing help
-              </p>
-            </a>
+      {/* Hero Section */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Refined Hero Container - Same as HomePage */}
+          <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
+            {/* Header */}
+            <h1 className="fantasy-heading-cinzel text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
+              Help Center
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
+              Find answers to common questions and learn how to make the most of Tale Forge
+            </p>
+            
+            {/* Quick Links Grid - Same structure as HomePage features */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+              {quickLinks.map((link, index) => (
+                <a 
+                  key={index}
+                  href={link.anchor} 
+                  className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-2">{link.title}</h3>
+                  <p className="text-white/80">{link.description}</p>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
+      </div>
         
-        {/* FAQ Section */}
-        <div className="mb-12">
-          <h2 className="fantasy-heading-cinzel text-2xl md:text-3xl font-bold text-center mb-8">
-            Frequently Asked Questions
-          </h2>
-          
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
-              <div key={index} className="glass-card bg-white/5 border border-white/10 p-6 rounded-xl hover:border-amber-400/20 transition-all duration-300">
-                <h3 className="fantasy-heading text-lg font-semibold text-amber-300 mb-3">
-                  {faq.question}
-                </h3>
-                <p className="text-white/80 leading-relaxed">
-                  {faq.answer}
-                </p>
+      {/* FAQ Section - Same structure as HomePage Featured Stories */}
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
+            <h2 className="fantasy-heading-cinzel text-3xl md:text-4xl font-bold text-center mb-12">
+              Frequently Asked Questions
+            </h2>
+            
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {faq.question}
+                  </h3>
+                  <p className="text-white/80">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Contact Support Section */}
+            <div className="text-center mt-12">
+              <h3 className="text-2xl font-bold text-white mb-4">
+                Still Need Help?
+              </h3>
+              <p className="text-white/80 mb-8 leading-relaxed">
+                Our support team is here to assist you with any questions or issues you may have.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a 
+                  href="/contact" 
+                  className="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300"
+                >
+                  Contact Support
+                </a>
+                <a 
+                  href="mailto:support@taleforge.com" 
+                  className="glass-card text-white border-2 border-amber-400/50 hover:border-amber-400 font-semibold px-8 py-4 text-lg rounded-xl backdrop-blur-md hover:bg-amber-400/10 transition-all duration-300 text-center"
+                >
+                  Email Support
+                </a>
               </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Contact Support Section */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8">
-          <h2 className="fantasy-heading-cinzel text-2xl font-bold text-center mb-6">
-            Still Need Help?
-          </h2>
-          <p className="text-white/80 text-center mb-8 leading-relaxed">
-            Our support team is here to assist you with any questions or issues you may have.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="/contact" 
-              className="fantasy-cta px-6 py-3 rounded-xl font-medium transition-all duration-300 text-center transform hover:scale-105"
-            >
-              Contact Support
-            </a>
-            <a 
-              href="mailto:support@taleforge.com" 
-              className="glass-card text-white border-2 border-amber-400/50 hover:border-amber-400 font-semibold px-6 py-3 rounded-xl backdrop-blur-md hover:bg-amber-400/10 transition-all duration-300 text-center"
-            >
-              Email Support
-            </a>
+            </div>
           </div>
         </div>
       </div>
