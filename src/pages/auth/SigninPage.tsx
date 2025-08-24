@@ -57,21 +57,19 @@ const SigninPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Cosmic Background Elements */}
-      <div className="absolute inset-0 bg-[url('/images/cosmic-bg.jpg')] bg-cover bg-center opacity-20"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-transparent to-slate-900/50"></div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/30 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-purple-400/40 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-blue-400/30 rounded-full animate-pulse delay-2000"></div>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Refined Floating Elements - Same as HomePage */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/20 rounded-full animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-amber-500/25 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-amber-300/15 rounded-full animate-pulse delay-2000"></div>
+        <div className="absolute top-1/3 right-2/3 w-1 h-1 bg-amber-600/20 rounded-full animate-pulse delay-3000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-amber-400/30 rounded-full animate-pulse delay-4000"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md mx-auto px-6">
         {/* Main Sign In Card */}
-        <div className="glass-enhanced p-8 rounded-2xl border border-amber-500/30">
+        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="fantasy-heading-cinzel text-3xl sm:text-4xl font-bold mb-2">
