@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthContext';
 import Button from '@/components/atoms/Button';
+import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -70,29 +71,18 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Cosmic Background Elements */}
-      <div className="absolute inset-0 bg-[url('/images/cosmic-bg.jpg')] bg-cover bg-center opacity-20"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-transparent to-slate-900/50"></div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/30 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-purple-400/40 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-blue-400/30 rounded-full animate-pulse delay-2000"></div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-md mx-auto px-6">
+    <PageLayout maxWidth="sm" showFloatingElements noPadding>
+      <div className="flex items-center justify-center min-h-screen">
         {/* Main Sign Up Card */}
-        <div className="glass-card p-8">
+        <CardLayout variant="default" padding="xl" className="w-full max-w-md mx-6">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="title-hero mb-2">
+            <TypographyLayout variant="hero" as="h1" align="center" className="mb-2">
               Join Tale Forge
-            </h1>
-            <p className="text-body text-lg">
+            </TypographyLayout>
+            <TypographyLayout variant="body" align="center" className="text-xl">
               Begin your storytelling adventure
-            </p>
+            </TypographyLayout>
           </div>
 
           {/* Error Message */}

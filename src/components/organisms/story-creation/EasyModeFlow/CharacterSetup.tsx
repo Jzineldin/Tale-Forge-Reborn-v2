@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, RefreshCw, User } from 'lucide-react';
+import { generateStorySeeds, getContextFromGenre, convertSeedToString } from '@/services/storySeedsService';
 
 interface CharacterSetupProps {
   characterName: string;
@@ -82,18 +83,40 @@ const CharacterSetup: React.FC<CharacterSetupProps> = ({
     }
   }, [genre]);
 
-  const generateNewSeed = () => {
+  const generateNewSeed = async () => {
     if (!genre) return;
     
     setIsGenerating(true);
     
-    // Simulate API delay
-    setTimeout(() => {
+    try {
+      // Determine context from genre (bedtime/learning/playtime)
+      const context = getContextFromGenre(genre);
+      
+      // Generate AI-powered story seeds
+      const seeds = await generateStorySeeds({
+        context,
+        difficulty: 'medium', // Default difficulty for seed generation
+        genre,
+        childName: characterName || 'the child'
+      });
+      
+      // Pick a random seed from the 3 generated
+      const randomSeed = seeds[Math.floor(Math.random() * seeds.length)];
+      const seedText = convertSeedToString(randomSeed);
+      
+      onSeedChange(seedText);
+      
+    } catch (error) {
+      console.error('Failed to generate story seeds:', error);
+      
+      // Fallback to hardcoded seeds if API fails
       const seeds = storySeeds[genre] || storySeeds.FANTASY;
       const randomSeed = seeds[Math.floor(Math.random() * seeds.length)];
       onSeedChange(randomSeed);
+      
+    } finally {
       setIsGenerating(false);
-    }, 800);
+    }
   };
 
   const toggleTrait = (trait: string) => {

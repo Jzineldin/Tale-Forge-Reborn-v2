@@ -530,6 +530,7 @@ const CreateStoryPage: React.FC = () => {
             </div>
           </div>
         </CardLayout>
+    </PageLayout>
   );
 };
 

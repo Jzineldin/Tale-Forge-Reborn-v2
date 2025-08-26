@@ -8,6 +8,7 @@ import { goalService } from '@/services/goalService';
 import { toast } from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import StoryCompletionModal from '@/components/molecules/StoryCompletionModal';
+import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 interface StoryStats {
   totalWords: number;
@@ -176,28 +177,32 @@ const StoryCompletePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="page-container flex-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
-      </div>
+      <PageLayout maxWidth="lg" showFloatingElements>
+        <div className="flex justify-center items-center min-h-96">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
+        </div>
+      </PageLayout>
     );
   }
 
   if (error || !story) {
     return (
-      <div className="page-container flex-center">
-        <div className="glass-card text-center max-w-md">
+      <PageLayout maxWidth="lg" showFloatingElements>
+        <CardLayout variant="default" padding="xl" className="text-center max-w-md mx-auto">
           <span className="text-6xl mb-4 block">😞</span>
-          <h2 className="title-card mb-2">Story not found</h2>
+          <TypographyLayout variant="card" as="h2" align="center" className="mb-2">
+            Story not found
+          </TypographyLayout>
           <Link to="/stories" className="btn btn-primary">
             Back to Stories
           </Link>
-        </div>
-      </div>
+        </CardLayout>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="page-content completion-container">
+    <PageLayout maxWidth="lg" showFloatingElements>
       {/* Confetti Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -218,51 +223,53 @@ const StoryCompletePage: React.FC = () => {
       )}
 
       {/* Hero Section */}
-      <div className="glass-card text-center mb-8">
+      <CardLayout variant="default" padding="xl" className="text-center mb-8">
         <div className="text-8xl mb-6 animate-pulse">🏆</div>
-        <h1 className="title-hero mb-4">
+        <TypographyLayout variant="hero" as="h1" align="center" className="mb-4">
           Story Complete!
-        </h1>
-        <h2 className="title-section mb-6 text-amber-300">
+        </TypographyLayout>
+        <TypographyLayout variant="section" as="h2" align="center" className="mb-6 text-amber-300">
           "{story.title}"
-        </h2>
-        <p className="text-body text-xl mb-8 max-w-2xl mx-auto">
+        </TypographyLayout>
+        <TypographyLayout variant="body" align="center" className="text-xl mb-8 max-w-2xl mx-auto">
           🎉 Congratulations! You've created an incredible {story.genre} adventure.
           Your creativity and choices brought this magical story to life!
-        </p>
+        </TypographyLayout>
 
         {stats && (
-          <div className="completion-stats-grid max-w-2xl mx-auto">
-            <div className="stat-card">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
               <div className="stat-value">{stats.totalSegments}</div>
               <div className="stat-label">Chapters</div>
             </div>
-            <div className="stat-card">
+            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
               <div className="stat-value">{stats.totalWords}</div>
               <div className="stat-label">Words</div>
             </div>
-            <div className="stat-card">
+            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
               <div className="stat-value">{stats.readingTime}</div>
               <div className="stat-label">Reading Time</div>
             </div>
-            <div className="stat-card">
+            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
               <div className="stat-value">Today</div>
               <div className="stat-label">Completed</div>
             </div>
           </div>
         )}
-      </div>
+      </CardLayout>
 
       {/* Action Cards Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 
         {/* Share to Library */}
-        <div className="glass-card">
+        <CardLayout variant="default" padding="lg">
           <div className="text-4xl mb-4">🌟</div>
-          <h3 className="title-card mb-3">Share Your Story</h3>
-          <p className="text-body text-sm mb-4">
+          <TypographyLayout variant="card" as="h3" className="mb-3">
+            Share Your Story
+          </TypographyLayout>
+          <TypographyLayout variant="body" className="text-body-sm mb-4">
             Share your amazing story with the Tale Forge community in our public library.
-          </p>
+          </TypographyLayout>
           <Button
             onClick={handleShareToLibrary}
             disabled={isSharing}
@@ -271,15 +278,17 @@ const StoryCompletePage: React.FC = () => {
           >
             {isSharing ? 'Sharing...' : '✨ Share to Library'}
           </Button>
-        </div>
+        </CardLayout>
 
         {/* Download Story */}
-        <div className="glass-card">
+        <CardLayout variant="default" padding="lg">
           <div className="text-4xl mb-4">📥</div>
-          <h3 className="title-card mb-3">Download Story</h3>
-          <p className="text-body text-sm mb-4">
+          <TypographyLayout variant="card" as="h3" className="mb-3">
+            Download Story
+          </TypographyLayout>
+          <TypographyLayout variant="body" className="text-body-sm mb-4">
             Download your complete story as a text file to keep forever.
-          </p>
+          </TypographyLayout>
           <Button
             onClick={handleDownloadStory}
             variant="secondary"
@@ -287,15 +296,17 @@ const StoryCompletePage: React.FC = () => {
           >
             📄 Download Text
           </Button>
-        </div>
+        </CardLayout>
 
         {/* Generate Audio */}
-        <div className="glass-card">
+        <CardLayout variant="default" padding="lg">
           <div className="text-4xl mb-4">🎧</div>
-          <h3 className="title-card mb-3">Audio Narration</h3>
-          <p className="text-body text-sm mb-4">
+          <TypographyLayout variant="card" as="h3" className="mb-3">
+            Audio Narration
+          </TypographyLayout>
+          <TypographyLayout variant="body" className="text-body-sm mb-4">
             Add professional AI narration to bring your story to life for bedtime listening.
-          </p>
+          </TypographyLayout>
           {audioUrl ? (
             <div>
               <audio controls className="w-full mb-3">
@@ -314,15 +325,17 @@ const StoryCompletePage: React.FC = () => {
               🎙️ Add Narration
             </Button>
           )}
-        </div>
+        </CardLayout>
 
         {/* Social Share */}
-        <div className="glass-card">
+        <CardLayout variant="default" padding="lg">
           <div className="text-4xl mb-4">📱</div>
-          <h3 className="title-card mb-3">Social Share</h3>
-          <p className="text-body text-sm mb-4">
+          <TypographyLayout variant="card" as="h3" className="mb-3">
+            Social Share
+          </TypographyLayout>
+          <TypographyLayout variant="body" className="text-body-sm mb-4">
             Share your creative achievement with friends and family.
-          </p>
+          </TypographyLayout>
           <Button
             onClick={handleSocialShare}
             variant="ghost"
@@ -330,59 +343,69 @@ const StoryCompletePage: React.FC = () => {
           >
             🔗 Share Link
           </Button>
-        </div>
+        </CardLayout>
 
         {/* Create Another */}
-        <div className="glass-card">
+        <CardLayout variant="default" padding="lg">
           <div className="text-4xl mb-4">✍️</div>
-          <h3 className="title-card mb-3">Create Another</h3>
-          <p className="text-body text-sm mb-4">
+          <TypographyLayout variant="card" as="h3" className="mb-3">
+            Create Another
+          </TypographyLayout>
+          <TypographyLayout variant="body" className="text-body-sm mb-4">
             Ready for your next adventure? Create another magical story.
-          </p>
+          </TypographyLayout>
           <Link to="/create">
             <Button variant="secondary" className="w-full">
               🎨 New Story
             </Button>
           </Link>
-        </div>
+        </CardLayout>
 
         {/* View Library */}
-        <div className="glass-card">
+        <CardLayout variant="default" padding="lg">
           <div className="text-4xl mb-4">📚</div>
-          <h3 className="title-card mb-3">Your Library</h3>
-          <p className="text-body text-sm mb-4">
+          <TypographyLayout variant="card" as="h3" className="mb-3">
+            Your Library
+          </TypographyLayout>
+          <TypographyLayout variant="body" className="text-body-sm mb-4">
             View all your created stories and discover new adventures.
-          </p>
+          </TypographyLayout>
           <Link to="/stories">
             <Button variant="ghost" className="w-full">
               📖 View Stories
             </Button>
           </Link>
-        </div>
+        </CardLayout>
       </div>
 
       {/* Story Preview */}
-      <div className="glass-card">
-        <h3 className="title-section mb-6 text-center">Your Complete Story</h3>
+      <CardLayout variant="default" padding="lg">
+        <TypographyLayout variant="section" as="h3" align="center" className="mb-6">
+          Your Complete Story
+        </TypographyLayout>
         <div className="max-h-96 overflow-y-auto space-y-4">
           {story.segments.map((segment, index) => (
             <div key={segment.id} className="border-l-4 border-amber-400 pl-4">
-              <div className="text-amber-300 font-semibold mb-2">Chapter {index + 1}</div>
-              <div className="text-body">{segment.content}</div>
+              <TypographyLayout variant="body" className="text-amber-300 font-semibold mb-2">
+                Chapter {index + 1}
+              </TypographyLayout>
+              <TypographyLayout variant="body">{segment.content}</TypographyLayout>
             </div>
           ))}
         </div>
-      </div>
+      </CardLayout>
 
       {/* Share Success Modal */}
       {showShareSuccess && (
         <div className="modal-backdrop">
-          <div className="modal-content p-8 text-center">
+          <CardLayout variant="default" padding="xl" className="max-w-md mx-auto text-center">
             <div className="text-6xl mb-4">🌟</div>
-            <h3 className="title-section mb-4">Story Shared!</h3>
-            <p className="text-body mb-6">
+            <TypographyLayout variant="section" as="h3" align="center" className="mb-4">
+              Story Shared!
+            </TypographyLayout>
+            <TypographyLayout variant="body" align="center" className="mb-6">
               Your amazing story is now available in the public library for everyone to discover and enjoy!
-            </p>
+            </TypographyLayout>
             <div className="space-y-3">
               <Link to="/discover" className="block">
                 <Button className="w-full" variant="primary">
@@ -397,7 +420,7 @@ const StoryCompletePage: React.FC = () => {
                 Continue Celebrating
               </Button>
             </div>
-          </div>
+          </CardLayout>
         </div>
       )}
 
@@ -413,7 +436,7 @@ const StoryCompletePage: React.FC = () => {
           onAudioPurchased={handleAudioPurchased}
         />
       )}
-    </div>
+    </PageLayout>
   );
 };
 
