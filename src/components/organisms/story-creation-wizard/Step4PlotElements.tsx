@@ -144,17 +144,17 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
     <div className="space-y-8">
       {/* Step Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
+        <h2 className="title-section mb-3">
           ⚔️ Plot Elements
         </h2>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">
+        <p className="text-body text-lg max-w-2xl mx-auto">
           Choose the exciting challenges and goals that will drive your story forward
         </p>
       </div>
 
       {/* Central Conflict Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card">
+        <h3 className="title-card text-center mb-6">
           ⚡ Choose Main Conflict
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -162,10 +162,10 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
             <button
               key={conflict.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+              className={`genre-card ${
                 storyData.conflict === conflict.name
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('conflict', conflict.name)}
             >
@@ -173,11 +173,11 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
                 {conflict.emoji}
               </div>
               <h4 className={`font-semibold text-sm mb-2 ${
-                storyData.conflict === conflict.name ? 'text-amber-400' : 'text-white'
+                storyData.conflict === conflict.name ? 'text-primary' : 'text-white'
               }`}>
                 {conflict.name}
               </h4>
-              <p className="text-xs text-white/70">
+              <p className="text-xs text-muted">
                 {conflict.description}
               </p>
             </button>
@@ -195,7 +195,7 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
               placeholder="Describe the main challenge or problem in your story"
               value={storyData.conflict && !conflictPresets.find(c => c.name === storyData.conflict) ? storyData.conflict : ''}
               onChange={(e) => handleInputChange('conflict', e.target.value)}
-              className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+              className="input-primary w-full pl-12"
             />
             <Icon name="search" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
           </div>
@@ -203,8 +203,8 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
       </div>
 
       {/* Quest/Goal Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card">
+        <h3 className="title-card text-center mb-6">
           🎯 Choose Quest/Goal
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -212,20 +212,20 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
             <button
               key={quest.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+              className={`genre-card ${
                 storyData.quest === quest.name
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('quest', quest.name)}
             >
               <div className="text-3xl mb-2">{quest.emoji}</div>
               <h4 className={`font-semibold text-sm mb-2 ${
-                storyData.quest === quest.name ? 'text-amber-400' : 'text-white'
+                storyData.quest === quest.name ? 'text-primary' : 'text-white'
               }`}>
                 {quest.name}
               </h4>
-              <p className="text-xs text-white/70">
+              <p className="text-xs text-muted">
                 {quest.description}
               </p>
             </button>
@@ -243,7 +243,7 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
               placeholder="Describe the main goal or objective of your story"
               value={storyData.quest && !questPresets.find(q => q.name === storyData.quest) ? storyData.quest : ''}
               onChange={(e) => handleInputChange('quest', e.target.value)}
-              className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+              className="input-primary w-full pl-12"
             />
             <Icon name="search" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
           </div>
@@ -251,8 +251,8 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
       </div>
 
       {/* Moral Lesson Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6" data-testid="lesson-select">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card" data-testid="lesson-select">
+        <h3 className="title-card text-center mb-6">
           💡 Moral Lesson (Optional)
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -260,16 +260,16 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
             <button
               key={lesson.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+              className={`genre-card ${
                 storyData.moralLesson === lesson.name
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('moralLesson', lesson.name)}
             >
               <div className="text-2xl mb-2">{lesson.emoji}</div>
               <h4 className={`font-semibold text-xs ${
-                storyData.moralLesson === lesson.name ? 'text-amber-400' : 'text-white'
+                storyData.moralLesson === lesson.name ? 'text-primary' : 'text-white'
               }`}>
                 {lesson.name}
               </h4>
@@ -287,13 +287,13 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
             value={storyData.moralLesson && !moralLessons.find(l => l.name === storyData.moralLesson) ? storyData.moralLesson : ''}
             onChange={(e) => handleInputChange('moralLesson', e.target.value)}
             rows={3}
-            className="glass-input w-full p-4 text-lg rounded-xl resize-none"
+            className="input-primary w-full resize-none"
           />
         </div>
       </div>
 
       {/* Additional Story Elements */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+      <div className="glass-card">
         <label className="block text-white font-semibold mb-3">
           ✨ Additional Story Elements (Optional)
         </label>
@@ -304,7 +304,7 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
           rows={4}
           className="glass-input w-full p-4 text-lg rounded-xl resize-none"
         />
-        <p className="text-sm text-white/60 mt-2">
+        <p className="text-sm text-muted mt-2">
           These extra details help create a more unique and engaging story world
         </p>
       </div>
@@ -313,17 +313,17 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
       <div className="flex justify-between pt-6">
         <button 
           onClick={onPrevious}
-          className="px-6 py-3 rounded-lg bg-white/20 hover:bg-white/30 text-white font-semibold transition-all duration-300 hover:scale-105"
+          className="btn btn-secondary"
         >
           ← Back: Story Setting
         </button>
         <button 
           onClick={onNext}
           disabled={!isValid}
-          className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
+          className={`btn ${
             isValid
-              ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg hover:scale-105'
-              : 'bg-white/10 text-white/40 cursor-not-allowed'
+              ? 'btn-primary'
+              : 'btn-ghost opacity-50 cursor-not-allowed'
           }`}
         >
           Next: Review & Generate →
@@ -333,7 +333,7 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
       {/* Validation Helper */}
       {(!storyData.conflict || !storyData.quest) && (
         <div className="text-center">
-          <p className="text-amber-400 text-sm">
+          <p className="text-primary text-sm">
             Please choose a conflict and quest to continue ⚔️
           </p>
         </div>

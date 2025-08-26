@@ -87,17 +87,17 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
     <div className="space-y-8">
       {/* Step Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
+        <h2 className="title-section mb-3">
           🌍 Story Setting
         </h2>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">
+        <p className="text-body text-lg max-w-2xl mx-auto">
           Create the magical world where your story unfolds - choose the perfect location, time, and atmosphere
         </p>
       </div>
 
       {/* Location Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6" data-testid="setting-select">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card" data-testid="setting-select">
+        <h3 className="title-card text-center mb-6">
           📍 Choose Location
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -105,10 +105,10 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
             <button
               key={location.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 group ${
+              className={`genre-card group ${
                 storyData.location === location.name
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('location', location.name)}
             >
@@ -138,11 +138,11 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
               {/* Location Info */}
               <div className="p-4">
                 <h4 className={`font-bold mb-1 ${
-                  storyData.location === location.name ? 'text-amber-400' : 'text-white'
+                  storyData.location === location.name ? 'text-primary' : 'text-white'
                 }`}>
                   {location.emoji} {location.name}
                 </h4>
-                <p className="text-xs text-white/70">
+                <p className="text-xs text-muted">
                   {location.description}
                 </p>
               </div>
@@ -161,7 +161,7 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
               placeholder="Describe your custom location (e.g., floating cloud city, underground kingdom)"
               value={storyData.location && !locationPresets.find(l => l.name === storyData.location) ? storyData.location : ''}
               onChange={(e) => handleInputChange('location', e.target.value)}
-              className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+              className="input-primary w-full pl-12"
             />
             <Icon name="search" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
           </div>
@@ -169,8 +169,8 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
       </div>
 
       {/* Time Period Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card">
+        <h3 className="title-card text-center mb-6">
           ⏰ Choose Time Period
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -178,20 +178,20 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
             <button
               key={period.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+              className={`genre-card ${
                 storyData.timePeriod === period.name
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('timePeriod', period.name)}
             >
               <div className="text-3xl mb-2">{period.emoji}</div>
               <h4 className={`font-bold mb-2 ${
-                storyData.timePeriod === period.name ? 'text-amber-400' : 'text-white'
+                storyData.timePeriod === period.name ? 'text-primary' : 'text-white'
               }`}>
                 {period.name}
               </h4>
-              <p className="text-xs text-white/70">
+              <p className="text-xs text-muted">
                 {period.description}
               </p>
             </button>
@@ -200,8 +200,8 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
       </div>
 
       {/* Atmosphere Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card">
+        <h3 className="title-card text-center mb-6">
           🎭 Choose Story Atmosphere
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -209,10 +209,10 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
             <button
               key={atmosphere.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+              className={`genre-card ${
                 storyData.atmosphere === atmosphere.name
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('atmosphere', atmosphere.name)}
             >
@@ -220,11 +220,11 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
                 {atmosphere.emoji}
               </div>
               <h4 className={`font-semibold text-sm mb-1 ${
-                storyData.atmosphere === atmosphere.name ? 'text-amber-400' : 'text-white'
+                storyData.atmosphere === atmosphere.name ? 'text-primary' : 'text-white'
               }`}>
                 {atmosphere.name}
               </h4>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-muted">
                 {atmosphere.description}
               </p>
             </button>
@@ -233,7 +233,7 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
       </div>
 
       {/* Optional Setting Details */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+      <div className="glass-card">
         <label className="block text-white font-semibold mb-3">
           📝 Additional Setting Details (Optional)
         </label>
@@ -242,9 +242,9 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
           value={storyData.settingDescription}
           onChange={(e) => handleInputChange('settingDescription', e.target.value)}
           rows={4}
-          className="glass-input w-full p-4 text-lg rounded-xl resize-none"
+          className="input-primary w-full resize-none"
         />
-        <p className="text-sm text-white/60 mt-2">
+        <p className="text-sm text-muted mt-2">
           These details help create a richer, more immersive story world
         </p>
       </div>
@@ -253,17 +253,17 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
       <div className="flex justify-between pt-6">
         <button 
           onClick={onPrevious}
-          className="px-6 py-3 rounded-lg bg-white/20 hover:bg-white/30 text-white font-semibold transition-all duration-300 hover:scale-105"
+          className="btn btn-secondary"
         >
           ← Back: Characters
         </button>
         <button 
           onClick={onNext}
           disabled={!isValid}
-          className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
+          className={`btn ${
             isValid
-              ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg hover:scale-105'
-              : 'bg-white/10 text-white/40 cursor-not-allowed'
+              ? 'btn-primary'
+              : 'btn-ghost opacity-50 cursor-not-allowed'
           }`}
         >
           Next: Plot Elements →
@@ -273,7 +273,7 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
       {/* Validation Helper */}
       {(!storyData.location || !storyData.timePeriod || !storyData.atmosphere) && (
         <div className="text-center">
-          <p className="text-amber-400 text-sm">
+          <p className="text-primary text-sm">
             Please choose a location, time period, and atmosphere to continue ✨
           </p>
         </div>

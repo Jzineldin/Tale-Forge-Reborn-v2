@@ -176,7 +176,7 @@ const StoryCompletePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="page-container flex-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
       </div>
     );
@@ -184,11 +184,11 @@ const StoryCompletePage: React.FC = () => {
 
   if (error || !story) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-md">
+      <div className="page-container flex-center">
+        <div className="glass-card text-center max-w-md">
           <span className="text-6xl mb-4 block">😞</span>
-          <h2 className="text-xl font-bold text-white mb-2">Story not found</h2>
-          <Link to="/stories" className="fantasy-cta px-4 py-2 rounded-lg">
+          <h2 className="title-card mb-2">Story not found</h2>
+          <Link to="/stories" className="btn btn-primary">
             Back to Stories
           </Link>
         </div>
@@ -197,7 +197,7 @@ const StoryCompletePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-6 relative">
+    <div className="page-container completion-container">
       {/* Confetti Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -217,38 +217,38 @@ const StoryCompletePage: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="container">
         {/* Hero Section */}
-        <div className="glass-enhanced p-8 md:p-12 rounded-2xl text-center mb-8">
+        <div className="glass-card text-center mb-8">
           <div className="text-8xl mb-6 animate-pulse">🏆</div>
-          <h1 className="fantasy-heading-cinzel text-4xl md:text-6xl lg:text-7xl mb-4">
+          <h1 className="title-hero mb-4">
             Story Complete!
           </h1>
-          <h2 className="fantasy-heading text-2xl md:text-3xl mb-6 text-amber-300">
+          <h2 className="title-section mb-6 text-amber-300">
             "{story.title}"
           </h2>
-          <p className="text-white/80 text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text-body text-xl mb-8 max-w-2xl mx-auto">
             🎉 Congratulations! You've created an incredible {story.genre} adventure. 
             Your creativity and choices brought this magical story to life!
           </p>
           
           {stats && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-              <div className="glass-card p-4 rounded-lg">
-                <div className="text-2xl font-bold text-amber-400">{stats.totalSegments}</div>
-                <div className="text-white/60 text-sm">Chapters</div>
+            <div className="completion-stats-grid max-w-2xl mx-auto">
+              <div className="stat-card">
+                <div className="stat-value">{stats.totalSegments}</div>
+                <div className="stat-label">Chapters</div>
               </div>
-              <div className="glass-card p-4 rounded-lg">
-                <div className="text-2xl font-bold text-amber-400">{stats.totalWords}</div>
-                <div className="text-white/60 text-sm">Words</div>
+              <div className="stat-card">
+                <div className="stat-value">{stats.totalWords}</div>
+                <div className="stat-label">Words</div>
               </div>
-              <div className="glass-card p-4 rounded-lg">
-                <div className="text-2xl font-bold text-amber-400">{stats.readingTime}</div>
-                <div className="text-white/60 text-sm">Reading Time</div>
+              <div className="stat-card">
+                <div className="stat-value">{stats.readingTime}</div>
+                <div className="stat-label">Reading Time</div>
               </div>
-              <div className="glass-card p-4 rounded-lg">
-                <div className="text-2xl font-bold text-amber-400">Today</div>
-                <div className="text-white/60 text-sm">Completed</div>
+              <div className="stat-card">
+                <div className="stat-value">Today</div>
+                <div className="stat-label">Completed</div>
               </div>
             </div>
           )}
@@ -258,26 +258,27 @@ const StoryCompletePage: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           
           {/* Share to Library */}
-          <div className="glass-card p-6 rounded-2xl">
+          <div className="glass-card">
             <div className="text-4xl mb-4">🌟</div>
-            <h3 className="fantasy-heading text-xl mb-3">Share Your Story</h3>
-            <p className="text-white/70 text-sm mb-4">
+            <h3 className="title-card mb-3">Share Your Story</h3>
+            <p className="text-body text-sm mb-4">
               Share your amazing story with the Tale Forge community in our public library.
             </p>
             <Button
               onClick={handleShareToLibrary}
               disabled={isSharing}
-              className="w-full fantasy-cta"
+              className="w-full"
+              variant="primary"
             >
               {isSharing ? 'Sharing...' : '✨ Share to Library'}
             </Button>
           </div>
 
           {/* Download Story */}
-          <div className="glass-card p-6 rounded-2xl">
+          <div className="glass-card">
             <div className="text-4xl mb-4">📥</div>
-            <h3 className="fantasy-heading text-xl mb-3">Download Story</h3>
-            <p className="text-white/70 text-sm mb-4">
+            <h3 className="title-card mb-3">Download Story</h3>
+            <p className="text-body text-sm mb-4">
               Download your complete story as a text file to keep forever.
             </p>
             <Button
@@ -290,10 +291,10 @@ const StoryCompletePage: React.FC = () => {
           </div>
 
           {/* Generate Audio */}
-          <div className="glass-card p-6 rounded-2xl">
+          <div className="glass-card">
             <div className="text-4xl mb-4">🎧</div>
-            <h3 className="fantasy-heading text-xl mb-3">Audio Narration</h3>
-            <p className="text-white/70 text-sm mb-4">
+            <h3 className="title-card mb-3">Audio Narration</h3>
+            <p className="text-body text-sm mb-4">
               Add professional AI narration to bring your story to life for bedtime listening.
             </p>
             {audioUrl ? (
@@ -308,7 +309,7 @@ const StoryCompletePage: React.FC = () => {
             ) : (
               <Button
                 onClick={handleOpenAudioModal}
-                variant="magical"
+                variant="primary"
                 className="w-full"
               >
                 🎙️ Add Narration
@@ -317,15 +318,15 @@ const StoryCompletePage: React.FC = () => {
           </div>
 
           {/* Social Share */}
-          <div className="glass-card p-6 rounded-2xl">
+          <div className="glass-card">
             <div className="text-4xl mb-4">📱</div>
-            <h3 className="fantasy-heading text-xl mb-3">Social Share</h3>
-            <p className="text-white/70 text-sm mb-4">
+            <h3 className="title-card mb-3">Social Share</h3>
+            <p className="text-body text-sm mb-4">
               Share your creative achievement with friends and family.
             </p>
             <Button
               onClick={handleSocialShare}
-              variant="outline"
+              variant="ghost"
               className="w-full"
             >
               🔗 Share Link
@@ -333,10 +334,10 @@ const StoryCompletePage: React.FC = () => {
           </div>
 
           {/* Create Another */}
-          <div className="glass-card p-6 rounded-2xl">
+          <div className="glass-card">
             <div className="text-4xl mb-4">✍️</div>
-            <h3 className="fantasy-heading text-xl mb-3">Create Another</h3>
-            <p className="text-white/70 text-sm mb-4">
+            <h3 className="title-card mb-3">Create Another</h3>
+            <p className="text-body text-sm mb-4">
               Ready for your next adventure? Create another magical story.
             </p>
             <Link to="/create">
@@ -347,14 +348,14 @@ const StoryCompletePage: React.FC = () => {
           </div>
 
           {/* View Library */}
-          <div className="glass-card p-6 rounded-2xl">
+          <div className="glass-card">
             <div className="text-4xl mb-4">📚</div>
-            <h3 className="fantasy-heading text-xl mb-3">Your Library</h3>
-            <p className="text-white/70 text-sm mb-4">
+            <h3 className="title-card mb-3">Your Library</h3>
+            <p className="text-body text-sm mb-4">
               View all your created stories and discover new adventures.
             </p>
             <Link to="/stories">
-              <Button variant="outline" className="w-full">
+              <Button variant="ghost" className="w-full">
                 📖 View Stories
               </Button>
             </Link>
@@ -362,13 +363,13 @@ const StoryCompletePage: React.FC = () => {
         </div>
 
         {/* Story Preview */}
-        <div className="glass-card p-6 rounded-2xl">
-          <h3 className="fantasy-heading text-2xl mb-6 text-center">Your Complete Story</h3>
+        <div className="glass-card">
+          <h3 className="title-section mb-6 text-center">Your Complete Story</h3>
           <div className="max-h-96 overflow-y-auto space-y-4">
             {story.segments.map((segment, index) => (
               <div key={segment.id} className="border-l-4 border-amber-400 pl-4">
                 <div className="text-amber-300 font-semibold mb-2">Chapter {index + 1}</div>
-                <div className="text-white/80 leading-relaxed">{segment.content}</div>
+                <div className="text-body">{segment.content}</div>
               </div>
             ))}
           </div>
@@ -376,22 +377,22 @@ const StoryCompletePage: React.FC = () => {
 
         {/* Share Success Modal */}
         {showShareSuccess && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="glass-enhanced p-8 rounded-2xl max-w-md text-center">
+          <div className="modal-backdrop">
+            <div className="modal-content p-8 text-center">
               <div className="text-6xl mb-4">🌟</div>
-              <h3 className="fantasy-heading text-2xl mb-4">Story Shared!</h3>
-              <p className="text-white/80 mb-6">
+              <h3 className="title-section mb-4">Story Shared!</h3>
+              <p className="text-body mb-6">
                 Your amazing story is now available in the public library for everyone to discover and enjoy!
               </p>
               <div className="space-y-3">
                 <Link to="/discover" className="block">
-                  <Button className="w-full fantasy-cta">
+                  <Button className="w-full" variant="primary">
                     🔍 Browse Public Library
                   </Button>
                 </Link>
                 <Button 
                   onClick={() => setShowShareSuccess(false)}
-                  variant="outline"
+                  variant="ghost"
                   className="w-full"
                 >
                   Continue Celebrating

@@ -144,17 +144,17 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
     <div className="space-y-8">
       {/* Step Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
+        <h2 className="title-section mb-3">
           👥 Create Characters
         </h2>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">
+        <p className="text-body text-lg max-w-2xl mx-auto">
           Bring your story to life with memorable characters who will go on this magical adventure
         </p>
       </div>
       
       {/* Character Creation Form */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card">
+        <h3 className="title-card text-center mb-6">
           ✨ Create a New Character
         </h3>
         
@@ -169,7 +169,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
               placeholder="What's your character's name? (e.g., Brave Luna, Captain Sparkle)"
               value={newCharacter.name}
               onChange={(e) => setNewCharacter({...newCharacter, name: e.target.value})}
-              className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+              className="input-primary w-full pl-12"
             />
             <Icon name="user" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
           </div>
@@ -185,20 +185,20 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
               <button
                 key={role.id}
                 type="button"
-                className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+                className={`genre-card ${
                   newCharacter.role === role.label
-                    ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                    : 'bg-white/5 border-white/10 hover:border-white/30'
+                    ? 'selected'
+                    : ''
                 }`}
                 onClick={() => setNewCharacter({...newCharacter, role: role.label})}
               >
                 <div className="text-2xl mb-2">{role.emoji}</div>
                 <div className={`font-semibold text-sm ${
-                  newCharacter.role === role.label ? 'text-amber-400' : 'text-white'
+                  newCharacter.role === role.label ? 'text-primary' : 'text-white'
                 }`}>
                   {role.label}
                 </div>
-                <div className="text-xs text-white/70 mt-1">
+                <div className="text-xs text-muted mt-1">
                   {role.description}
                 </div>
               </button>
@@ -216,7 +216,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
             value={newCharacter.description}
             onChange={(e) => setNewCharacter({...newCharacter, description: e.target.value})}
             rows={3}
-            className="glass-input w-full p-4 text-lg rounded-xl resize-none"
+            className="input-primary w-full resize-none"
           />
         </div>
         
@@ -228,16 +228,16 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
           
           {/* Quick Select Traits */}
           <div className="mb-4">
-            <p className="text-white/70 text-sm mb-3">Click to add traits:</p>
+            <p className="text-muted text-sm mb-3">Click to add traits:</p>
             <div className="flex flex-wrap gap-2">
               {availableTraits.map((trait) => (
                 <button
                   key={trait}
                   type="button"
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
+                  className={`badge badge-sm ${
                     newCharacter.traits.includes(trait)
-                      ? 'bg-amber-500 text-white shadow-lg'
-                      : 'bg-white/20 text-white/80 hover:bg-white/30'
+                      ? 'badge-primary'
+                      : 'badge-ghost'
                   }`}
                   onClick={() => {
                     if (newCharacter.traits.includes(trait)) {
@@ -265,14 +265,14 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
                 placeholder="Add your own trait..."
                 value={traitInput}
                 onChange={(e) => setTraitInput(e.target.value)}
-                className="glass-input w-full pl-10 pr-4 py-2 rounded-lg"
+                className="input-primary w-full pl-10"
                 onKeyPress={(e) => e.key === 'Enter' && addTrait()}
               />
               <Icon name="star" size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60" />
             </div>
             <button
               type="button"
-              className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors"
+              className="btn btn-primary btn-sm"
               onClick={addTrait}
               disabled={!traitInput.trim()}
             >
@@ -283,17 +283,17 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
           {/* Selected Traits */}
           {newCharacter.traits.length > 0 && (
             <div className="mt-4">
-              <p className="text-white/70 text-sm mb-2">Selected traits:</p>
+              <p className="text-muted text-sm mb-2">Selected traits:</p>
               <div className="flex flex-wrap gap-2">
                 {newCharacter.traits.map((trait, index) => (
                   <span 
                     key={index} 
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-500/20 text-amber-400 border border-amber-400/30"
+                    className="badge badge-primary"
                   >
                     {trait}
                     <button
                       type="button"
-                      className="ml-2 text-amber-400/70 hover:text-amber-400 transition-colors"
+                      className="ml-2 hover:text-primary transition-colors"
                       onClick={() => removeTrait(trait)}
                       aria-label={`Remove trait ${trait}`}
                     >
@@ -334,10 +334,10 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
             type="button"
             onClick={addCharacter}
             disabled={!newCharacter.name || !newCharacter.role}
-            className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
+            className={`btn ${
               (newCharacter.name && newCharacter.role)
-                ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg hover:scale-105'
-                : 'bg-white/10 text-white/40 cursor-not-allowed'
+                ? 'btn-success'
+                : 'btn-ghost opacity-50 cursor-not-allowed'
             }`}
           >
             {(newCharacter.name && newCharacter.role) 
@@ -350,15 +350,15 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
 
       {/* Saved Characters Library */}
       {savedCharacters && savedCharacters.length > 0 && (
-        <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+        <div className="glass-card">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="title-card">
               📚 Your Character Library ({savedCharacters.length})
             </h3>
             <button
               type="button"
               onClick={() => setShowSavedCharacters(!showSavedCharacters)}
-              className="text-amber-400 hover:text-amber-300 transition-colors"
+              className="text-primary hover:text-amber-300 transition-colors"
             >
               {showSavedCharacters ? 'Hide' : 'Show'} Saved Characters
             </button>
@@ -369,21 +369,21 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
               {savedCharacters.map((savedChar) => (
                 <div 
                   key={savedChar.id} 
-                  className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
+                  className="glass-card hover:bg-white/10 transition-all duration-300"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h4 className="text-lg font-bold text-white mb-1">
                         {savedChar.name}
                       </h4>
-                      <div className="text-blue-400 font-semibold text-sm">
+                      <div className="text-accent font-semibold text-sm">
                         {characterRoles.find(r => r.label === savedChar.role)?.emoji} {savedChar.role}
                       </div>
                     </div>
                     <div className="flex space-x-2">
                       <button
                         type="button"
-                        className="text-green-400 hover:text-green-300 transition-colors bg-green-500/20 hover:bg-green-500/30 rounded-full w-8 h-8 flex items-center justify-center"
+                        className="btn-icon-sm text-success bg-green-500/20 hover:bg-green-500/30"
                         onClick={() => addSavedCharacterToStory(savedChar)}
                         title="Add to story"
                       >
@@ -391,7 +391,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
                       </button>
                       <button
                         type="button"
-                        className="text-red-400 hover:text-red-300 transition-colors bg-red-500/20 hover:bg-red-500/30 rounded-full w-8 h-8 flex items-center justify-center"
+                        className="btn-icon-sm text-danger bg-red-500/20 hover:bg-red-500/30"
                         onClick={() => deleteSavedCharacter(savedChar.id)}
                         title="Delete from library"
                       >
@@ -402,7 +402,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
                   
                   {savedChar.description && (
                     <div className="mb-3">
-                      <p className="text-white/80 text-sm">
+                      <p className="text-body text-sm">
                         {savedChar.description}
                       </p>
                     </div>
@@ -410,12 +410,12 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
                   
                   {savedChar.traits.length > 0 && (
                     <div>
-                      <p className="text-white/70 text-xs mb-2">Traits:</p>
+                      <p className="text-muted text-xs mb-2">Traits:</p>
                       <div className="flex flex-wrap gap-1">
                         {savedChar.traits.map((trait: string, index: number) => (
                           <span 
                             key={index} 
-                            className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-400/30"
+                            className="badge badge-sm badge-accent"
                           >
                             {trait}
                           </span>
@@ -430,7 +430,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
           
           {loadingSavedCharacters && (
             <div className="text-center py-4">
-              <div className="text-white/60">Loading your character library...</div>
+              <div className="text-muted">Loading your character library...</div>
             </div>
           )}
         </div>
@@ -439,7 +439,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
       {/* Character List */}
       {characters.length > 0 && (
         <div>
-          <h3 className="text-xl font-bold text-white mb-6 text-center">
+          <h3 className="title-card text-center mb-6">
             🎭 Your Story Characters ({characters.length})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -453,7 +453,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
                     <h4 className="text-lg font-bold text-white mb-1">
                       {character.name}
                     </h4>
-                    <div className="text-amber-400 font-semibold text-sm">
+                    <div className="text-primary font-semibold text-sm">
                       {characterRoles.find(r => r.label === character.role)?.emoji} {character.role}
                     </div>
                   </div>
@@ -500,8 +500,8 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
       {characters.length === 0 && (
         <div className="text-center py-8">
           <div className="text-6xl mb-4">👥</div>
-          <h3 className="text-lg font-semibold text-white mb-2">No Characters Yet</h3>
-          <p className="text-white/70">Create your first character above to bring your story to life!</p>
+          <h3 className="title-card mb-2">No Characters Yet</h3>
+          <p className="text-muted">Create your first character above to bring your story to life!</p>
         </div>
       )}
       
@@ -509,13 +509,13 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
       <div className="flex justify-between pt-8">
         <button 
           onClick={onPrevious}
-          className="px-6 py-3 rounded-lg bg-white/20 hover:bg-white/30 text-white font-semibold transition-all duration-300 hover:scale-105"
+          className="btn btn-secondary"
         >
           ← Back: Story Concept
         </button>
         <button 
           onClick={handleSave}
-          className="px-8 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-all duration-300 hover:scale-105"
+          className="btn btn-primary"
         >
           Next: Story Setting →
         </button>
@@ -523,7 +523,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
 
       {/* Progress Tip */}
       <div className="text-center mt-4">
-        <p className="text-white/60 text-sm">
+        <p className="text-muted text-sm">
           💡 You can continue without adding characters - we'll create some for you!
         </p>
       </div>

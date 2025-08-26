@@ -100,16 +100,16 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
     <div className="space-y-8">
         {/* Step Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
+        <h2 className="title-section mb-3">
           💡 Story Concept
         </h2>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">
+        <p className="text-body text-lg max-w-2xl mx-auto">
           Let's start by choosing what kind of magical tale you'd like to create
         </p>
       </div>
 
       {/* Child's Name Input */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+      <div className="glass-card">
         <label className="block text-white font-semibold mb-3">
           ✨ Child's Name (Optional)
         </label>
@@ -121,18 +121,18 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
             placeholder="Enter the hero's name for personalization..."
             value={storyData.childName}
             onChange={(e) => handleInputChange('childName', e.target.value)}
-            className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+            className="input-primary w-full pl-12"
           />
           <Icon name="user" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
         </div>
-        <p className="text-sm text-white/60 mt-2">
+        <p className="text-sm text-muted mt-2">
           We'll use this name to make the story extra special and personal
         </p>
       </div>
 
       {/* Age Group Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6" data-testid="age-group-select">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card" data-testid="age-group-select">
+        <h3 className="title-card text-center mb-6">
           👶 Target Age Group
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -145,20 +145,20 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
             <button
               key={ageGroup.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+              className={`genre-card ${
                 storyData.ageGroup === ageGroup.id
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
+                  ? 'selected'
+                  : ''
               }`}
               onClick={() => handleInputChange('ageGroup', ageGroup.id)}
             >
               <div className="text-2xl mb-2">{ageGroup.emoji}</div>
               <h4 className={`font-semibold text-sm mb-1 ${
-                storyData.ageGroup === ageGroup.id ? 'text-amber-400' : 'text-white'
+                storyData.ageGroup === ageGroup.id ? 'text-primary' : 'text-white'
               }`}>
                 {ageGroup.label}
               </h4>
-              <p className="text-xs text-white/70">
+              <p className="text-xs text-muted">
                 {ageGroup.description}
               </p>
             </button>
@@ -167,8 +167,8 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
       </div>
 
       {/* Difficulty and Words Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+      <div className="glass-card">
+        <h3 className="title-card text-center mb-6">
           🎯 Story Difficulty & Length
         </h3>
         
@@ -177,7 +177,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           <div>
             <div className="flex justify-between items-center mb-4">
               <label className="text-white font-semibold">Difficulty Level</label>
-              <div className="glass-card bg-purple-500/20 border border-purple-400/30 px-4 py-2 rounded-lg">
+              <div className="badge badge-lg bg-purple-500/20 border-purple-400/30">
                 <span className="text-purple-300 font-bold text-lg">{currentDifficulty}/10</span>
               </div>
             </div>
@@ -192,7 +192,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
                 onChange={(e) => handleInputChange('difficulty', parseInt(e.target.value))}
                 className="w-full h-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg appearance-none cursor-pointer"
               />
-              <div className="flex justify-between text-xs text-white/60 mt-2">
+              <div className="flex justify-between text-xs text-muted mt-2">
                 <span>1</span>
                 <span>3</span>
                 <span>5</span>
@@ -203,10 +203,10 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           </div>
 
           {/* Difficulty Description */}
-          <div className="text-center p-6 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 rounded-xl border border-purple-500/30">
-            <h4 className="text-xl font-bold text-white mb-2">{difficultyInfo.label}</h4>
-            <p className="text-purple-100 mb-3">{difficultyInfo.description}</p>
-            <div className="inline-block bg-purple-500/20 border border-purple-400/50 px-3 py-1 rounded-full">
+          <div className="glass-card text-center">
+            <h4 className="title-card mb-2">{difficultyInfo.label}</h4>
+            <p className="text-body mb-3">{difficultyInfo.description}</p>
+            <div className="badge bg-purple-500/20 border-purple-400/50">
               <span className="text-purple-300 text-sm font-medium">Complexity: {difficultyInfo.complexity}</span>
             </div>
           </div>
@@ -215,7 +215,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           <div>
             <div className="flex justify-between items-center mb-4">
               <label className="text-white font-semibold">Words Per Chapter</label>
-              <div className="glass-card bg-green-500/20 border border-green-400/30 px-4 py-2 rounded-lg">
+              <div className="badge badge-lg bg-green-500/20 border-green-400/30">
                 <span className="text-green-300 font-bold">{currentWordsPerChapter} words</span>
               </div>
             </div>
@@ -230,7 +230,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
                 onChange={(e) => handleInputChange('wordsPerChapter', parseInt(e.target.value))}
                 className="w-full h-3 bg-gradient-to-r from-green-500 to-emerald-400 rounded-lg appearance-none cursor-pointer"
               />
-              <div className="flex justify-between text-xs text-white/60 mt-2">
+              <div className="flex justify-between text-xs text-muted mt-2">
                 <span>30</span>
                 <span className="text-green-400 font-medium">Recommended: 150</span>
                 <span>400</span>
@@ -239,13 +239,13 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
             
             <div className="mt-3 text-center">
               <div className="inline-flex space-x-4 text-sm">
-                <span className={`${currentWordsPerChapter <= 80 ? 'text-blue-400' : 'text-white/60'}`}>
+                <span className={`${currentWordsPerChapter <= 80 ? 'text-primary' : 'text-muted'}`}>
                   📖 Quick Reads
                 </span>
-                <span className={`${currentWordsPerChapter >= 120 && currentWordsPerChapter <= 180 ? 'text-green-400' : 'text-white/60'}`}>
+                <span className={`${currentWordsPerChapter >= 120 && currentWordsPerChapter <= 180 ? 'text-success' : 'text-muted'}`}>
                   ⭐ Recommended
                 </span>
-                <span className={`${currentWordsPerChapter >= 300 ? 'text-purple-400' : 'text-white/60'}`}>
+                <span className={`${currentWordsPerChapter >= 300 ? 'text-accent' : 'text-muted'}`}>
                   📚 Detailed Tales
                 </span>
               </div>
@@ -253,9 +253,9 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           </div>
 
           {/* Reading Time Estimate */}
-          <div className="text-center p-4 bg-indigo-900/30 rounded-lg border border-indigo-400/30">
-            <Icon name="clock" size={20} className="inline-block text-indigo-400 mr-2" />
-            <span className="text-indigo-300 text-sm">
+          <div className="alert alert-info">
+            <Icon name="clock" size={20} className="inline-block mr-2" />
+            <span className="text-sm">
               Estimated reading time: {Math.ceil(currentWordsPerChapter / (currentDifficulty <= 3 ? 30 : currentDifficulty <= 6 ? 60 : 100))} minutes per chapter
             </span>
           </div>
@@ -264,7 +264,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
 
       {/* Genre Selection */}
       <div data-testid="theme-select">
-        <h3 className="text-xl font-bold text-white mb-6 text-center">
+        <h3 className="title-card text-center mb-6">
           🎨 Pick Your Story Genre
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -272,11 +272,11 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
             <button
               key={genre.id}
               type="button"
-              className={`glass-card backdrop-blur-md border-2 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 group ${
+              className={`genre-card group ${
                 storyData.genre === genre.id
-                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
-                  : 'bg-white/5 border-white/10 hover:border-white/30'
-              } ${genre.color}`}
+                  ? 'selected'
+                  : ''
+              }`}
               onClick={() => handleInputChange('genre', genre.id)}
             >
               {/* Genre Image */}
@@ -305,11 +305,11 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
               {/* Genre Info */}
               <div className="p-4">
                 <h4 className={`font-bold mb-2 ${
-                  storyData.genre === genre.id ? 'text-amber-400' : 'text-white'
+                  storyData.genre === genre.id ? 'text-primary' : 'text-white'
                 }`}>
                   {genre.emoji} {genre.label}
                 </h4>
-                <p className="text-xs text-white/70">
+                <p className="text-xs text-muted">
                   {genre.description}
                 </p>
               </div>
@@ -319,7 +319,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
       </div>
 
       {/* Story Theme Input */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+      <div className="glass-card">
         <label className="block text-white font-semibold mb-3">
           💭 Story Theme or Idea (Optional)
         </label>
@@ -329,11 +329,11 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
             placeholder="What should the story be about? (e.g., friendship, courage, kindness)"
             value={storyData.theme}
             onChange={(e) => handleInputChange('theme', e.target.value)}
-            className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+            className="input-primary w-full pl-12"
           />
           <Icon name="star" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
         </div>
-        <p className="text-sm text-white/60 mt-2">
+        <p className="text-sm text-muted mt-2">
           Give us a theme or lesson you'd like the story to explore
         </p>
       </div>
@@ -342,7 +342,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
       <div className="flex justify-between pt-6">
         <button 
           disabled
-          className="px-6 py-3 rounded-lg bg-white/10 text-white/40 cursor-not-allowed"
+          className="btn btn-ghost opacity-50 cursor-not-allowed"
           aria-label="Back to previous step (disabled on first step)"
         >
           ← Back
@@ -351,10 +351,10 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           onClick={onNext}
           disabled={!isValid}
           data-testid="next-button"
-          className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
+          className={`btn ${
             isValid
-              ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg hover:scale-105'
-              : 'bg-white/10 text-white/40 cursor-not-allowed'
+              ? 'btn-primary'
+              : 'btn-ghost opacity-50 cursor-not-allowed'
           }`}
           aria-label="Continue to character creation step"
         >
@@ -365,10 +365,10 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
       {/* Validation Helper */}
       {(!storyData.difficulty || !storyData.genre || !storyData.wordsPerChapter || !storyData.ageGroup) && (
         <div className="text-center">
-          <p className="text-amber-400 text-sm">
+          <p className="text-primary text-sm">
             Please set the age group, difficulty level, words per chapter, and select a genre to continue ✨
           </p>
-          <p className="text-xs text-white/60 mt-1">
+          <p className="text-xs text-muted mt-1">
             Debug: Age={storyData.ageGroup ? 'selected' : 'missing'}, Difficulty={storyData.difficulty}, Words={storyData.wordsPerChapter}, Genre={storyData.genre ? 'selected' : 'missing'}
           </p>
         </div>
