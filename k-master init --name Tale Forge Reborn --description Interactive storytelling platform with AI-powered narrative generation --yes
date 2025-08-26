@@ -1,0 +1,13 @@
+[1mdiff --git a/src/pages/public/HomePage.tsx b/src/pages/public/HomePage.tsx[m
+[1mindex 2a269590..baa26d64 100644[m
+[1m--- a/src/pages/public/HomePage.tsx[m
+[1m+++ b/src/pages/public/HomePage.tsx[m
+[36m@@ -124,7 +124,7 @@[m [mconst HomePage: React.FC = () => {[m
+ [m
+       {/* Featured Stories Section */}[m
+       <section className="relative z-10 py-16 md:py-20 lg:py-24">[m
+[31m-        <div className="container">[m
+[32m+[m[32m        <div className="container-lg">[m
+           <div className="glass rounded-2xl p-8 md:p-12">[m
+             <h2 className="title-section text-center mb-12 text-amber-400">[m
+               Featured Story Adventures[m

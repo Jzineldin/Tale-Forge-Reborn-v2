@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
 
       {/* Featured Stories Section */}
       <section className="relative z-10 py-16 md:py-20 lg:py-24">
-        <div className="container">
+        <div className="container-lg">
           <div className="glass rounded-2xl p-8 md:p-12">
             <h2 className="title-section text-center mb-12 text-amber-400">
               Featured Story Adventures
