@@ -244,10 +244,85 @@ main,
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+/* Card Title Variants */
+.title-card-amber {
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.title-card-small {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 /* Body Text */
 .text-body {
   font-family: var(--font-primary);
   font-size: 1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Body Text Variants */
+.text-body-sm {
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.text-body-xs {
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Stat Text Classes */
+.stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stat-value-large {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stat-value-green {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-success);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stat-value-blue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-info);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stat-label {
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stat-label-sm {
+  font-family: var(--font-primary);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -551,12 +626,42 @@ main,
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  /* Ensure consistent background */
+  background: transparent;
 }
 
 .page-content {
   padding: 2rem 1rem;
   max-width: 1280px;
   margin: 0 auto;
+  /* Auto-apply floating elements to pages that don't use PageLayout */
+  position: relative;
+}
+
+/* Auto-floating elements for legacy pages */
+.page-content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(245, 158, 11, 0.2) 2px, transparent 2px),
+    radial-gradient(circle at 75% 33%, rgba(245, 158, 11, 0.25) 1px, transparent 1px),
+    radial-gradient(circle at 50% 75%, rgba(245, 158, 11, 0.15) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 33% 66%, rgba(245, 158, 11, 0.2) 1px, transparent 1px);
+  background-size: 100px 100px, 150px 150px, 120px 120px, 180px 180px;
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); opacity: 1; }
+  25% { transform: translate(10px, -10px); opacity: 0.8; }
+  50% { transform: translate(-5px, 10px); opacity: 0.6; }
+  75% { transform: translate(5px, 5px); opacity: 0.8; }
 }
 
 .page-hero {
@@ -1390,6 +1495,32 @@ main,
   padding: 0 1rem;
   color: var(--color-text-muted);
   font-size: 0.875rem;
+}
+
+/* ========================================
+   DESIGN SYSTEM UTILITIES
+   ======================================== */
+
+/* Design system specific utilities - avoid conflicts with Tailwind */
+.tale-forge-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.tale-forge-button {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-default);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base) var(--ease);
+}
+
+.tale-forge-button:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--color-primary);
 }
 
 /* ========================================

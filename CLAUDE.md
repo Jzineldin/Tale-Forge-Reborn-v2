@@ -49,6 +49,27 @@ This document defines the integrated development workflow using Multiple MCP ser
 - **Capabilities**: Create, read, update notes; link management; vault organization
 - **Usage**: Project documentation, knowledge base, meeting notes, technical specifications
 
+## 🎭 SuperClaude Personas Integration
+
+This project includes specialized SuperClaude personas for enhanced development workflows:
+
+### **System Architect** 🏗️
+- **Activation**: `/activate-architect` or `@architect`
+- **Focus**: Scalable system design, architectural decisions, long-term technical strategy
+- **Context**: Tale-Forge's React + Supabase architecture optimization
+
+### **Frontend Developer** ⚛️
+- **Activation**: `/activate-frontend` or `@frontend` 
+- **Focus**: React 18, TypeScript, UI components, accessibility, performance
+- **Context**: shadcn/ui, Tailwind CSS, responsive design, Core Web Vitals
+
+### **Security Engineer** 🔒
+- **Activation**: `/activate-security` or `@security`
+- **Focus**: Vulnerability assessment, compliance, authentication, data protection
+- **Context**: Tale-Forge security (payments, user data, content moderation)
+
+**Usage**: Use slash commands or trigger words to activate specialized personas for specific development tasks. See `.claude/SUPERCLAUDE_INTEGRATION.md` for detailed usage guide.
+
 ## 🚀 Integrated Development Workflow
 
 ### Phase 1: Project Setup & Planning

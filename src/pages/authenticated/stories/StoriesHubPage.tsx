@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/atoms/Icon';
+import Button from '@/components/atoms/Button';
 
 const StoriesHubPage: React.FC = () => {
   const quickActions = [
@@ -59,14 +60,13 @@ const StoriesHubPage: React.FC = () => {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container-lg">
         {/* Header */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center" 
-              style={{ fontFamily: 'Cinzel, serif' }}>
+        <div className="glass-card p-8 mb-8">
+          <h1 className="title-hero mb-4 text-center">
             Your Story Universe
           </h1>
-          <p className="text-xl text-white/90 text-center max-w-3xl mx-auto">
+          <p className="text-body text-xl text-center max-w-3xl mx-auto">
             Welcome to your personal story hub - discover new tales, manage your library, and dive into magical worlds
           </p>
         </div>
@@ -77,17 +77,17 @@ const StoriesHubPage: React.FC = () => {
             <Link 
               key={index}
               to={action.link}
-              className={`glass-enhanced backdrop-blur-md bg-white/5 border border-white/10 ${action.color} rounded-xl p-6 hover:transform hover:scale-105 transition-all duration-300 group`}
+              className={`glass-card p-6 ${action.color} hover:transform hover:scale-105 transition-all duration-300 group`}
             >
               <div className="flex items-center mb-4">
                 <div className={`${action.iconBg} rounded-lg p-3 mr-4`}>
                   <span className="text-2xl">{action.icon}</span>
                 </div>
-                <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
+                <h3 className="title-card group-hover:text-amber-400 transition-colors">
                   {action.title}
                 </h3>
               </div>
-              <p className="text-white/80 mb-6">
+              <p className="text-body mb-6">
                 {action.description}
               </p>
               <div className="flex items-center text-amber-400 group-hover:text-white transition-colors">
@@ -98,63 +98,63 @@ const StoriesHubPage: React.FC = () => {
           ))}
         </div>
 
-
         {/* Stats Overview */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6 mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: 'Cinzel, serif' }}>
+        <div className="glass-card p-6 mb-8">
+          <h2 className="title-section mb-6">
             Your Story Journey
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-amber-400 mb-2">12</div>
-              <div className="text-white/80">Stories Read</div>
+              <div className="text-body">Stories Read</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-400 mb-2">3</div>
-              <div className="text-white/80">Stories Created</div>
+              <div className="text-body">Stories Created</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-green-400 mb-2">8</div>
-              <div className="text-white/80">Stories Completed</div>
+              <div className="text-body">Stories Completed</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-purple-400 mb-2">45</div>
-              <div className="text-white/80">Reading Hours</div>
+              <div className="text-body">Reading Hours</div>
             </div>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
-          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: 'Cinzel, serif' }}>
+        <div className="glass-card p-6">
+          <h2 className="title-section mb-6">
             Recent Activity
           </h2>
           <div className="space-y-4">
             {recentActivities.map((activity, index) => (
-              <div key={index} className="flex items-center p-4 glass-card backdrop-blur-sm bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                <div className={`${activity.iconBg} rounded-full p-3 mr-4`}>
-                  <Icon name={activity.icon as any} size={20} className={activity.iconColor} />
-                </div>
-                <div className="flex-1">
-                  <div className="text-white font-medium">
-                    {activity.action} "{activity.story}"
+              <div key={index} className="glass-card p-4 hover:bg-white/10 transition-colors">
+                <div className="flex items-center">
+                  <div className={`${activity.iconBg} rounded-full p-3 mr-4`}>
+                    <Icon name={activity.icon as any} size={20} className={activity.iconColor} />
                   </div>
-                  <div className="text-white/60 text-sm">
-                    {activity.time}
+                  <div className="flex-1">
+                    <div className="text-body font-medium">
+                      {activity.action} "{activity.story}"
+                    </div>
+                    <div className="text-white/60 text-sm">
+                      {activity.time}
+                    </div>
                   </div>
+                  <Icon name="star" size={16} className="text-amber-400/50" />
                 </div>
-                <Icon name="star" size={16} className="text-amber-400/50" />
               </div>
             ))}
           </div>
           
           <div className="mt-6 text-center">
-            <Link 
-              to="/account/history"
-              className="inline-flex items-center text-amber-400 hover:text-white transition-colors"
-            >
-              View All Activity
-              <Icon name="search" size={16} className="ml-2" />
+            <Link to="/account/history">
+              <Button variant="ghost" size="medium">
+                <Icon name="search" size={16} className="mr-2" />
+                View All Activity
+              </Button>
             </Link>
           </div>
         </div>

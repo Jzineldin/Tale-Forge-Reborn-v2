@@ -11,6 +11,7 @@ import StoryTemplateSelector from '@/components/organisms/story-creation-wizard/
 import EasyModeFlow from '@/components/organisms/story-creation/EasyModeFlow';
 import ModeSelector from '@/components/organisms/story-creation/ModeSelector';
 import { useCreateStory } from '@/utils/storyHooks';
+import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 import {
   validateStep1,
   validateStep2,
@@ -378,20 +379,19 @@ const CreateStoryPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container-lg">
-        {/* Header - only show if not in Easy Mode */}
-        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-8 mb-8 text-center">
-          <h1 className="fantasy-heading-cinzel text-4xl md:text-5xl font-bold mb-4" id="create-story-heading">
-            Create Your Magical Story ✨
-          </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-6">
-            {step === 0 ? 'Choose how you\'d like to create your story' : 'Follow our step-by-step wizard to craft a personalized interactive adventure'}
-          </p>
-        </div>
+    <PageLayout maxWidth="lg" showFloatingElements>
+      {/* Header */}
+      <CardLayout variant="default" padding="xl" className="mb-8 text-center">
+        <TypographyLayout variant="hero" as="h1" align="center" className="mb-4" id="create-story-heading">
+          Create Your Magical Story ✨
+        </TypographyLayout>
+        <TypographyLayout variant="body" align="center" className="text-xl max-w-3xl mx-auto mb-6">
+          {step === 0 ? 'Choose how you\'d like to create your story' : 'Follow our step-by-step wizard to craft a personalized interactive adventure'}
+        </TypographyLayout>
+      </CardLayout>
 
         {/* Progress Bar */}
-        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-6 mb-8">
+        <CardLayout variant="default" padding="lg" className="mb-8">
           <div className="flex items-center justify-between mb-4">
             {progressSteps.map((stepInfo, index) => {
               let stepNumber, isActive, isCompleted, isAccessible;
@@ -433,10 +433,10 @@ const CreateStoryPage: React.FC = () => {
                       {isCompleted ? '✓' : stepInfo.icon}
                     </div>
                     <div className="mt-2 text-center">
-                      <div className={`text-sm font-semibold ${isActive ? 'text-amber-400' : isCompleted ? 'text-amber-300' : 'text-slate-300'}`}>
+                      <div className={`text-body-sm font-semibold ${isActive ? 'text-amber-400' : isCompleted ? 'text-amber-300' : 'text-slate-300'}`}>
                         {stepInfo.label}
                       </div>
-                      <div className="text-xs text-white/50 max-w-20">{stepInfo.description}</div>
+                      <div className="text-body-xs text-white/50 max-w-20">{stepInfo.description}</div>
                     </div>
                   </div>
                   {index < progressSteps.length - 1 && (
@@ -451,15 +451,17 @@ const CreateStoryPage: React.FC = () => {
 
           {/* Progress percentage */}
           <div className="mt-4">
-            <div className="flex justify-between text-sm text-white/70 mb-2">
-              <span>Story Completion</span>
-              <span>
+            <div className="flex justify-between mb-2">
+              <TypographyLayout variant="body" className="text-body-sm text-white/70">
+                Story Completion
+              </TypographyLayout>
+              <TypographyLayout variant="body" className="text-body-sm text-white/70">
                 {step === 0
                   ? '0'
                   : usingTemplate
                     ? step === 5 ? storyProgress : '100'
                     : storyProgress}% Complete
-              </span>
+              </TypographyLayout>
             </div>
             <div className="w-full bg-white/20 rounded-full h-2">
               <div
@@ -475,15 +477,17 @@ const CreateStoryPage: React.FC = () => {
               <div className="mt-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg">
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="text-red-400">⚠️</span>
-                  <span className="text-red-200 font-medium text-sm">
+                  <TypographyLayout variant="body" className="text-red-200 font-medium text-sm">
                     Please fix the following issues:
-                  </span>
+                  </TypographyLayout>
                 </div>
                 <ul className="space-y-1">
                   {validationErrors.filter(e => e.type === 'required').map((error, index) => (
-                    <li key={index} className="text-red-200 text-sm flex items-center space-x-2">
+                    <li key={index} className="flex items-center space-x-2">
                       <span className="text-red-400">•</span>
-                      <span>{error.message}</span>
+                      <TypographyLayout variant="body" className="text-red-200 text-sm">
+                        {error.message}
+                      </TypographyLayout>
                     </li>
                   ))}
                 </ul>
@@ -495,42 +499,37 @@ const CreateStoryPage: React.FC = () => {
               <div className="mt-4 p-3 bg-green-900/30 border border-green-500/50 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <span className="text-green-400">✅</span>
-                  <span className="text-green-200 font-medium text-sm">
+                  <TypographyLayout variant="body" className="text-green-200 font-medium text-sm">
                     Your story is ready to generate!
-                  </span>
+                  </TypographyLayout>
                 </div>
               </div>
             )}
           </div>
-        </div>
+        </CardLayout>
 
         {/* Wizard Content */}
-        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl overflow-hidden">
-          <div className="p-8">
-            {renderStep()}
-          </div>
-        </div>
+        <CardLayout variant="default" padding="xl" className="mb-8">
+          {renderStep()}
+        </CardLayout>
 
         {/* Help Section */}
-        <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-6 mt-8">
+        <CardLayout variant="default" padding="lg">
           <div className="flex items-center justify-center space-x-6 text-white/70">
             <div className="flex items-center space-x-2">
               <span className="text-amber-400">💡</span>
-              <span className="text-sm">Need help? Hover over any option for tips</span>
+              <TypographyLayout variant="body" className="text-sm">Need help? Hover over any option for tips</TypographyLayout>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-amber-400">🎯</span>
-              <span className="text-sm">All steps are optional - create as you go</span>
+              <TypographyLayout variant="body" className="text-sm">All steps are optional - create as you go</TypographyLayout>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-amber-400">⚡</span>
-              <span className="text-sm">Story generates in ~30 seconds</span>
+              <TypographyLayout variant="body" className="text-sm">Story generates in ~30 seconds</TypographyLayout>
             </div>
           </div>
-        </div>
-      </div>
-
-    </div>
+        </CardLayout>
   );
 };
 

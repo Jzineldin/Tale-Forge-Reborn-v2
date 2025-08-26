@@ -59,10 +59,6 @@ tests/e2e/.auth/
 tests/e2e/screenshots/
 tests/e2e/test-data/ 
 
-# Task files
-tasks.json
-tasks/
-
 # Security and secret files
 *.key
 *.pem
@@ -93,3 +89,7 @@ backup-project.ps1
 quick-save.ps1
 restore-backup.ps1
 setup-git-safety.ps1 
+
+# Task files
+# tasks.json
+# tasks/ 

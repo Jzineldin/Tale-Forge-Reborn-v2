@@ -229,6 +229,10 @@ export function convertToBackendFormat(easyMode: EasyModeData) {
     genre: backendGenre,
     age_group: difficulty.age_group,
 
+    // Required Story fields  
+    status: 'draft' as const,
+    user_id: '', // Will be set by the useCreateStory hook
+
     // Story configuration
     story_type: difficulty.story_type,
     target_age: difficulty.target_age,

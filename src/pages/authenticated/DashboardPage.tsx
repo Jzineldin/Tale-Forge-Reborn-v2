@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthContext';
 import Icon from '@/components/atoms/Icon';
 import { supabase } from '@/lib/supabase';
+import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
@@ -175,60 +176,62 @@ const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="page-content">
+    <PageLayout maxWidth="xl" showFloatingElements>
       {/* Welcome Header */}
       <div className="text-center mb-8">
-        <h1 className="title-hero mb-4">
+        <TypographyLayout variant="hero" as="h1" align="center" className="mb-4">
           Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! ✨
-        </h1>
-        <p className="text-body text-xl max-w-3xl mx-auto">
+        </TypographyLayout>
+        <TypographyLayout variant="body" align="center" className="text-xl max-w-3xl mx-auto">
           Ready to continue your storytelling journey? Create magical tales with our 5-step wizard and discover new adventures.
-        </p>
+        </TypographyLayout>
       </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content - Stats Dashboard */}
           <div className="lg:col-span-2">
-            <div className="glass-card">
-              <h2 className="title-section text-center mb-6">
+            <CardLayout variant="default" padding="lg">
+              <TypographyLayout variant="section" as="h2" align="center" className="mb-6">
                 📊 Your Story Journey
-              </h2>
+              </TypographyLayout>
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-2xl font-bold text-green-400 mb-1">
+                  <div className="stat-value-green mb-1">
                     {userStats.storiesCreated}
                   </div>
-                  <div className="text-white/70 text-sm">Stories Created</div>
+                  <div className="stat-label-sm">Stories Created</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-2xl font-bold text-amber-400 mb-1">
+                  <div className="stat-value-large mb-1">
                     {userStats.storiesRead}
                   </div>
-                  <div className="text-white/70 text-sm">Stories Read</div>
+                  <div className="stat-label-sm">Stories Read</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-2xl font-bold text-amber-400 mb-1">
+                  <div className="stat-value-large mb-1">
                     {userStats.readingStreak}
                   </div>
-                  <div className="text-white/70 text-sm">Day Streak</div>
+                  <div className="stat-label-sm">Day Streak</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-2xl font-bold text-blue-400 mb-1">
+                  <div className="stat-value-blue mb-1">
                     {userStats.readingTime}
                   </div>
-                  <div className="text-white/70 text-sm">Hours Read</div>
+                  <div className="stat-label-sm">Hours Read</div>
                 </div>
               </div>
 
               {/* Motivational Section */}
               <div className="text-center">
                 <div className="text-4xl mb-4">✨</div>
-                <h3 className="title-card mb-2">Keep Creating Magic!</h3>
-                <p className="text-muted mb-6">
+                <TypographyLayout variant="card" as="h3" align="center" className="mb-2">
+                  Keep Creating Magic!
+                </TypographyLayout>
+                <TypographyLayout variant="body" color="muted" align="center" className="mb-6">
                   Every story you create adds to your amazing collection of adventures.
-                </p>
+                </TypographyLayout>
 
                 {userStats.storiesCreated === 0 ? (
                   <Link
@@ -246,17 +249,17 @@ const DashboardPage: React.FC = () => {
                   </Link>
                 )}
               </div>
-            </div>
+            </CardLayout>
           </div>
 
           {/* Sidebar - Recent Stories & Quick Actions */}
           <div className="space-y-6">
             {/* Recent Stories */}
-            <div className="glass-card">
+            <CardLayout variant="default" padding="lg">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="title-card">
+                <TypographyLayout variant="card" as="h2">
                   📚 Recent Stories
-                </h2>
+                </TypographyLayout>
                 <Link
                   to="/stories"
                   className="btn btn-primary btn-sm"
@@ -287,10 +290,10 @@ const DashboardPage: React.FC = () => {
                         <Icon name="book" size={20} className="text-amber-400/80" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-medium group-hover:text-primary transition-colors truncate">
+                        <TypographyLayout variant="body" className="font-medium group-hover:text-primary transition-colors truncate">
                           {story.title}
-                        </h3>
-                        <p className="text-muted text-xs">
+                        </TypographyLayout>
+                        <p className="text-body-xs">
                           {story.isCompleted ? 'Complete' : `${story.progress}% read`} • {story.lastRead}
                         </p>
                       </div>
@@ -299,7 +302,9 @@ const DashboardPage: React.FC = () => {
                 ) : (
                   <div className="text-center py-8">
                     <Icon name="book" size={32} className="text-amber-400/50 mx-auto mb-2" />
-                    <p className="text-muted text-sm">No stories yet. Create your first story!</p>
+                    <TypographyLayout variant="body" color="muted" className="text-sm">
+                      No stories yet. Create your first story!
+                    </TypographyLayout>
                   </div>
                 )}
               </div>
@@ -308,9 +313,9 @@ const DashboardPage: React.FC = () => {
               {recentStories.length > 0 && !recentStories[0].isCompleted && (
                 <div className="mt-4 p-4 bg-blue-500/10 border border-blue-400/20 rounded-lg">
                   <div className="text-center">
-                    <p className="text-white text-sm mb-2">
+                    <TypographyLayout variant="body" className="text-sm mb-2">
                       📖 Continue "{recentStories[0].title}"
-                    </p>
+                    </TypographyLayout>
                     <Link
                       to={`/stories/${recentStories[0].id}`}
                       className="btn btn-primary btn-sm"
@@ -320,13 +325,13 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </CardLayout>
 
             {/* Quick Actions */}
-            <div className="glass-card">
-              <h3 className="title-card text-center mb-6">
+            <CardLayout variant="default" padding="lg">
+              <TypographyLayout variant="card" as="h3" align="center" className="mb-6">
                 ⚡ Quick Actions
-              </h3>
+              </TypographyLayout>
               <div className="space-y-3">
                 {quickActions.map((action, index) => (
                   <Link
@@ -338,20 +343,20 @@ const DashboardPage: React.FC = () => {
                       <Icon name={action.icon as any} size={16} className="text-white" />
                     </div>
                     <div>
-                      <div className="text-white font-medium group-hover:text-primary transition-colors text-sm">
+                      <TypographyLayout variant="body" className="font-medium group-hover:text-primary transition-colors text-sm">
                         {action.title}
-                      </div>
-                      <div className="text-muted text-xs">
+                      </TypographyLayout>
+                      <TypographyLayout variant="body" color="muted" className="text-xs">
                         {action.description}
-                      </div>
+                      </TypographyLayout>
                     </div>
                   </Link>
                 ))}
               </div>
-            </div>
+            </CardLayout>
           </div>
         </div>
-    </div>
+    </PageLayout>
   );
 };
 

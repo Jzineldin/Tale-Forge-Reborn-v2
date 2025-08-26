@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles, BookOpen, Settings } from 'lucide-react';
+import { TypographyLayout } from '@/components/layout';
 
 interface ModeSelectorProps {
   onEasyMode: () => void;
@@ -13,26 +14,26 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
   onCustomMode
 }) => {
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
+          <TypographyLayout variant="hero" as="h1" align="center" className="mb-4">
             Create Your Story ✨
-          </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          </TypographyLayout>
+          <TypographyLayout variant="body" align="center" className="text-xl max-w-2xl mx-auto">
             Choose how you'd like to create your personalized children's story
-          </p>
+          </TypographyLayout>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Easy Mode */}
           <button
             onClick={onEasyMode}
-            className="group relative p-8 rounded-2xl border-2 border-transparent bg-gradient-to-br from-green-500/10 to-emerald-600/10 hover:from-green-500/20 hover:to-emerald-600/20 transition-all duration-300 transform hover:scale-105 hover:border-green-500/30"
+            className="glass-card group relative p-8 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 hover:border-green-500/30"
           >
             <div className="absolute top-4 right-4">
-              <span className="px-3 py-1 text-xs font-bold bg-green-500 text-white rounded-full animate-pulse">
-                NEW!
+              <span className="px-3 py-1 bg-green-500 text-white rounded-full animate-pulse">
+                <TypographyLayout variant="body" className="text-xs font-bold">NEW!</TypographyLayout>
               </span>
             </div>
 
@@ -41,31 +42,31 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
                 <Sparkles className="w-10 h-10 text-green-400" />
               </div>
               
-              <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">
+              <TypographyLayout variant="card" as="h3" align="center" className="mb-3 group-hover:text-green-400 transition-colors">
                 Easy Mode
-              </h3>
+              </TypographyLayout>
               
-              <p className="text-gray-400 mb-6 leading-relaxed">
+              <TypographyLayout variant="body" color="muted" align="center" className="mb-6">
                 Quick & Simple • 3 Steps
-              </p>
+              </TypographyLayout>
               
               <div className="space-y-3 text-left">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Choose story length</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Choose story length</TypographyLayout>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Pick your favorite genre</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Pick your favorite genre</TypographyLayout>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Add your child's name</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Add your child's name</TypographyLayout>
                 </div>
               </div>
               
               <div className="mt-6 p-3 bg-green-500/10 rounded-lg">
-                <span className="text-xs font-medium text-green-400">⏱️ Under 60 seconds</span>
+                <TypographyLayout variant="body" className="text-body-xs font-medium text-green-400">⏱️ Under 60 seconds</TypographyLayout>
               </div>
             </div>
           </button>
@@ -73,38 +74,38 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
           {/* Template Mode */}
           <button
             onClick={onTemplateMode}
-            className="group relative p-8 rounded-2xl border-2 border-transparent bg-gradient-to-br from-blue-500/10 to-purple-600/10 hover:from-blue-500/20 hover:to-purple-600/20 transition-all duration-300 transform hover:scale-105 hover:border-blue-500/30"
+            className="glass-card group relative p-8 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 hover:border-blue-500/30"
           >
             <div className="text-center">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <BookOpen className="w-10 h-10 text-blue-400" />
               </div>
               
-              <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+              <TypographyLayout variant="card" as="h3" align="center" className="mb-3 group-hover:text-blue-400 transition-colors">
                 Template Mode
-              </h3>
+              </TypographyLayout>
               
-              <p className="text-gray-400 mb-6 leading-relaxed">
+              <TypographyLayout variant="body" color="muted" align="center" className="mb-6">
                 Pre-made Stories • Instant
-              </p>
+              </TypographyLayout>
               
               <div className="space-y-3 text-left">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Choose from curated templates</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Choose from curated templates</TypographyLayout>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Professional story structures</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Professional story structures</TypographyLayout>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Minimal customization needed</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Minimal customization needed</TypographyLayout>
                 </div>
               </div>
               
               <div className="mt-6 p-3 bg-blue-500/10 rounded-lg">
-                <span className="text-xs font-medium text-blue-400">⚡ Fastest option</span>
+                <TypographyLayout variant="body" className="text-body-xs font-medium text-blue-400">⚡ Fastest option</TypographyLayout>
               </div>
             </div>
           </button>
@@ -112,54 +113,56 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
           {/* Advanced Mode */}
           <button
             onClick={onCustomMode}
-            className="group relative p-8 rounded-2xl border-2 border-transparent bg-gradient-to-br from-orange-500/10 to-red-600/10 hover:from-orange-500/20 hover:to-red-600/20 transition-all duration-300 transform hover:scale-105 hover:border-orange-500/30"
+            className="glass-card group relative p-8 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 hover:border-orange-500/30"
           >
             <div className="text-center">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-orange-500/20 flex items-center justify-center">
                 <Settings className="w-10 h-10 text-orange-400" />
               </div>
               
-              <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
+              <TypographyLayout variant="card" as="h3" align="center" className="mb-3 group-hover:text-orange-400 transition-colors">
                 Advanced Mode
-              </h3>
+              </TypographyLayout>
               
-              <p className="text-gray-400 mb-6 leading-relaxed">
+              <TypographyLayout variant="body" color="muted" align="center" className="mb-6">
                 Full Control • 5 Steps
-              </p>
+              </TypographyLayout>
               
               <div className="space-y-3 text-left">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Complete story customization</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Complete story customization</TypographyLayout>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Detailed character creation</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Detailed character creation</TypographyLayout>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span className="text-sm text-gray-300">Custom settings & plots</span>
+                  <TypographyLayout variant="body" className="text-body-sm">Custom settings & plots</TypographyLayout>
                 </div>
               </div>
               
               <div className="mt-6 p-3 bg-orange-500/10 rounded-lg">
-                <span className="text-xs font-medium text-orange-400">🎯 Maximum creativity</span>
+                <TypographyLayout variant="body" className="text-body-xs font-medium text-orange-400">🎯 Maximum creativity</TypographyLayout>
               </div>
             </div>
           </button>
         </div>
 
         {/* Info Section */}
-        <div className="mt-12 glass-panel p-6 text-center">
-          <h4 className="text-lg font-semibold text-white mb-3">New to Tale Forge?</h4>
-          <p className="text-gray-400 mb-4">
+        <div className="mt-12 glass-card p-6 text-center">
+          <TypographyLayout variant="card" as="h4" align="center" className="mb-3">
+            New to Tale Forge?
+          </TypographyLayout>
+          <TypographyLayout variant="body" color="muted" align="center" className="mb-4">
             We recommend starting with <strong className="text-green-400">Easy Mode</strong> to 
             create your first story in under a minute!
-          </p>
-          <div className="flex justify-center gap-4 text-sm text-gray-500">
-            <span>🎨 AI-powered illustrations</span>
-            <span>🎵 Optional narration</span>
-            <span>📱 Mobile-friendly</span>
+          </TypographyLayout>
+          <div className="flex justify-center gap-4">
+            <TypographyLayout variant="body" className="text-body-sm text-white/50">🎨 AI-powered illustrations</TypographyLayout>
+            <TypographyLayout variant="body" className="text-body-sm text-white/50">🎵 Optional narration</TypographyLayout>
+            <TypographyLayout variant="body" className="text-body-sm text-white/50">📱 Mobile-friendly</TypographyLayout>
           </div>
         </div>
       </div>

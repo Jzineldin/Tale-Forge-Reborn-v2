@@ -6,6 +6,7 @@ import GenreSelector from './GenreSelector';
 import CharacterSetup from './CharacterSetup';
 import { convertToBackendFormat } from './utils';
 import { Sparkles, Loader2 } from 'lucide-react';
+import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 export interface EasyModeData {
   difficulty: 'short' | 'medium' | 'long' | null;
@@ -78,11 +79,11 @@ const EasyModeFlow: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <PageLayout maxWidth="xl" showFloatingElements>
       <div className="max-w-4xl mx-auto">
         {/* Progress Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+        <CardLayout variant="default" padding="lg" className="mb-8">
+          <div className="flex items-center justify-between">
             {[1, 2, 3].map((stepNum) => (
               <div key={stepNum} className="flex-1 flex items-center">
                 <div className="flex flex-col items-center flex-1">
@@ -98,12 +99,14 @@ const EasyModeFlow: React.FC = () => {
                   >
                     {step > stepNum ? '✓' : stepNum}
                   </div>
-                  <span className={`
-                    mt-2 text-sm font-medium
-                    ${step >= stepNum ? 'text-amber-400' : 'text-gray-500'}
-                  `}>
+                  <TypographyLayout 
+                    variant="body" 
+                    className={`mt-2 text-body-sm font-medium ${
+                      step >= stepNum ? 'text-amber-400' : 'text-gray-500'
+                    }`}
+                  >
                     {stepNum === 1 ? 'Length' : stepNum === 2 ? 'Genre' : 'Character'}
-                  </span>
+                  </TypographyLayout>
                 </div>
                 {stepNum < 3 && (
                   <div className={`
@@ -114,23 +117,27 @@ const EasyModeFlow: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
+        </CardLayout>
 
         {/* Step Content */}
-        <div className="glass-panel p-8">
+        <CardLayout variant="default" padding="xl" className="mb-8">
           {/* Loading Overlay */}
           {isLoading && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="glass-panel p-8 flex flex-col items-center gap-4">
+              <CardLayout variant="default" padding="xl" className="flex flex-col items-center gap-4">
                 <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
-                <h3 className="text-xl font-semibold text-white">Creating Your Story...</h3>
-                <p className="text-gray-300">This may take up to 30 seconds</p>
-                <div className="mt-4 space-y-2 text-sm text-gray-400">
-                  <p>✨ Crafting narrative...</p>
-                  <p>🎨 Generating illustrations...</p>
-                  <p>🎯 Personalizing for {data.characterName || 'your child'}...</p>
+                <TypographyLayout variant="section" as="h3" align="center">
+                  Creating Your Story...
+                </TypographyLayout>
+                <TypographyLayout variant="body" color="secondary" align="center">
+                  This may take up to 30 seconds
+                </TypographyLayout>
+                <div className="mt-4 space-y-2">
+                  <TypographyLayout variant="body" className="text-body-sm text-white/70">✨ Crafting narrative...</TypographyLayout>
+                  <TypographyLayout variant="body" className="text-body-sm text-white/70">🎨 Generating illustrations...</TypographyLayout>
+                  <TypographyLayout variant="body" className="text-body-sm text-white/70">🎯 Personalizing for {data.characterName || 'your child'}...</TypographyLayout>
                 </div>
-              </div>
+              </CardLayout>
             </div>
           )}
 
@@ -193,18 +200,18 @@ const EasyModeFlow: React.FC = () => {
               </button>
             )}
           </div>
-        </div>
+        </CardLayout>
 
         {/* Help Text */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-400">
+        <div className="text-center">
+          <TypographyLayout variant="body" color="muted" align="center" className="text-body-sm">
             {step === 1 && "Choose how long you want your story to be"}
             {step === 2 && "Pick a genre that your child will love"}
             {step === 3 && "Personalize the story with your child's name"}
-          </p>
+          </TypographyLayout>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

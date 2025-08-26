@@ -8,6 +8,7 @@ import StoryChoices from '@/components/molecules/StoryChoices';
 import StoryProgress from '@/components/molecules/StoryProgress';
 import { TTSPlayer } from '@/components/molecules/TTSPlayer';
 import { useStory, useGenerateStorySegment, useGenerateStoryEnding, useGenerateAudio } from '@/utils/performance.tsx';
+import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 // Helper function to convert age format back to difficulty display
 const getDifficultyDisplay = (ageGroup: string): string => {
@@ -442,9 +443,9 @@ const StoryReaderPage: React.FC = () => {
 
     // Remove title patterns: **Title**, Title at start, etc.
     const titlePatterns = [
-      new RegExp(`^\\*\\*${storyTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*\\s*`, 'i'),
-      new RegExp(`^${storyTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'i'),
-      new RegExp(`^\\*\\*${storyTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\*\\*\\s*(.*)`, 'i')
+      new RegExp(`^\\*\\*${storyTitle.replace(/[.*+?^${}()|\\[\\]\\\\]/g, '\\$&')}\\*\\*\\s*`, 'i'),
+      new RegExp(`^${storyTitle.replace(/[.*+?^${}()|\\[\\]\\\\]/g, '\\$&')}\\s*`, 'i'),
+      new RegExp(`^\\*\\*${storyTitle.replace(/[.*+?^${}()|\\[\\]\\\\]/g, '\\$&')}\\*\\*\\s*(.*)`, 'i')
     ];
 
     let cleanContent = content;
@@ -468,15 +469,16 @@ const StoryReaderPage: React.FC = () => {
   })) || [];
 
   return (
-    <div className="story-reader-container">
-      {/* Compact Story Header with better visibility */}
-      <div className="story-segment mb-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h1 className="title-section mb-1">
-                {story.title}
-              </h1>
+    <PageLayout variant="story" maxWidth="md" noPadding>
+      <div className="story-reader-container">
+        {/* Compact Story Header with better visibility */}
+        <CardLayout variant="default" padding="md" className="mb-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <TypographyLayout variant="section" as="h1" className="mb-1">
+                  {story.title}
+                </TypographyLayout>
               <div className="flex items-center gap-2 text-muted text-xs">
                 <span>{story.genre}</span>
                 <span>•</span>
@@ -546,8 +548,7 @@ const StoryReaderPage: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
-      </div>
+      </CardLayout>
 
       {/* Chapter Navigation - Compact with better visibility */}
       {story.segments && story.segments.length > 0 && (
@@ -585,7 +586,7 @@ const StoryReaderPage: React.FC = () => {
       )}
 
       {/* Main Story Content - Compact with better visibility */}
-      <div className="story-segment overflow-hidden mb-4">
+      <CardLayout variant="default" padding="md" className="overflow-hidden mb-4">
         {/* Story Image - Balanced size */}
         {cleanedSegment?.image_url ? (
           <div className="story-image-container" style={{ height: '200px' }}>
@@ -678,113 +679,111 @@ const StoryReaderPage: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </CardLayout>
 
 
-      {/* Footer Info - Even smaller */}
-      <div className="text-center">
-        <p className="text-muted text-[10px]">
-          Created {new Date(story.created_at).toLocaleDateString()}
-        </p>
-      </div>
-    </div>
-    </div>
-
-  {/* Story Completion Modal */}
-{
-  showCompletionModal && story && (
-    <div className="modal-backdrop">
-      <div className="modal-content p-6">
-        {/* Close button */}
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => {
-              setShowCompletionModal(false);
-              navigate('/dashboard');
-            }}
-            className="text-white/60 hover:text-white transition-colors"
-            aria-label="Close"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        {/* Footer Info - Even smaller */}
+        <div className="text-center">
+          <TypographyLayout variant="caption" color="muted" align="center" className="text-[10px]">
+            Created {new Date(story.created_at).toLocaleDateString()}
+          </TypographyLayout>
         </div>
 
-        {/* Modal Content */}
-        <div className="text-center mb-4">
-          <div className="text-5xl mb-3">🎉</div>
-          <h2 className="text-2xl font-bold mb-2 text-white">Story Complete!</h2>
-          <h3 className="text-lg text-amber-400 mb-1">
-            "{story.title}"
-          </h3>
-          <p className="text-white/60 text-sm">
-            Finished {story.segments?.length || 0} chapters!
-          </p>
-        </div>
+        {/* Story Completion Modal */}
+        {showCompletionModal && story && (
+          <div className="modal-backdrop">
+            <div className="modal-content p-6">
+              {/* Close button */}
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    navigate('/dashboard');
+                  }}
+                  className="text-white/60 hover:text-white transition-colors"
+                  aria-label="Close"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
-        <div>
-          <div className="bg-green-900/20 border border-green-400/20 rounded-lg p-4 mb-4">
-            <div className="text-center">
-              <div className="text-3xl mb-2">📚</div>
-              <h3 className="text-base font-semibold text-white mb-1">Story saved!</h3>
-              <p className="text-white/60 text-xs">You can revisit or share it anytime.</p>
+              {/* Modal Content */}
+              <div className="text-center mb-4">
+                <div className="text-5xl mb-3">🎉</div>
+                <h2 className="title-section mb-2">Story Complete!</h2>
+                <h3 className="title-card-amber mb-1">
+                  "{story.title}"
+                </h3>
+                <p className="text-body-sm">
+                  Finished {story.segments?.length || 0} chapters!
+                </p>
+              </div>
+
+              <div>
+                <div className="glass-card p-4 mb-4 bg-green-500/10 border-green-400/20">
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">📚</div>
+                    <h3 className="title-card mb-1">Story saved!</h3>
+                    <p className="text-body-xs">You can revisit or share it anytime.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      setCurrentSegmentIndex(0);
+                      setShowCompletionModal(false);
+                    }}
+                    className="btn btn-secondary w-full"
+                  >
+                    <span>🔁</span>
+                    <span>Read Again</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigate(`/stories/${story.id}/complete`);
+                    }}
+                    className="btn btn-secondary w-full"
+                  >
+                    <span>📤</span>
+                    <span>Share Story</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/create')}
+                    className="btn btn-primary w-full"
+                  >
+                    Create New Story
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-white/10">
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <p className="stat-value">{story.segments?.length || 0}</p>
+                    <p className="stat-label">Chapters</p>
+                  </div>
+                  <div>
+                    <p className="stat-value">
+                      {Math.ceil((story.segments?.reduce((sum, seg) => sum + (seg.content?.split(' ').length || 0), 0) || 0) / 100)}
+                    </p>
+                    <p className="stat-label">Credits</p>
+                  </div>
+                  <div>
+                    <p className="stat-value">100%</p>
+                    <p className="stat-label">Done</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <button
-              onClick={() => {
-                setCurrentSegmentIndex(0);
-                setShowCompletionModal(false);
-              }}
-              className="w-full bg-black/20 hover:bg-black/30 border border-white/10 hover:border-white/20 py-2.5 rounded-lg text-white text-sm transition-all flex items-center justify-center space-x-2"
-            >
-              <span>🔁</span>
-              <span>Read Again</span>
-            </button>
-
-            <button
-              onClick={() => {
-                navigate(`/stories/${story.id}/complete`);
-              }}
-              className="w-full bg-black/20 hover:bg-black/30 border border-white/10 hover:border-white/20 py-2.5 rounded-lg text-white text-sm transition-all flex items-center justify-center space-x-2"
-            >
-              <span>📤</span>
-              <span>Share Story</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/create')}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all"
-            >
-              Create New Story
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-4 pt-3 border-t border-white/10">
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div>
-              <p className="text-lg font-bold text-amber-400">{story.segments?.length || 0}</p>
-              <p className="text-[10px] text-white/50">Chapters</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-amber-400">
-                {Math.ceil((story.segments?.reduce((sum, seg) => sum + (seg.content?.split(' ').length || 0), 0) || 0) / 100)}
-              </p>
-              <p className="text-[10px] text-white/50">Credits</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-amber-400">100%</p>
-              <p className="text-[10px] text-white/50">Done</p>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
-    </div>
-  )
-}
+    </PageLayout>
   );
 };
 

@@ -1,0 +1,175 @@
+# Tale-Forge Phase 1: Critical Path UI Harmonization PRD
+
+## Project Overview
+Execute Phase 1: Critical Path Harmonization to fix critical UI inconsistencies across Tale-Forge's most user-facing pages. Focus on implementing unified design system standards for maximum user impact.
+
+## Phase 1 Priority Pages
+
+### 1. DiscoverPage - High Priority Public-Facing Page
+**Current Issues**:
+- Uses `fantasy-heading-cinzel` instead of `title-hero`
+- Custom `glass-input` instead of `input-primary`
+- Mixed container approaches (`max-w-7xl mx-auto` vs `container-lg`)
+- Fantasy button classes (`fantasy-cta`) instead of `<Button variant="primary">`
+- Inconsistent card styling
+
+**Implementation Requirements**:
+- Replace all `fantasy-heading-cinzel` with `title-hero` class
+- Update all custom `glass-input` elements to `input-primary`
+- Convert all `max-w-7xl mx-auto` containers to `container-lg`
+- Replace all `fantasy-cta` buttons with `<Button variant="primary">`
+- Ensure all cards use `glass-card` class consistently
+- Test mobile responsiveness on all screen sizes
+- Verify no console errors or warnings
+
+### 2. StoriesHubPage - Critical User Flow Page
+**Focus Areas**:
+- Story grid layouts consistency
+- Filter components harmonization
+- Navigation consistency
+- Story card implementation
+
+**Implementation Requirements**:
+- Implement unified story-card classes across all story displays
+- Harmonize all filter components with design system
+- Ensure proper container structure using `container-*` classes
+- Apply consistent typography hierarchy
+- Test story grid responsiveness
+
+### 3. StoryReaderPage - Core User Experience
+**Current Issues**:
+- Mixed styling approaches throughout
+- JSX structure needs proper closing tags fix
+- Reader interface inconsistencies
+- Choice buttons styling variations
+
+**Implementation Requirements**:
+- Fix JSX syntax error with proper modal structure closing tags
+- Standardize reader interface with unified design system
+- Update all choice buttons to use Button component
+- Ensure mobile-first responsive design
+- Test reading experience on all devices
+
+### 4. SigninPage & SignupPage - Authentication Flow
+**Current Issues**:
+- Mixed button classes (`fantasy-cta btn btn-md` vs `<Button variant="primary">`)
+- Inconsistent form styling approaches
+- Authentication flow visual inconsistencies
+
+**Implementation Requirements**:
+- Replace all mixed button classes with unified Button component
+- Implement consistent form styling using design system
+- Ensure authentication pages follow auth-card patterns
+- Test form validation and error states
+- Verify accessibility standards
+
+## Implementation Standards
+
+### Container Pattern (Apply Everywhere)
+```tsx
+<div className="container-lg">
+  <div className="glass-card">
+    // page content
+  </div>
+</div>
+```
+
+### Typography Hierarchy (Replace All Inconsistencies)
+- Main Headlines: `title-hero`
+- Section Headers: `title-section`
+- Card Titles: `title-card`
+- Body Text: `text-body`
+
+### Button Implementation (No Direct CSS Classes)
+- Primary Actions: `<Button variant="primary" size="large">`
+- Secondary Actions: `<Button variant="secondary" size="medium">`
+- Tertiary Actions: `<Button variant="ghost" size="small">`
+
+### Card Components (Unified Styling)
+- All cards must use `glass-card` class
+- Card titles use `title-card`
+- Card content uses `text-body`
+
+## Quality Checklist Requirements
+
+For each page, verify:
+- All custom CSS classes replaced with unified system
+- Button component used instead of direct CSS classes
+- Typography hierarchy follows title-* and text-* patterns
+- Container structure uses container-* classes
+- Mobile responsive on all screen sizes (320px to 1920px)
+- No console errors or warnings in browser devtools
+- Smooth hover effects and transitions working
+- Accessibility standards maintained (ARIA labels, focus states)
+- Color contrast meets WCAG guidelines
+- Touch targets minimum 44px for mobile
+
+## Technical Requirements
+
+### Development Standards
+- Maintain React 18 + TypeScript best practices
+- Preserve all existing functionality (no feature regression)
+- Follow mobile-first responsive design approach
+- Maintain Tale-Forge magical aesthetic with amber/orange primary colors
+- Ensure build process completes without errors
+- Test on multiple browsers (Chrome, Firefox, Safari, Edge)
+
+### Testing Requirements
+- Test each page on mobile (320px-768px), tablet (768px-1024px), desktop (1024px+)
+- Verify smooth transitions and hover effects
+- Test form inputs and button interactions
+- Verify modal dialogs and overlays work correctly
+- Check image loading and display
+- Validate navigation flows between pages
+
+### Performance Requirements
+- Maintain or improve page load times
+- Ensure smooth scrolling and animations
+- Optimize for mobile performance
+- No layout shifts during loading
+- Efficient CSS bundle size
+
+## Success Criteria
+
+### Phase 1 Completion Metrics
+1. All 4 priority pages pass quality checklist
+2. Zero console errors across all pages
+3. Mobile responsiveness verified on all target devices
+4. Typography hierarchy consistently implemented
+5. Button component usage at 100%
+6. Container pattern applied uniformly
+7. Glass card styling standardized
+8. All hover effects and transitions smooth
+9. Accessibility standards maintained
+10. Build process clean without warnings
+
+### User Experience Goals
+- Consistent professional appearance across critical user flow
+- Improved mobile experience on all pages
+- Faster recognition of interactive elements
+- Cohesive visual hierarchy supporting user tasks
+- Reduced cognitive load through design consistency
+- Enhanced trust through polished interface
+
+## Post-Implementation Validation
+
+### Code Quality
+- TypeScript compilation without errors
+- ESLint passes with no warnings
+- CSS is consolidated and optimized
+- No duplicate or conflicting styles
+- Proper component prop types
+
+### Visual Quality
+- Screenshots comparison before/after on multiple devices
+- Visual regression testing if available
+- Cross-browser compatibility verification
+- Print stylesheet compatibility if needed
+
+### Performance Impact
+- Lighthouse score maintenance or improvement
+- Bundle size impact assessment
+- Runtime performance validation
+- Memory usage stability
+
+This PRD defines the complete scope for Phase 1 Critical Path Harmonization, focusing on the highest-impact pages for user experience improvement.

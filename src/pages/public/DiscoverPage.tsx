@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/atoms/Icon';
+import Button from '@/components/atoms/Button';
 import { useAuth } from '@/providers/AuthContext';
 
 interface PublicStory {
@@ -174,9 +175,9 @@ const DiscoverPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="container-lg">
           {/* Loading Header */}
-          <div className="glass-enhanced p-6 rounded-2xl mb-8">
+          <div className="glass-card p-6 rounded-2xl mb-8">
             <div className="animate-pulse">
               <div className="h-8 bg-white/20 rounded-lg w-64 mb-4"></div>
               <div className="h-4 bg-white/10 rounded w-96"></div>
@@ -186,7 +187,7 @@ const DiscoverPage: React.FC = () => {
           {/* Loading Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="glass-enhanced rounded-xl overflow-hidden animate-pulse">
+              <div key={i} className="glass-card rounded-xl overflow-hidden animate-pulse">
                 <div className="h-48 bg-white/20"></div>
                 <div className="p-6">
                   <div className="h-6 bg-white/20 rounded mb-4"></div>
@@ -204,12 +205,12 @@ const DiscoverPage: React.FC = () => {
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <div className="glass-enhanced p-6 rounded-2xl">
-          <h1 className="fantasy-heading-cinzel text-3xl font-bold mb-2">
+      <div className="container-lg mb-8">
+        <div className="glass-card p-6 rounded-2xl">
+          <h1 className="title-hero mb-2">
             🌟 Discover Stories
           </h1>
-          <p className="text-white/70 text-lg">
+          <p className="text-body text-lg">
             Explore magical tales created by our community of storytellers ({filteredAndSortedStories.length} stories)
           </p>
         </div>
@@ -217,9 +218,9 @@ const DiscoverPage: React.FC = () => {
 
       {/* Featured Stories */}
       {featuredStories.length > 0 && (
-        <div className="max-w-7xl mx-auto mb-8">
-          <div className="glass-enhanced p-6 rounded-2xl">
-            <h2 className="fantasy-heading-cinzel text-2xl font-bold mb-6">✨ Featured Stories</h2>
+        <div className="container-lg mb-8">
+          <div className="glass-card p-6 rounded-2xl">
+            <h2 className="title-section mb-6">✨ Featured Stories</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredStories.slice(0, 3).map((story) => (
                 <div key={story.id} className="glass-card bg-amber-500/10 border border-amber-400/30 rounded-xl overflow-hidden hover:scale-105 transition-all duration-300">
@@ -237,19 +238,19 @@ const DiscoverPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-2">{story.title}</h3>
+                    <h3 className="title-card mb-2">{story.title}</h3>
                     <div className="flex items-center space-x-2 mb-3">
                       <span className="text-amber-400 text-sm font-medium">{story.genre}</span>
                       <span className="text-white/60">•</span>
                       <span className="text-white/60 text-sm">{story.age_group}</span>
                     </div>
-                    <p className="text-white/80 text-sm mb-4 line-clamp-2">{story.description}</p>
+                    <p className="text-body text-sm mb-4 line-clamp-2">{story.description}</p>
                     <div className="flex justify-between items-center">
                       <span className="text-white/60 text-sm">by {story.author_name}</span>
                       <Link to={`/stories/${story.id}`}>
-                        <button className="fantasy-cta px-4 py-2 text-sm rounded-lg hover:scale-105 transition-all duration-300">
+                        <Button variant="primary" size="small">
                           Read Story
-                        </button>
+                        </Button>
                       </Link>
                     </div>
                   </div>
@@ -261,8 +262,8 @@ const DiscoverPage: React.FC = () => {
       )}
 
       {/* Search and Filters */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <div className="glass-enhanced p-6 rounded-2xl">
+      <div className="container-lg mb-8">
+        <div className="glass-card p-6 rounded-2xl">
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative">
@@ -271,7 +272,7 @@ const DiscoverPage: React.FC = () => {
                 placeholder="Search stories, authors, or tags..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="glass-input w-full pl-12 pr-4 py-3 text-lg rounded-xl"
+                className="input-primary w-full pl-12 pr-4 py-3 text-lg rounded-xl"
               />
               <Icon name="search" size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" />
               {searchTerm && (
@@ -311,7 +312,7 @@ const DiscoverPage: React.FC = () => {
               <select
                 value={selectedAge}
                 onChange={(e) => setSelectedAge(e.target.value)}
-                className="glass-input px-3 py-2 rounded-lg text-sm"
+                className="input-primary px-3 py-2 rounded-lg text-sm"
               >
                 {ageGroups.map((age) => (
                   <option key={age.id} value={age.id}>{age.label}</option>
@@ -324,7 +325,7 @@ const DiscoverPage: React.FC = () => {
                 <select
                   value={sortMode}
                   onChange={(e) => setSortMode(e.target.value as SortMode)}
-                  className="glass-input px-3 py-2 rounded-lg text-sm"
+                  className="input-primary px-3 py-2 rounded-lg text-sm"
                 >
                   <option value="popular">Most Popular</option>
                   <option value="recent">Most Recent</option>
@@ -358,11 +359,11 @@ const DiscoverPage: React.FC = () => {
       </div>
 
       {/* Stories Display */}
-      <div className="max-w-7xl mx-auto">
+      <div className="container-lg">
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedStories.map((story) => (
-              <div key={story.id} className="glass-enhanced rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 group">
+              <div key={story.id} className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-all duration-300 group">
                 {/* Story Image */}
                 <div className="relative h-48 bg-gradient-to-br from-purple-900/20 to-blue-900/20">
                   <img 
@@ -404,7 +405,7 @@ const DiscoverPage: React.FC = () => {
                 {/* Story Info */}
                 <div className="p-6">
                   <div className="mb-3">
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                    <h3 className="title-card mb-2 group-hover:text-amber-300 transition-colors">
                       {story.title}
                     </h3>
                     <div className="flex items-center space-x-2 mb-2">
@@ -412,7 +413,7 @@ const DiscoverPage: React.FC = () => {
                       <span className="text-white/60">•</span>
                       <span className="text-white/60 text-sm">{story.age_group}</span>
                     </div>
-                    <p className="text-white/80 text-sm line-clamp-2 mb-3">{story.description}</p>
+                    <p className="text-body text-sm line-clamp-2 mb-3">{story.description}</p>
                     
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-3">
@@ -441,9 +442,9 @@ const DiscoverPage: React.FC = () => {
 
                   {/* Action Button */}
                   <Link to={`/stories/${story.id}`}>
-                    <button className="w-full fantasy-cta px-4 py-2 text-sm rounded-lg hover:scale-105 transition-all duration-300">
+                    <Button variant="primary" size="small" className="w-full">
                       Read Story
-                    </button>
+                    </Button>
                   </Link>
                 </div>
               </div>
@@ -453,7 +454,7 @@ const DiscoverPage: React.FC = () => {
           /* List View */
           <div className="space-y-4">
             {filteredAndSortedStories.map((story) => (
-              <div key={story.id} className="glass-enhanced rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div key={story.id} className="glass-card rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center space-x-6">
                   {/* Story Image */}
                   <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -468,7 +469,7 @@ const DiscoverPage: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-xl font-bold text-white mb-1">{story.title}</h3>
+                        <h3 className="title-card mb-1">{story.title}</h3>
                         <div className="flex items-center space-x-2 mb-2">
                           <span className="text-amber-400 text-sm font-medium">{story.genre}</span>
                           <span className="text-white/60">•</span>
@@ -476,7 +477,7 @@ const DiscoverPage: React.FC = () => {
                           <span className="text-white/60">•</span>
                           <span className="text-white/60 text-sm">by {story.author_name}</span>
                         </div>
-                        <p className="text-white/80 text-sm mb-3">{story.description}</p>
+                        <p className="text-body text-sm mb-3">{story.description}</p>
                         
                         {/* Tags and Stats */}
                         <div className="flex items-center space-x-4">
@@ -527,9 +528,9 @@ const DiscoverPage: React.FC = () => {
                           </>
                         )}
                         <Link to={`/stories/${story.id}`}>
-                          <button className="fantasy-cta px-4 py-2 text-sm rounded-lg hover:scale-105 transition-all duration-300">
+                          <Button variant="primary" size="small">
                             Read
-                          </button>
+                          </Button>
                         </Link>
                       </div>
                     </div>
@@ -542,22 +543,23 @@ const DiscoverPage: React.FC = () => {
 
         {/* Empty State */}
         {filteredAndSortedStories.length === 0 && (
-          <div className="glass-enhanced rounded-xl p-12 text-center">
+          <div className="glass-card rounded-xl p-12 text-center">
             <div className="text-6xl mb-6">🔍</div>
-            <h3 className="text-2xl font-bold text-white mb-4">No Stories Found</h3>
-            <p className="text-white/70 mb-8 max-w-md mx-auto">
+            <h3 className="title-section mb-4">No Stories Found</h3>
+            <p className="text-body mb-8 max-w-md mx-auto">
               No stories match your search criteria. Try adjusting your filters or search terms to discover more amazing tales!
             </p>
-            <button 
+            <Button
+              variant="primary"
+              size="large"
               onClick={() => {
                 setSearchTerm('');
                 setSelectedGenre('all');
                 setSelectedAge('all');
               }}
-              className="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
             >
               Clear All Filters
-            </button>
+            </Button>
           </div>
         )}
       </div>

@@ -211,7 +211,29 @@ export const realStoryService = {
       const data = await response.json();
       console.log('✅ Story created successfully:', data.story.id);
       
-      return data.story;
+      // Transform backend format to frontend Story interface
+      const transformedStory: Story = {
+        id: data.story.id,
+        title: data.story.title,
+        description: data.story.description,
+        genre: data.story.genre,
+        age_group: data.story.age_group,
+        target_age: data.story.target_age,
+        user_id: data.story.user_id || userId,
+        created_at: data.story.created_at,
+        updated_at: data.story.updated_at,
+        status: data.story.is_completed ? 'completed' : 'draft',
+        segments: data.firstSegment ? [data.firstSegment] : [], // Include first segment if available
+        // Extended properties from original data
+        theme: storyData.theme,
+        setting: storyData.setting,
+        characters: storyData.characters || [],
+        conflict: storyData.conflict,
+        quest: storyData.quest,
+        moralLesson: storyData.moralLesson
+      };
+      
+      return transformedStory;
     } catch (error) {
       console.error('❌ Error creating story:', error);
       if (error instanceof StoryServiceError) {
@@ -287,7 +309,29 @@ export const realStoryService = {
       const data = await response.json();
       console.log('✅ Story fetched successfully:', data.story.id);
       
-      return data.story;
+      // Transform backend format to frontend Story interface
+      const transformedStory: Story = {
+        id: data.story.id,
+        title: data.story.title,
+        description: data.story.description,
+        genre: data.story.genre,
+        age_group: data.story.age_group,
+        target_age: data.story.target_age,
+        user_id: data.story.user_id || userId,
+        created_at: data.story.created_at,
+        updated_at: data.story.updated_at,
+        status: data.story.is_completed ? 'completed' : 'draft',
+        segments: data.story.segments || [], // Critical: Include segments
+        // Optional extended properties
+        theme: data.story.theme,
+        setting: data.story.setting,
+        characters: data.story.characters || [],
+        conflict: data.story.conflict,
+        quest: data.story.quest,
+        moralLesson: data.story.moralLesson
+      };
+      
+      return transformedStory;
     } catch (error) {
       console.error('❌ Error fetching story:', error);
       if (error instanceof StoryServiceError) {

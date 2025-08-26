@@ -11,6 +11,7 @@ export interface Story {
   created_at: string;
   updated_at: string;
   status: 'draft' | 'published' | 'archived' | 'completed';
+  segments?: StorySegment[];  // Critical: Frontend expects this
   // Extended properties from generation_settings
   theme?: string;
   setting?: string;
