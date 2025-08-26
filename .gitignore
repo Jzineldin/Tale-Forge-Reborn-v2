@@ -30,6 +30,17 @@ node_modules/
 .env
 .env.production
 .env.local
+.env.local.functions
+
+# Files with secrets
+.mcp-config.json
+.mcp.json
+deploy-env-vars.sh
+.claude/
+
+# PostgresTools config (contains database password)
+postgrestools.jsonc
+IMPORTANT_DATABASE_CREDENTIALS.md
 .vscode
 # OS specific
 
