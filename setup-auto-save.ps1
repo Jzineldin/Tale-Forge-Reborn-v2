@@ -102,4 +102,4 @@ if ($runNow -eq 'y') {
 Write-Host ""
 Write-Host "TIP: You can still manually save anytime with:" -ForegroundColor Cyan
 Write-Host "  .\quick-save.ps1" -ForegroundColor White
-Write-Host "  Ctrl+Alt+S (in Cursor)" -ForegroundColor White
+Write-Host "  Ctrl+Alt+S in Cursor" -ForegroundColor White
