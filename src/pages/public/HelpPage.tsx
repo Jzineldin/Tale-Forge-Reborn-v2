@@ -45,15 +45,15 @@ const HelpPage: React.FC = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="section-hero relative z-10 flex-1 flex items-center justify-center">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Refined Hero Container - Same as HomePage */}
-          <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
+      <section className="relative z-10 flex-1 flex items-center justify-center py-16 md:py-20 lg:py-24">
+        <div className="container text-center">
+          {/* Hero Container */}
+          <div className="glass-card rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Header */}
-            <h1 className="fantasy-heading-cinzel h1-page gradient-text mb-6 sm:mb-8 text-center">
+            <h1 className="title-hero mb-6 sm:mb-8 text-center">
               Help Center
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
+            <p className="text-body text-lg sm:text-xl md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
               Find answers to common questions and learn how to make the most of Tale Forge
             </p>
             
@@ -63,32 +63,32 @@ const HelpPage: React.FC = () => {
                 <a 
                   key={index}
                   href={link.anchor} 
-                  className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6"
+                  className="glass-card rounded-lg p-6"
                 >
-                  <h3 className="h3-card text-white mb-2">{link.title}</h3>
-                  <p className="text-white/80">{link.description}</p>
+                  <h3 className="title-card mb-2">{link.title}</h3>
+                  <p className="text-body">{link.description}</p>
                 </a>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
         
-      {/* FAQ Section - Same structure as HomePage Featured Stories */}
-      <div className="relative z-10 section-spacing">
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
-            <h2 className="fantasy-heading-cinzel h2-section text-center mb-12">
+      {/* FAQ Section */}
+      <div className="relative z-10 py-16 md:py-20 lg:py-24">
+        <div className="container-sm">
+          <div className="glass rounded-2xl p-8 md:p-12">
+            <h2 className="title-section text-center mb-12 text-amber-400">
               Frequently Asked Questions
             </h2>
             
             <div className="space-y-6">
               {faqs.map((faq, index) => (
                 <div key={index} className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                  <h3 className="h3-card text-white mb-2">
+                  <h3 className="title-card mb-2">
                     {faq.question}
                   </h3>
-                  <p className="text-white/80">
+                  <p className="text-body">
                     {faq.answer}
                   </p>
                 </div>
@@ -97,22 +97,22 @@ const HelpPage: React.FC = () => {
 
             {/* Contact Support Section */}
             <div className="text-center mt-12">
-              <h3 className="text-2xl font-bold text-white mb-4">
+              <h3 className="title-section mb-4 text-amber-400">
                 Still Need Help?
               </h3>
-              <p className="text-white/80 mb-8 leading-relaxed">
+              <p className="text-body mb-8 leading-relaxed">
                 Our support team is here to assist you with any questions or issues you may have.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
                   href="/contact" 
-                  className="fantasy-cta btn btn-lg text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  className="btn btn-primary btn-lg"
                 >
                   Contact Support
                 </a>
                 <a 
                   href="mailto:support@taleforge.com" 
-                  className="glass-card text-white border-2 border-amber-400/50 hover:border-amber-400 font-semibold btn btn-lg text-lg rounded-xl backdrop-blur-md hover:bg-amber-400/10 transition-all duration-300 text-center"
+                  className="btn btn-secondary btn-lg"
                 >
                   Email Support
                 </a>

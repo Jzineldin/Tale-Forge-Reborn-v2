@@ -1,94 +1,13 @@
-/* Tale Forge App Styles */
+/* Tale Forge App Component Styles */
+
+/* App Container */
 .App {
   min-height: 100vh;
-  background-image: url('/images/main-astronaut.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
 }
 
-/* Dark overlay for better text readability */
-.App::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(30, 27, 75, 0.7) 0%, rgba(49, 46, 129, 0.6) 50%, rgba(30, 58, 138, 0.7) 100%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* Twinkling stars overlay */
-.App::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #fff, transparent),
-    radial-gradient(2px 2px at 40px 70px, #fff, transparent),
-    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-    radial-gradient(1px 1px at 130px 80px, #fff, transparent),
-    radial-gradient(2px 2px at 160px 30px, #fff, transparent);
-  background-repeat: repeat;
-  background-size: 200px 100px;
-  animation: twinkle 8s linear infinite;
-  opacity: 0.4;
-  pointer-events: none;
-  z-index: -1;
-}
-
-@keyframes twinkle {
-  0% { opacity: 0.6; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.6; }
-}
-
-/* Ensure all text has proper shadows and is readable */
-.App * {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-/* Glass effects for UI elements */
-.glass-card {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.glass-enhanced {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.glass-input {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-}
-
-.glass-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.glass-input:focus {
-  outline: none;
-  border-color: rgba(251, 191, 36, 0.5);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Line clamp utilities */
+/* Line clamp utilities - keeping for text truncation */
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
@@ -101,4 +20,11 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }

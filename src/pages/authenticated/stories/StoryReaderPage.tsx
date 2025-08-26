@@ -347,14 +347,14 @@ const StoryReaderPage: React.FC = () => {
   // Error state - critical errors only
   if (storyError) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-sm">
+      <div className="page-container flex-center">
+        <div className="glass-card text-center max-w-sm">
           <span className="text-4xl mb-3 block">😞</span>
-          <h2 className="text-lg font-bold text-white mb-2">Something went wrong</h2>
-          <p className="text-white/60 text-sm mb-4">Failed to load your story</p>
+          <h2 className="title-card mb-2">Something went wrong</h2>
+          <p className="text-body mb-4">Failed to load your story</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all font-medium shadow-lg"
+            className="btn btn-primary"
           >
             Try Again
           </button>
@@ -366,14 +366,14 @@ const StoryReaderPage: React.FC = () => {
   // No story found
   if (!story) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-sm">
+      <div className="page-container flex-center">
+        <div className="glass-card text-center max-w-sm">
           <span className="text-4xl mb-3 block">📚</span>
-          <h2 className="text-lg font-bold text-white mb-2">Story not found</h2>
-          <p className="text-white/60 text-sm mb-4">This story doesn't exist</p>
+          <h2 className="title-card mb-2">Story not found</h2>
+          <p className="text-body mb-4">This story doesn't exist</p>
           <button 
             onClick={() => window.history.back()}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all font-medium shadow-lg"
+            className="btn btn-primary"
           >
             Go Back
           </button>
@@ -385,23 +385,23 @@ const StoryReaderPage: React.FC = () => {
   // Story generation failed - show error
   if (story.status === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-sm">
+      <div className="page-container flex-center">
+        <div className="glass-card text-center max-w-sm">
           <span className="text-4xl mb-3 block">🔧</span>
-          <h2 className="text-lg font-bold text-white mb-2">Generation Failed</h2>
-          <p className="text-white/60 text-sm mb-4">
+          <h2 className="title-card mb-2">Generation Failed</h2>
+          <p className="text-body mb-4">
             {story.error_message || 'Something went wrong'}
           </p>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <button 
               onClick={() => window.history.back()}
-              className="w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all font-medium shadow-lg"
+              className="btn btn-primary w-full"
             >
               Create New Story
             </button>
             <button 
               onClick={() => window.location.reload()}
-              className="w-full px-4 py-2 bg-black/20 text-white text-sm rounded-lg hover:bg-black/30 transition-all font-medium"
+              className="btn btn-secondary w-full"
             >
               Try Again
             </button>
@@ -414,22 +414,20 @@ const StoryReaderPage: React.FC = () => {
   // 🎯 UNIFIED LOADING STATE: Story still generating or no segments yet
   if (isStoryLoading || story.status === 'generating' || !story.segments || story.segments.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>
-          <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-md">
-            <div className="animate-bounce text-5xl mb-3">✨</div>
-            <h2 className="text-lg font-bold text-white mb-2">Creating Your Story</h2>
-            <p className="text-white/60 text-sm mb-4">
-              {story?.title ? `"${story.title}"` : 'Loading adventure...'}
-            </p>
-            
-            {/* Simple loading indicator */}
-            <div className="flex justify-center mb-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
-            </div>
-            
-            <p className="text-white/40 text-xs">This takes 15-30 seconds</p>
+      <div className="page-container flex-center">
+        <div className="glass-card text-center max-w-md">
+          <div className="animate-bounce text-5xl mb-3">✨</div>
+          <h2 className="title-card mb-2">Creating Your Story</h2>
+          <p className="text-body mb-4">
+            {story?.title ? `"${story.title}"` : 'Loading adventure...'}
+          </p>
+          
+          {/* Simple loading indicator */}
+          <div className="flex justify-center mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
           </div>
+          
+          <p className="text-muted text-xs">This takes 15-30 seconds</p>
         </div>
       </div>
     );
@@ -470,18 +468,17 @@ const StoryReaderPage: React.FC = () => {
   })) || [];
   
   return (
-    <div className="min-h-screen relative">
-      <div className="py-3">
-        <div className="max-w-2xl mx-auto px-3">
+    <div className="page-container">
+      <div className="story-reader-container">
           {/* Compact Story Header with better visibility */}
-          <div className="mb-3 bg-slate-900/80 rounded-lg p-3">
+          <div className="story-segment mb-4">
             <div className="flex flex-col gap-2">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h1 className="text-xl font-bold text-white mb-1">
+                  <h1 className="title-section mb-1">
                     {story.title}
                   </h1>
-                  <div className="flex items-center gap-2 text-white/70 text-xs">
+                  <div className="flex items-center gap-2 text-muted text-xs">
                     <span>{story.genre}</span>
                     <span>•</span>
                     <span>{getDifficultyDisplay(story.age_group)}</span>
@@ -491,24 +488,24 @@ const StoryReaderPage: React.FC = () => {
                 {/* Compact Controls */}
                 <div className="flex items-center gap-2">
                   {/* Font Size Control - Smaller */}
-                  <div className="flex items-center bg-black/20 rounded-lg p-0.5">
+                  <div className="flex items-center glass rounded-lg p-0.5">
                     <button 
                       onClick={() => handleFontSizeChange('small')}
-                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white' : 'text-white/60 hover:text-white'}`}
+                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white' : 'text-muted hover:text-primary'}`}
                       aria-label="Small font"
                     >
                       <span className="text-xs font-medium">A</span>
                     </button>
                     <button 
                       onClick={() => handleFontSizeChange('medium')}
-                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white' : 'text-white/60 hover:text-white'}`}
+                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white' : 'text-muted hover:text-primary'}`}
                       aria-label="Medium font"
                     >
                       <span className="text-sm font-medium">A</span>
                     </button>
                     <button 
                       onClick={() => handleFontSizeChange('large')}
-                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white' : 'text-white/60 hover:text-white'}`}
+                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white' : 'text-muted hover:text-primary'}`}
                       aria-label="Large font"
                     >
                       <span className="text-base font-medium">A</span>
@@ -520,7 +517,7 @@ const StoryReaderPage: React.FC = () => {
                     <button
                       onClick={handleStoryEnding}
                       disabled={isGenerating}
-                      className="px-3 py-1.5 text-xs bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all disabled:opacity-50 font-medium shadow-lg"
+                      className="btn btn-sm btn-primary"
                       aria-label="End story"
                     >
                       End Story
@@ -532,7 +529,7 @@ const StoryReaderPage: React.FC = () => {
                     segmentAudioUrls[currentSegmentIndex] ? (
                       <button 
                         onClick={() => setShowAudioPlayer(!showAudioPlayer)}
-                        className="px-3 py-1.5 text-xs text-white/60 hover:text-white bg-black/20 hover:bg-black/30 rounded-lg transition-all"
+                        className="btn btn-sm btn-ghost"
                         aria-label={showAudioPlayer ? "Hide audio" : "Show audio"}
                       >
                         {showAudioPlayer ? '🔇' : '🔊'}
@@ -541,7 +538,7 @@ const StoryReaderPage: React.FC = () => {
                       <button 
                         onClick={() => handleGenerateSegmentAudio(currentSegmentIndex)}
                         disabled={generatingAudioForSegment === currentSegmentIndex}
-                        className="px-3 py-1.5 text-xs text-white/60 hover:text-white bg-black/20 hover:bg-black/30 rounded-lg disabled:opacity-50 transition-all"
+                        className="btn btn-sm btn-ghost disabled:opacity-50"
                         aria-label="Generate audio"
                       >
                         {generatingAudioForSegment === currentSegmentIndex ? '⏳' : '🎵'}
@@ -589,10 +586,10 @@ const StoryReaderPage: React.FC = () => {
       )}
       
         {/* Main Story Content - Compact with better visibility */}
-        <div className="bg-slate-900/90 rounded-xl overflow-hidden mb-4 border border-white/10">
+        <div className="story-segment overflow-hidden mb-4">
           {/* Story Image - Balanced size */}
           {cleanedSegment?.image_url ? (
-            <div className="relative bg-black/5" style={{ height: '200px' }}>
+            <div className="story-image-container" style={{ height: '200px' }}>
               <StoryImage 
                 src={cleanedSegment.image_url} 
                 alt={`Illustration for segment ${currentSegmentIndex + 1}`} 
@@ -622,18 +619,18 @@ const StoryReaderPage: React.FC = () => {
           )}
           
           {/* Story Text - Better background for readability */}
-          <div className="p-4 bg-slate-900/95">
+          <div className="p-content">
             {isGenerating ? (
               <div className="text-center py-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
-                <p className="text-white/80 text-sm">
+                <p className="text-body">
                   Creating your next chapter...
                 </p>
               </div>
             ) : cleanedSegment ? (
               <>
                 <div 
-                  className={`${fontSizeClasses[fontSize as keyof typeof fontSizeClasses]} text-white mb-4 leading-relaxed`}
+                  className={`story-text ${fontSizeClasses[fontSize as keyof typeof fontSizeClasses]} mb-4`}
                 >
                   {cleanedSegment.content}
                 </div>
@@ -641,10 +638,10 @@ const StoryReaderPage: React.FC = () => {
                 {/* Check if this is the ending segment */}
                 {cleanedSegment.is_end ? (
                   <div className="mt-4 text-center">
-                    <div className="bg-amber-500/10 border border-amber-400/20 rounded-lg p-3">
+                    <div className="achievement-card">
                       <div className="text-3xl mb-2">🎉</div>
-                      <h2 className="text-base font-bold mb-1 text-white">Story Complete!</h2>
-                      <p className="text-white/60 text-xs mb-2">
+                      <h2 className="achievement-title">Story Complete!</h2>
+                      <p className="achievement-description mb-2">
                         What an amazing adventure!
                       </p>
                       <div className="flex justify-center">
@@ -669,13 +666,13 @@ const StoryReaderPage: React.FC = () => {
               </>
             ) : (
               <div className="text-center py-6">
-                <p className="text-white text-base mb-3">
+                <p className="text-body mb-3">
                   Ready to begin your story?
                 </p>
                 <button 
                   onClick={() => handleChoiceSelect('begin')}
                   disabled={isGeneratingSegment}
-                  className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl hover:from-amber-600 hover:to-orange-700 transition-all disabled:opacity-50 font-medium shadow-lg"
+                  className="btn btn-primary btn-lg disabled:opacity-50"
                 >
                   {isGeneratingSegment ? 'Starting...' : 'Begin Story'}
                 </button>
@@ -687,7 +684,7 @@ const StoryReaderPage: React.FC = () => {
         
         {/* Footer Info - Even smaller */}
         <div className="text-center">
-          <p className="text-white/20 text-[10px]">
+          <p className="text-muted text-[10px]">
             Created {new Date(story.created_at).toLocaleDateString()}
           </p>
         </div>
@@ -696,8 +693,8 @@ const StoryReaderPage: React.FC = () => {
       
       {/* Story Completion Modal */}
       {showCompletionModal && story && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900/95 border border-white/10 rounded-xl p-6 max-w-md w-full">
+        <div className="modal-backdrop">
+          <div className="modal-content p-6">
             {/* Close button */}
             <div className="flex justify-end mb-4">
               <button

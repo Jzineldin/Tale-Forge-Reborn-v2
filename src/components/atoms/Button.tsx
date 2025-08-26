@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'magical' | 'outline';
-  size?: 'small' | 'medium' | 'large';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'small' | 'medium' | 'large' | 'xl';
   className?: string;
 }
 
@@ -14,24 +14,24 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props
 }) => {
-  const baseClasses = 'font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-102 active:scale-98';
-  
+  // Map variants to our unified CSS classes
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 focus:ring-amber-500 focus:ring-offset-amber-100 shadow-sm hover:shadow-md',
-    secondary: 'bg-white/5 text-amber-400 border border-amber-400/30 hover:bg-amber-400/10 hover:border-amber-400/50 focus:ring-amber-400/50 backdrop-blur-sm shadow-sm hover:shadow-md',
-    danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 focus:ring-offset-red-100 shadow-sm hover:shadow-md',
-    magical: 'bg-gradient-to-r from-amber-400 via-purple-500 to-amber-600 text-white hover:from-amber-500 hover:via-purple-600 hover:to-amber-700 shadow-sm hover:shadow-md',
-    outline: 'bg-transparent border border-amber-500 text-amber-500 hover:bg-amber-500/10 hover:border-amber-600 focus:ring-amber-500 focus:ring-offset-amber-100 shadow-sm hover:shadow-md',
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    ghost: 'btn-ghost',
+    danger: 'bg-red-500 text-white hover:bg-red-600',
   };
   
+  // Map sizes to our unified CSS size modifiers
   const sizeClasses = {
-    small: 'px-3 py-1.5 text-sm',
-    medium: 'px-4 py-2 text-base',
-    large: 'px-6 py-3 text-lg',
+    small: 'btn-sm',
+    medium: '',  // Default size, no modifier needed
+    large: 'btn-lg',
+    xl: 'btn-xl',
   };
   
-  // All variants now use consistent structure
-  const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+  // Combine base btn class with variant and size modifiers
+  const classes = `btn ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim();
   
   return (
     <button 

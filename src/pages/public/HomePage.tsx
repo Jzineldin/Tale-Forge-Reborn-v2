@@ -38,23 +38,23 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="section-hero relative z-10 flex-1 flex items-center justify-center">
-        <div className="container-default text-center">
-          {/* Refined Hero Container */}
-          <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
+      <section className="relative z-10 flex-1 flex items-center justify-center py-16 md:py-20 lg:py-24">
+        <div className="container text-center">
+          {/* Hero Container */}
+          <div className="glass-card rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}
-            <h1 className="h1-hero fantasy-heading-cinzel mb-8 text-center gradient-text">
+            <h1 className="title-hero mb-8 text-center">
               TALE FORGE
             </h1>
 
             {/* Subtitle */}
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 sm:mb-12 text-slate-200 text-center">
+            <h2 className="title-section mb-8 sm:mb-12 text-center text-amber-400">
               CREATE MAGICAL STORIES<br />
               TOGETHER!
             </h2>
 
             {/* Description */}
-            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
+            <p className="text-body text-lg sm:text-xl md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
               Transform your ideas into enchanting stories with AI-powered creativity.
               Perfect for families, educators, and storytellers of all ages!
             </p>
@@ -96,26 +96,26 @@ const HomePage: React.FC = () => {
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6">
+              <div className="glass-card rounded-lg p-6">
                 <div className="text-amber-400 mb-4">
                   <Icon name="star" size={32} />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">AI-Powered</h3>
-                <p className="text-white/80">Stories crafted with advanced AI that adapts to your child's interests</p>
+                <h3 className="title-card mb-2">AI-Powered</h3>
+                <p className="text-body">Stories crafted with advanced AI that adapts to your child's interests</p>
               </div>
-              <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6">
+              <div className="glass-card rounded-lg p-6">
                 <div className="text-amber-400 mb-4">
                   <Icon name="user" size={32} />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Interactive</h3>
-                <p className="text-white/80">Children make choices that shape the story's direction and outcome</p>
+                <h3 className="title-card mb-2">Interactive</h3>
+                <p className="text-body">Children make choices that shape the story's direction and outcome</p>
               </div>
-              <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6">
+              <div className="glass-card rounded-lg p-6">
                 <div className="text-amber-400 mb-4">
                   <Icon name="book" size={32} />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Educational</h3>
-                <p className="text-white/80">Stories designed to teach values and spark imagination</p>
+                <h3 className="title-card mb-2">Educational</h3>
+                <p className="text-body">Stories designed to teach values and spark imagination</p>
               </div>
             </div>
           </div>
@@ -123,15 +123,15 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Featured Stories Section */}
-      <section className="section-features relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
-            <h2 className="fantasy-heading-cinzel text-3xl md:text-4xl font-bold text-center mb-12">
+      <section className="relative z-10 py-16 md:py-20 lg:py-24">
+        <div className="container">
+          <div className="glass rounded-2xl p-8 md:p-12">
+            <h2 className="title-section text-center mb-12 text-amber-400">
               Featured Story Adventures
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredStories.map((story, index) => (
-                <div key={index} className="glass-card bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:transform hover:scale-105 hover:border-amber-400/30 transition-all duration-300 group">
+                <div key={index} className="glass-card rounded-lg overflow-hidden hover:transform hover:scale-105  transition-all duration-300 group">
                   <div className="relative">
                     <img 
                       src={story.image} 
@@ -169,7 +169,7 @@ const HomePage: React.FC = () => {
             <div className="text-center mt-12">
               {!user && (
                 <Link to="/signup">
-                  <button className="fantasy-cta px-8 py-4 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+                  <button className="btn btn-primary btn-lg">
                     Join the Adventure Today!
                   </button>
                 </Link>

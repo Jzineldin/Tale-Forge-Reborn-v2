@@ -28,20 +28,28 @@ dev-debug.log
 node_modules/
 # Environment variables
 .env
+.env.*
+!.env.example
 .env.production
 .env.local
 .env.local.functions
 
-# Files with secrets
+# Files with secrets and API keys
 .mcp-config.json
 .mcp.json
+mcp.json
 deploy-env-vars.sh
 .claude/
+claude_desktop_config*.json
+!claude_desktop_config_example.json
 
 # PostgresTools config (contains database password)
 postgrestools.jsonc
 IMPORTANT_DATABASE_CREDENTIALS.md
+
+# IDE and editor configs that may contain secrets
 .vscode
+.cursor/
 # OS specific
 
 # Playwright test artifacts
@@ -53,4 +61,35 @@ tests/e2e/test-data/
 
 # Task files
 tasks.json
-tasks/ 
+tasks/
+
+# Security and secret files
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+serviceAccountKey.json
+service-account*.json
+credentials.json
+secrets.json
+config.secret.json
+
+# Database migration scripts with credentials
+*-direct.js
+check-db-*.js
+apply-*.js
+run-manual-*.js
+
+# Temporary and cache files
+.vite/
+.cache/
+tmp/
+temp/
+
+# Local backup scripts (keep these local only)
+backup-project.ps1
+quick-save.ps1
+restore-backup.ps1
+setup-git-safety.ps1 
