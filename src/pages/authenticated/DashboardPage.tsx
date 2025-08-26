@@ -175,14 +175,14 @@ const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="page-container">
+      <div className="container">
         {/* Welcome Header */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-8 text-center">
-          <h1 className="fantasy-heading-cinzel text-4xl md:text-5xl font-bold mb-4">
+        <div className="glass-card text-center mb-8">
+          <h1 className="title-hero mb-4">
             Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! ✨
           </h1>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto">
+          <p className="text-body text-xl max-w-3xl mx-auto">
             Ready to continue your storytelling journey? Create magical tales with our 5-step wizard and discover new adventures.
           </p>
         </div>
@@ -190,58 +190,58 @@ const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content - Stats Dashboard */}
           <div className="lg:col-span-2">
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
-              <h2 className="fantasy-heading-cinzel text-2xl font-bold mb-6 text-center">
+            <div className="glass-card">
+              <h2 className="title-section text-center mb-6">
                 📊 Your Story Journey
               </h2>
               
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-green-400 mb-1">
+                <div className="stat-card">
+                  <div className="stat-value text-success mb-1">
                     {userStats.storiesCreated}
                   </div>
-                  <div className="text-white/70 text-sm">Stories Created</div>
+                  <div className="stat-label">Stories Created</div>
                 </div>
-                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-blue-400 mb-1">
+                <div className="stat-card">
+                  <div className="stat-value text-accent mb-1">
                     {userStats.storiesRead}
                   </div>
-                  <div className="text-white/70 text-sm">Stories Read</div>
+                  <div className="stat-label">Stories Read</div>
                 </div>
-                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-purple-400 mb-1">
+                <div className="stat-card">
+                  <div className="stat-value text-accent mb-1">
                     {userStats.readingStreak}
                   </div>
-                  <div className="text-white/70 text-sm">Day Streak</div>
+                  <div className="stat-label">Day Streak</div>
                 </div>
-                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-amber-400 mb-1">
+                <div className="stat-card">
+                  <div className="stat-value text-primary mb-1">
                     {userStats.readingTime}
                   </div>
-                  <div className="text-white/70 text-sm">Hours Read</div>
+                  <div className="stat-label">Hours Read</div>
                 </div>
               </div>
 
               {/* Motivational Section */}
               <div className="text-center">
                 <div className="text-4xl mb-4">✨</div>
-                <h3 className="text-xl font-bold text-white mb-2">Keep Creating Magic!</h3>
-                <p className="text-white/70 mb-6">
+                <h3 className="title-card mb-2">Keep Creating Magic!</h3>
+                <p className="text-muted mb-6">
                   Every story you create adds to your amazing collection of adventures.
                 </p>
                 
                 {userStats.storiesCreated === 0 ? (
                   <Link
                     to="/create"
-                    className="inline-block bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
+                    className="btn btn-primary btn-lg"
                   >
                     Create Your First Story! 🎉
                   </Link>
                 ) : (
                   <Link
                     to="/create"
-                    className="inline-block bg-gradient-to-r from-purple-500 to-amber-500 hover:from-purple-600 hover:to-amber-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
+                    className="btn btn-primary btn-lg"
                   >
                     Create Another Adventure! 🚀
                   </Link>
@@ -253,14 +253,14 @@ const DashboardPage: React.FC = () => {
           {/* Sidebar - Recent Stories & Quick Actions */}
           <div className="space-y-6">
             {/* Recent Stories */}
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
+            <div className="glass-card">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="fantasy-heading-cinzel text-xl font-bold">
+                <h2 className="title-card">
                   📚 Recent Stories
                 </h2>
                 <Link 
                   to="/stories"
-                  className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-colors font-medium text-sm"
+                  className="btn btn-primary btn-sm"
                 >
                   View All →
                 </Link>
@@ -270,7 +270,7 @@ const DashboardPage: React.FC = () => {
                 {loading ? (
                   // Loading skeleton
                   Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                    <div key={index} className="glass-card">
                       <div className="p-3 space-y-2">
                         <div className="h-4 bg-white/20 rounded animate-pulse"></div>
                         <div className="h-3 bg-white/15 rounded animate-pulse w-3/4"></div>
@@ -282,16 +282,16 @@ const DashboardPage: React.FC = () => {
                     <Link
                       key={story.id}
                       to={`/stories/${story.id}`}
-                      className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all duration-300 group flex items-center space-x-3"
+                      className="glass-card hover:bg-white/10 transition-all duration-300 group flex items-center space-x-3"
                     >
                       <div className="w-12 h-12 bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-lg flex items-center justify-center">
                         <Icon name="book" size={20} className="text-amber-400/80" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-medium group-hover:text-amber-400 transition-colors truncate">
+                        <h3 className="text-white font-medium group-hover:text-primary transition-colors truncate">
                           {story.title}
                         </h3>
-                        <p className="text-white/60 text-xs">
+                        <p className="text-muted text-xs">
                           {story.isCompleted ? 'Complete' : `${story.progress}% read`} • {story.lastRead}
                         </p>
                       </div>
@@ -300,21 +300,21 @@ const DashboardPage: React.FC = () => {
                 ) : (
                   <div className="text-center py-8">
                     <Icon name="book" size={32} className="text-amber-400/50 mx-auto mb-2" />
-                    <p className="text-white/60 text-sm">No stories yet. Create your first story!</p>
+                    <p className="text-muted text-sm">No stories yet. Create your first story!</p>
                   </div>
                 )}
               </div>
 
               {/* Continue Reading Prompt */}
               {recentStories.length > 0 && !recentStories[0].isCompleted && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-lg">
+                <div className="alert alert-info mt-4">
                   <div className="text-center">
                     <p className="text-white text-sm mb-2">
                       📖 Continue "{recentStories[0].title}"
                     </p>
                     <Link 
                       to={`/stories/${recentStories[0].id}`}
-                      className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm inline-block"
+                      className="btn btn-primary btn-sm"
                     >
                       Continue Reading →
                     </Link>
@@ -324,8 +324,8 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
-              <h3 className="fantasy-heading-cinzel text-xl font-bold mb-6 text-center">
+            <div className="glass-card">
+              <h3 className="title-card text-center mb-6">
                 ⚡ Quick Actions
               </h3>
               <div className="space-y-3">
@@ -333,16 +333,16 @@ const DashboardPage: React.FC = () => {
                   <Link
                     key={index}
                     to={action.link}
-                    className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex items-center space-x-3"
+                    className="glass-card hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex items-center space-x-3"
                   >
                     <div className={`${action.color} rounded-lg p-2 group-hover:scale-110 transition-transform`}>
                       <Icon name={action.icon as any} size={16} className="text-white" />
                     </div>
                     <div>
-                      <div className="text-white font-medium group-hover:text-amber-400 transition-colors text-sm">
+                      <div className="text-white font-medium group-hover:text-primary transition-colors text-sm">
                         {action.title}
                       </div>
-                      <div className="text-white/60 text-xs">
+                      <div className="text-muted text-xs">
                         {action.description}
                       </div>
                     </div>

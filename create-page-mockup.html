@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tale Forge - Create Page Redesign Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .screen {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .screen-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #1a1a1a;
+        }
+        
+        /* Mode Selection */
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .mode-card {
+            padding: 30px;
+            border-radius: 16px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .easy-mode {
+            background: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+            color: white;
+        }
+        
+        .template-mode {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            color: white;
+        }
+        
+        .beta-mode {
+            background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            color: white;
+        }
+        
+        .mode-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 15px;
+        }
+        
+        .mode-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .mode-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .badge-new {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FFD700;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Difficulty Selection */
+        .difficulty-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .difficulty-card {
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .difficulty-card:hover {
+            border-color: #10B981;
+            background: #F0FDF4;
+            transform: translateX(10px);
+        }
+        
+        .difficulty-card.selected {
+            background: linear-gradient(135deg, #10B981, #06B6D4);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .difficulty-icon {
+            font-size: 40px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .difficulty-info {
+            flex: 1;
+        }
+        
+        .difficulty-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .difficulty-details {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .difficulty-time {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+        
+        /* Genre Grid */
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .genre-card {
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #E5E7EB;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .genre-card:hover {
+            border-color: #10B981;
+            background: #F0FDF4;
+            transform: scale(1.05);
+        }
+        
+        .genre-card.selected {
+            background: linear-gradient(135deg, #10B981, #06B6D4);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .genre-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .genre-name {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        /* Character Setup */
+        .setup-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            background: #F9FAFB;
+        }
+        
+        .setup-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .story-seed {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            font-style: italic;
+            color: #4B5563;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .generate-btn {
+            padding: 10px 20px;
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .generate-btn:hover {
+            background: #059669;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #10B981;
+        }
+        
+        .traits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .trait-checkbox {
+            padding: 10px;
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .trait-checkbox:hover {
+            border-color: #10B981;
+        }
+        
+        .trait-checkbox.selected {
+            background: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+        
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        
+        .nav-btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back {
+            background: #F3F4F6;
+            color: #4B5563;
+        }
+        
+        .btn-next, .btn-create {
+            background: linear-gradient(135deg, #10B981, #06B6D4);
+            color: white;
+        }
+        
+        .btn-create {
+            padding: 14px 40px;
+            font-size: 18px;
+        }
+        
+        .nav-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: #E5E7EB;
+            z-index: 1;
+        }
+        
+        .step:last-child::before {
+            display: none;
+        }
+        
+        .step.active::before {
+            background: #10B981;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step.active .step-circle {
+            background: #10B981;
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: #10B981;
+            color: white;
+        }
+        
+        .step-label {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+        
+        .step.active .step-label {
+            color: #10B981;
+            font-weight: bold;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .genre-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .traits-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .screen {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen 1: Mode Selection -->
+    <div class="container">
+        <div class="screen">
+            <h1 class="screen-title">Create Your Story ✨</h1>
+            
+            <div class="mode-grid">
+                <div class="mode-card easy-mode">
+                    <span class="badge-new">NEW!</span>
+                    <span class="mode-icon">🎯</span>
+                    <div class="mode-title">Easy Mode</div>
+                    <div class="mode-desc">Quick & Simple • 3 Steps</div>
+                </div>
+                
+                <div class="mode-card template-mode">
+                    <span class="mode-icon">📋</span>
+                    <div class="mode-title">Template Mode</div>
+                    <div class="mode-desc">Pre-made Stories • Instant</div>
+                </div>
+                
+                <div class="mode-card beta-mode">
+                    <span class="mode-icon">🛠️</span>
+                    <div class="mode-title">Beta (Advanced)</div>
+                    <div class="mode-desc">Full Control • 5 Steps</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Easy Mode - Difficulty Selection -->
+        <div class="screen">
+            <h1 class="screen-title">Easy Mode - Step 1</h1>
+            
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="step active">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Length</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Genre</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Character</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 style="font-size: 24px; margin-bottom: 30px; text-align: center;">How long should your story be?</h2>
+            
+            <div class="difficulty-cards">
+                <div class="difficulty-card">
+                    <div class="difficulty-icon">🌟</div>
+                    <div class="difficulty-info">
+                        <div class="difficulty-title">SHORT STORY</div>
+                        <div class="difficulty-details">40-80 words • Ages 4-6 • Simple vocabulary</div>
+                        <div class="difficulty-time">Perfect for bedtime • 2-3 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="difficulty-card selected">
+                    <div class="difficulty-icon">📖</div>
+                    <div class="difficulty-info">
+                        <div class="difficulty-title">MEDIUM STORY</div>
+                        <div class="difficulty-details">100-150 words • Ages 6-9 • Engaging plots</div>
+                        <div class="difficulty-time">Great for reading practice • 4-5 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="difficulty-card">
+                    <div class="difficulty-icon">📚</div>
+                    <div class="difficulty-info">
+                        <div class="difficulty-title">LONG STORY</div>
+                        <div class="difficulty-details">160-200 words • Ages 9-12 • Complex narratives</div>
+                        <div class="difficulty-time">Chapter book style • 6-8 minutes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn btn-back">← Back</button>
+                <button class="nav-btn btn-next">Next →</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Easy Mode - Genre Selection -->
+        <div class="screen">
+            <h1 class="screen-title">Easy Mode - Step 2</h1>
+            
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Length</div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Genre</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Character</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 style="font-size: 24px; margin-bottom: 30px; text-align: center;">What kind of story?</h2>
+            
+            <div class="genre-grid">
+                <div class="genre-card">
+                    <div class="genre-icon">🧙‍♂️</div>
+                    <div class="genre-name">FANTASY</div>
+                </div>
+                
+                <div class="genre-card selected">
+                    <div class="genre-icon">🚀</div>
+                    <div class="genre-name">SCI-FI</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">🦖</div>
+                    <div class="genre-name">ADVENTURE</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">🕵️</div>
+                    <div class="genre-name">MYSTERY</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">👸</div>
+                    <div class="genre-name">FAIRYTALE</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">🐾</div>
+                    <div class="genre-name">ANIMALS</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">🎓</div>
+                    <div class="genre-name">EDUCATION</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">😂</div>
+                    <div class="genre-name">FUNNY</div>
+                </div>
+                
+                <div class="genre-card">
+                    <div class="genre-icon">🌍</div>
+                    <div class="genre-name">NATURE</div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn btn-back">← Back</button>
+                <button class="nav-btn btn-next">Next →</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: Easy Mode - Character Setup -->
+        <div class="screen">
+            <h1 class="screen-title">Easy Mode - Step 3</h1>
+            
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Length</div>
+                    </div>
+                    <div class="step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Genre</div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Character</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 style="font-size: 24px; margin-bottom: 30px; text-align: center;">Personalize Your Story</h2>
+            
+            <div class="setup-section">
+                <div class="setup-title">
+                    <span>🎲</span>
+                    <span>AI Story Starter (Optional)</span>
+                </div>
+                <div class="story-seed">
+                    "A curious young astronaut discovers a hidden planet where robots and aliens work together to build the most amazing playground in the universe..."
+                </div>
+                <button class="generate-btn">🔄 Generate New Idea</button>
+            </div>
+            
+            <div class="setup-section">
+                <div class="setup-title">
+                    <span>👦</span>
+                    <span>Main Character Name</span>
+                </div>
+                <input type="text" class="input-field" placeholder="Enter your child's name" value="Alex">
+            </div>
+            
+            <div class="setup-section">
+                <div class="setup-title">
+                    <span>✨</span>
+                    <span>Character Traits (Optional)</span>
+                </div>
+                <div class="traits-grid">
+                    <div class="trait-checkbox selected">Brave</div>
+                    <div class="trait-checkbox">Curious</div>
+                    <div class="trait-checkbox selected">Kind</div>
+                    <div class="trait-checkbox">Smart</div>
+                    <div class="trait-checkbox">Funny</div>
+                    <div class="trait-checkbox">Creative</div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn btn-back">← Back</button>
+                <button class="nav-btn btn-create">Create Story! ✨</button>
+            </div>
+        </div>
+
+        <!-- Screen 5: Generation -->
+        <div class="screen" style="text-align: center; padding: 80px 40px;">
+            <h1 class="screen-title">✨ Creating Your Story ✨</h1>
+            
+            <div style="width: 100%; max-width: 500px; margin: 40px auto;">
+                <div style="background: #F3F4F6; border-radius: 20px; height: 20px; overflow: hidden;">
+                    <div style="background: linear-gradient(90deg, #10B981, #06B6D4); height: 100%; width: 65%; transition: width 0.5s ease; border-radius: 20px;"></div>
+                </div>
+                <div style="margin-top: 20px; font-size: 24px; font-weight: bold; color: #10B981;">65%</div>
+            </div>
+            
+            <div style="margin-top: 40px; color: #6B7280;">
+                <div style="margin-bottom: 10px;">📝 Writing Chapter 2 of 3...</div>
+                <div>🎨 Adding illustrations...</div>
+            </div>
+            
+            <div style="margin-top: 30px; color: #9CA3AF; font-size: 14px;">
+                Estimated time: 30 seconds
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="screen" style="background: linear-gradient(135deg, #F0FDF4, #ECFDF5); border: 2px solid #10B981;">
+            <h2 style="color: #10B981; margin-bottom: 20px;">🎯 Easy Mode Benefits</h2>
+            <ul style="line-height: 2; color: #4B5563;">
+                <li>✅ <strong>3 simple steps</strong> - No overwhelming options</li>
+                <li>✅ <strong>Under 60 seconds</strong> - Quick story creation</li>
+                <li>✅ <strong>AI-powered suggestions</strong> - Creative story seeds</li>
+                <li>✅ <strong>Age-appropriate content</strong> - Automatic complexity adjustment</li>
+                <li>✅ <strong>Mobile-friendly</strong> - Works great on phones and tablets</li>
+                <li>✅ <strong>Smart defaults</strong> - Pre-selected popular options</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity
+        document.querySelectorAll('.mode-card, .difficulty-card, .genre-card, .trait-checkbox').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected from siblings
+                const siblings = this.parentElement.children;
+                Array.from(siblings).forEach(sibling => {
+                    if (sibling !== this) {
+                        sibling.classList.remove('selected');
+                    }
+                });
+                // Toggle selected on clicked element
+                this.classList.toggle('selected');
+            });
+        });
+
+        // Simulate navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.classList.contains('btn-create')) {
+                    alert('🎉 Story creation would start here!\n\nThis would call the backend API with:\n- Difficulty: Medium (100-150 words)\n- Genre: Sci-Fi\n- Character: Alex (Brave, Kind)\n- Story Seed: Space adventure');
+                } else {
+                    alert('Navigation button clicked! In the real app, this would move between steps.');
+                }
+            });
+        });
+
+        // Simulate generate new idea
+        document.querySelectorAll('.generate-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const seeds = [
+                    "A young inventor builds a time machine from old toys and travels to meet dinosaurs who love to dance...",
+                    "In a magical library, books come alive at night and need help from a brave reader to save their stories...",
+                    "A friendly dragon who's afraid of flying must overcome their fear to save the cloud kingdom...",
+                    "Deep in the ocean, a small fish discovers they can talk to submarines and helps lost sailors find their way home..."
+                ];
+                const randomSeed = seeds[Math.floor(Math.random() * seeds.length)];
+                const seedElement = this.previousElementSibling;
+                if (seedElement && seedElement.classList.contains('story-seed')) {
+                    seedElement.textContent = `"${randomSeed}"`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
