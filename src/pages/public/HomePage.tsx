@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
 
       {/* Hero Section */}
       <section className="relative z-10 flex-1 flex items-center justify-center py-16 md:py-20 lg:py-24">
-        <div className="container text-center">
+        <div className="container-lg text-center">
           {/* Hero Container */}
           <div className="glass-card rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}

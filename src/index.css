@@ -319,19 +319,75 @@ main, .main-content {
   box-shadow: var(--shadow-lg);
 }
 
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  transition: all var(--transition-base) var(--ease);
+}
+
 /* ========================================
    CONTAINER STYLES
    ======================================== */
 
 .container {
   width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-.container-sm { max-width: 960px; }
-.container-lg { max-width: 1440px; }
+.container-sm {
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-md {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-lg {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Wizard Specific Container */
+.wizard-container {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1rem;
+}
+
+.wizard-content {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.wizard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  gap: 1rem;
+}
 
 /* ========================================
    UTILITY CLASSES
@@ -491,49 +547,97 @@ main, .main-content {
 
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  padding: 0;
 }
 
 .template-card {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 1.5rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
   transition: all var(--transition-base) var(--ease);
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .template-card:hover {
-  background: var(--glass-bg-hover);
   border-color: var(--color-primary);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+}
+
+.template-card.selected {
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+/* Simplified Template Card Content */
+.template-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .template-icon {
-  width: 3rem;
-  height: 3rem;
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.template-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(245, 158, 11, 0.15);
   color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 .template-title {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
+  line-height: 1.3;
 }
 
 .template-description {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  line-height: 1.5;
+  font-size: 0.813rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.template-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.75rem;
+}
+
+.template-cost {
+  font-weight: 600;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.template-difficulty {
+  color: var(--color-text-muted);
 }
 
 /* ========================================

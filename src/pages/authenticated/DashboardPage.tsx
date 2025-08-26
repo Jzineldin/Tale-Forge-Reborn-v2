@@ -176,7 +176,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="page-container">
-      <div className="container">
+      <div className="container-lg">
         {/* Welcome Header */}
         <div className="glass-card text-center mb-8">
           <h1 className="title-hero mb-4">

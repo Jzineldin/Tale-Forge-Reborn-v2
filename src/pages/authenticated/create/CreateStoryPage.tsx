@@ -8,6 +8,8 @@ import {
   Step5ReviewGenerate
 } from '@/components/organisms/story-creation-wizard';
 import StoryTemplateSelector from '@/components/organisms/story-creation-wizard/StoryTemplateSelector';
+import EasyModeFlow from '@/components/organisms/story-creation/EasyModeFlow';
+import ModeSelector from '@/components/organisms/story-creation/ModeSelector';
 import { useCreateStory } from '@/utils/storyHooks';
 import {
   validateStep1,
@@ -48,11 +50,12 @@ interface StoryData {
 
 const CreateStoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(0); // Start at 0 for template selection
+  const [step, setStep] = useState(0); // Start at 0 for mode selection
   // Removed duplicate isGenerating state - using isCreatingStory from hook instead
   const [validationErrors, setValidationErrors] = useState<StoryValidationError[]>([]);
   const [storyProgress, setStoryProgress] = useState(0);
   const [usingTemplate, setUsingTemplate] = useState(false);
+  const [usingEasyMode, setUsingEasyMode] = useState(false);
   const [storyData, setStoryData] = useState<StoryData>({
     childName: '',
     difficulty: 5, // Default medium difficulty
@@ -122,13 +125,28 @@ const CreateStoryPage: React.FC = () => {
     setUsingTemplate(true);
 
     // Skip to final review step for template users
-    setStep(5);
+    setStep(6);
+  };
+
+  // Handle Easy Mode selection
+  const handleEasyModeSelect = () => {
+    setUsingEasyMode(true);
+    setUsingTemplate(false);
+    // Easy Mode handles its own navigation
+  };
+
+  // Handle template selection from mode selector
+  const handleTemplateModeSelect = () => {
+    setUsingEasyMode(false);
+    setUsingTemplate(false); // Will be set to true when template is selected
+    setStep(1); // Go to template selector
   };
 
   // Handle custom creation
   const handleCustomCreate = () => {
+    setUsingEasyMode(false);
     setUsingTemplate(false);
-    setStep(1); // Start with step 1 for custom creation
+    setStep(2); // Start with step 2 for custom creation (after mode selection)
   };
 
   const validateCurrentStep = (): boolean => {
@@ -136,21 +154,22 @@ const CreateStoryPage: React.FC = () => {
 
     switch (step) {
       case 0:
-        // Template selection step - always valid
-        return true;
       case 1:
+        // Mode selection and template selection steps - always valid
+        return true;
+      case 2:
         errors = validateStep1(storyData);
         break;
-      case 2:
+      case 3:
         errors = validateStep2(storyData);
         break;
-      case 3:
+      case 4:
         errors = validateStep3(storyData);
         break;
-      case 4:
+      case 5:
         errors = validateStep4(storyData);
         break;
-      case 5:
+      case 6:
         errors = validateStep5(storyData);
         break;
     }
@@ -160,14 +179,14 @@ const CreateStoryPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (validateCurrentStep() && step < 5) {
+    if (validateCurrentStep() && step < 6) {
       setStep(step + 1);
       setValidationErrors([]); // Clear errors when moving to next step
     }
   };
 
   const handlePrevious = () => {
-    if (step > 1) {
+    if (step > 0) {
       setStep(step - 1);
       setValidationErrors([]); // Clear errors when going back
     }
@@ -249,8 +268,22 @@ const CreateStoryPage: React.FC = () => {
   };
 
   const renderStep = () => {
+    // If using Easy Mode, render it instead of the step-by-step wizard
+    if (usingEasyMode) {
+      return <EasyModeFlow />;
+    }
+
     switch (step) {
       case 0:
+        return (
+          <ModeSelector
+            onEasyMode={handleEasyModeSelect}
+            onTemplateMode={handleTemplateModeSelect}
+            onCustomMode={handleCustomCreate}
+          />
+        );
+
+      case 1:
         return (
           <StoryTemplateSelector
             onSelectTemplate={handleTemplateSelect}
@@ -258,7 +291,7 @@ const CreateStoryPage: React.FC = () => {
           />
         );
 
-      case 1:
+      case 2:
         return (
           <Step1StoryConcept
             storyData={storyData}
@@ -268,7 +301,7 @@ const CreateStoryPage: React.FC = () => {
           />
         );
 
-      case 2:
+      case 3:
         return (
           <Step2CharacterCreation
             storyData={storyData}
@@ -278,7 +311,7 @@ const CreateStoryPage: React.FC = () => {
           />
         );
 
-      case 3:
+      case 4:
         return (
           <Step3StorySetting
             storyData={storyData}
@@ -288,7 +321,7 @@ const CreateStoryPage: React.FC = () => {
           />
         );
 
-      case 4:
+      case 5:
         return (
           <Step4PlotElements
             storyData={storyData}
@@ -298,12 +331,12 @@ const CreateStoryPage: React.FC = () => {
           />
         );
 
-      case 5:
+      case 6:
         return (
           <Step5ReviewGenerate
             storyData={storyData}
             onSubmit={handleSubmit}
-            onPrevious={usingTemplate ? () => setStep(0) : handlePrevious}
+            onPrevious={usingTemplate ? () => setStep(1) : handlePrevious}
             isGenerating={isCreatingStory}
             usingTemplate={usingTemplate}
             onUpdateChildName={(name: string) => handleInputChange('childName', name)}
@@ -339,16 +372,21 @@ const CreateStoryPage: React.FC = () => {
 
   const progressSteps = getProgressSteps();
 
+  // Easy Mode renders its own complete UI
+  if (usingEasyMode) {
+    return renderStep();
+  }
+
   return (
     <div className="min-h-screen py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+      <div className="container-lg">
+        {/* Header - only show if not in Easy Mode */}
         <div className="refined-card backdrop-blur-lg bg-white/5 border border-amber-400/20 rounded-2xl p-8 mb-8 text-center">
           <h1 className="fantasy-heading-cinzel text-4xl md:text-5xl font-bold mb-4" id="create-story-heading">
             Create Your Magical Story ✨
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-6">
-            Follow our step-by-step wizard to craft a personalized interactive adventure
+            {step === 0 ? 'Choose how you\'d like to create your story' : 'Follow our step-by-step wizard to craft a personalized interactive adventure'}
           </p>
         </div>
 
