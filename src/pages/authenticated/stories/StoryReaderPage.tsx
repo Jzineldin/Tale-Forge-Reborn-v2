@@ -688,9 +688,9 @@ const StoryReaderPage: React.FC = () => {
         </p>
       </div>
     </div>
-    </div >
+    </div>
 
-  {/* Story Completion Modal */ }
+  {/* Story Completion Modal */}
 {
   showCompletionModal && story && (
     <div className="modal-backdrop">
