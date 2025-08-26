@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useStory } from '@/utils/performance.tsx';
 import Button from '@/components/atoms/Button';
-import Text from '@/components/atoms/Text';
-import StoryImage from '@/components/atoms/StoryImage';
+import { useAuth } from '@/providers/AuthContext';
+import { achievementService } from '@/services/achievementService';
+import { goalService } from '@/services/goalService';
+import { toast } from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
+import StoryCompletionModal from '@/components/molecules/StoryCompletionModal';
 
 interface StoryStats {
   totalWords: number;
@@ -15,14 +18,15 @@ interface StoryStats {
 
 const StoryCompletePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [showConfetti, setShowConfetti] = useState(true);
   const [isSharing, setIsSharing] = useState(false);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
-  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [showAudioModal, setShowAudioModal] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [stats, setStats] = useState<StoryStats | null>(null);
+  const [newAchievements, setNewAchievements] = useState<any[]>([]);
+  const [completedGoals, setCompletedGoals] = useState<any[]>([]);
 
   // Get story data
   const { data: story, isLoading, error } = useStory(id || null);
@@ -50,6 +54,48 @@ const StoryCompletePage: React.FC = () => {
     const timer = setTimeout(() => setShowConfetti(false), 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Track achievement and goal progress on story completion
+  useEffect(() => {
+    if (story && user?.id) {
+      const trackProgress = async () => {
+        try {
+          // Update achievement progress for story completion
+          await achievementService.updateUserProgress(user.id, {
+            stories_read: 1,
+            total_reading_time: parseInt(stats?.readingTime?.split(' ')[0] || '0'),
+            current_streak: 1
+          });
+
+          // Check for new achievements
+          await achievementService.checkAndAwardAchievements(user.id);
+
+          // Update goal progress
+          await goalService.updateGoalProgress(user.id, 'daily_story', 1);
+
+          // Check for new achievements after a short delay to allow processing
+          setTimeout(async () => {
+            const newAchievementsData = await achievementService.getUnclaimedAchievements(user.id);
+            if (newAchievementsData.length > 0) {
+              setNewAchievements(newAchievementsData);
+              toast.success(`🏆 You unlocked ${newAchievementsData.length} new achievement${newAchievementsData.length > 1 ? 's' : ''}!`);
+            }
+          }, 1000);
+
+          // Check for completed goals
+          const goalProgress = await goalService.getUserGoalsWithProgress(user.id);
+          const newlyCompleted = goalProgress.filter(g => g.goal.completed && !g.goal.completed_at);
+          if (newlyCompleted.length > 0) {
+            setCompletedGoals(newlyCompleted);
+          }
+        } catch (error) {
+          console.error('Error tracking story completion progress:', error);
+        }
+      };
+
+      trackProgress();
+    }
+  }, [story, user?.id, stats]);
 
   const handleShareToLibrary = async () => {
     if (!story) return;
@@ -100,21 +146,13 @@ const StoryCompletePage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleGenerateAudio = async () => {
-    if (!story) return;
-    
-    setIsGeneratingAudio(true);
-    try {
-      // Placeholder for TTS generation
-      // In real implementation, this would call a TTS service
-      setTimeout(() => {
-        setAudioUrl('/placeholder-audio.mp3');
-        setIsGeneratingAudio(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Error generating audio:', error);
-      setIsGeneratingAudio(false);
-    }
+  const handleOpenAudioModal = () => {
+    setShowAudioModal(true);
+  };
+
+  const handleAudioPurchased = (audioUrl: string) => {
+    setAudioUrl(audioUrl);
+    setShowAudioModal(false);
   };
 
   const handleSocialShare = () => {
@@ -253,23 +291,28 @@ const StoryCompletePage: React.FC = () => {
 
           {/* Generate Audio */}
           <div className="glass-card p-6 rounded-2xl">
-            <div className="text-4xl mb-4">🎵</div>
+            <div className="text-4xl mb-4">🎧</div>
             <h3 className="fantasy-heading text-xl mb-3">Audio Narration</h3>
             <p className="text-white/70 text-sm mb-4">
-              Generate AI narration of your story for a magical listening experience.
+              Add professional AI narration to bring your story to life for bedtime listening.
             </p>
-            <Button
-              onClick={handleGenerateAudio}
-              disabled={isGeneratingAudio}
-              variant="magical"
-              className="w-full"
-            >
-              {isGeneratingAudio ? 'Generating...' : '🎙️ Create Audio'}
-            </Button>
-            {audioUrl && (
-              <audio controls className="w-full mt-3">
-                <source src={audioUrl} type="audio/mpeg" />
-              </audio>
+            {audioUrl ? (
+              <div>
+                <audio controls className="w-full mb-3">
+                  <source src={audioUrl} type="audio/mpeg" />
+                </audio>
+                <Button variant="outline" className="w-full" disabled>
+                  ✅ Audio Available
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={handleOpenAudioModal}
+                variant="magical"
+                className="w-full"
+              >
+                🎙️ Add Narration
+              </Button>
             )}
           </div>
 
@@ -356,6 +399,19 @@ const StoryCompletePage: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Audio Purchase Modal */}
+        {story && (
+          <StoryCompletionModal
+            isOpen={showAudioModal}
+            onClose={() => setShowAudioModal(false)}
+            storyId={story.id}
+            storyTitle={story.title}
+            originalStoryCost={story.cost || 10} // Use story cost from database or fallback
+            chapterCount={story.segments?.length || 0}
+            onAudioPurchased={handleAudioPurchased}
+          />
         )}
       </div>
     </div>

@@ -2,8 +2,8 @@
 // 2025 Production-Ready Analytics with Supabase MCP Integration
 
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Users, BookOpen, Clock, Star, Zap, Globe, Heart } from 'lucide-react';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { TrendingUp, Users, BookOpen, Star, Zap, Globe, Heart } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface AnalyticsData {
@@ -359,7 +359,7 @@ export const AnalyticsDashboard: React.FC = () => {
                   fill="#8884d8"
                   dataKey="count"
                 >
-                  {analytics.topGenres.map((entry, index) => (
+                  {analytics.topGenres.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

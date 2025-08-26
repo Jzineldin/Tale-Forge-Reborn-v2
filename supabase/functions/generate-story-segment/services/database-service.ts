@@ -163,7 +163,8 @@ export class Database implements DatabaseService {
     storyId: string,
     segmentText: string,
     choices: any[],
-    previousSegmentId: string | null = null
+    previousSegmentId: string | null = null,
+    imagePrompt: string | null = null
   ): NewSegment {
     const wordCount = segmentText.split(' ').filter(word => word.trim().length > 0).length;
     
@@ -174,6 +175,7 @@ export class Database implements DatabaseService {
       is_end: false,
       parent_segment_id: previousSegmentId,
       word_count: wordCount,
+      image_prompt: imagePrompt, // Include image prompt
       created_at: new Date().toISOString()
     };
   }

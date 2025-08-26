@@ -1,0 +1,271 @@
+# Tale Forge - AI-Powered Interactive Storytelling Platform - Product Requirements Document
+
+## Project Overview
+
+Tale Forge is an AI-powered interactive storytelling platform designed specifically for children aged 4-12. The platform creates personalized, educational, and safe story experiences where children make choices that shape the narrative, accompanied by AI-generated images and optional voice narration.
+
+## Current State
+
+- **Existing Codebase**: 350k+ lines with significant technical debt
+- **Technology Stack**: React 18, TypeScript, Supabase, Tailwind CSS
+- **Database**: PostgreSQL with 57+ tables including stories, users, analytics
+- **Integrations**: OpenAI GPT, DALL-E, ElevenLabs TTS, Stripe payments
+- **Deployment**: Vercel frontend, Supabase backend
+
+## Project Goals
+
+### Primary Objectives
+1. **Reduce Codebase Size**: From 350k+ lines to ~35k lines (90% reduction)
+2. **Improve Maintainability**: Clean, well-organized, documented code
+3. **Enhance Performance**: Faster loading, better UX, optimized bundles
+4. **Fix Core Issues**: Resolve broken functionality and technical debt
+5. **Preserve Features**: Maintain all essential functionality
+
+### Success Metrics
+- **Performance**: Page load times < 3 seconds
+- **Code Quality**: 90%+ reduction in lines of code
+- **Functionality**: 100% feature parity with current system
+- **Maintainability**: Clear documentation, consistent patterns
+- **User Experience**: Mobile-responsive, accessible design
+
+## Core Features to Rebuild
+
+### 1. Authentication System
+- Email/password registration and login
+- OAuth integration (Google, Apple)
+- Password reset functionality
+- Email verification
+- Session management
+- Role-based access control (User, Admin)
+
+### 2. Story Creation Engine
+- **5-Step Creation Wizard**:
+  - Step 1: Target audience selection (age groups 4-6, 7-9, 10-12)
+  - Step 2: Genre selection (Adventure, Fantasy, Mystery, Educational, etc.)
+  - Step 3: Character customization (appearance, personality, abilities)
+  - Step 4: Setting and theme selection
+  - Step 5: Review and generate
+- **AI Integration**: OpenAI GPT for story generation
+- **Image Generation**: DALL-E/Stable Diffusion integration
+- **Voice Narration**: ElevenLabs TTS integration
+- **Content Safety**: Age-appropriate filtering and moderation
+
+### 3. Story Reading Experience
+- **Interactive Story Reader**: Choice-driven narrative progression
+- **Media Integration**: Text, images, and audio seamlessly combined
+- **Progress Tracking**: Save reading progress and choices made
+- **Bookmark System**: Save favorite stories and moments
+- **Sharing Features**: Export stories, share with family
+
+### 4. User Management
+- **Personal Profile**: Avatar, preferences, reading history
+- **Story Library**: Personal collection of created and saved stories
+- **Account Settings**: Profile management, privacy controls
+- **Subscription Management**: Free, Premium, Pro, Family tiers
+- **Activity Dashboard**: Reading progress, creation history
+
+### 5. Content Discovery
+- **Featured Stories**: Curated high-quality content
+- **Search & Filters**: Find stories by genre, age group, themes
+- **Recommendations**: AI-powered story suggestions
+- **Public Gallery**: Browse community-created stories
+- **Collections**: Themed story collections
+
+### 6. Admin Dashboard
+- **User Management**: View, manage, and moderate users
+- **Content Moderation**: Review and approve user-generated content
+- **Analytics Dashboard**: Usage metrics, engagement data
+- **System Configuration**: Feature flags, content policies
+- **Financial Reporting**: Subscription and usage analytics
+
+### 7. Business Features
+- **Subscription Tiers**:
+  - Free: 3 stories/month, basic features
+  - Premium ($9.99/month): 20 stories/month, voice narration
+  - Pro ($19.99/month): Unlimited stories, advanced customization
+  - Family ($29.99/month): Multiple child profiles, parental controls
+- **Payment Integration**: Stripe for subscriptions and one-time purchases
+- **Usage Tracking**: Monitor API usage and costs
+- **Credit System**: Flexible pricing for story generation
+
+## Technical Requirements
+
+### Frontend Architecture
+- **Framework**: React 18+ with TypeScript
+- **Routing**: React Router v6 (25 routes vs current 50+)
+- **State Management**: React Context + useReducer (no external libraries)
+- **Styling**: Tailwind CSS with custom component system
+- **Forms**: React Hook Form with Zod validation
+- **Testing**: Vitest for unit tests, Playwright for e2e
+
+### Backend Architecture
+- **Database**: Supabase PostgreSQL
+- **Authentication**: Supabase Auth
+- **Storage**: Supabase Storage for images and audio
+- **API**: Supabase Edge Functions (Deno)
+- **Real-time**: Supabase Realtime for live updates
+
+### External Integrations
+- **AI Text Generation**: OpenAI GPT-4 for story creation
+- **Image Generation**: OpenAI DALL-E 3 for story illustrations
+- **Text-to-Speech**: ElevenLabs for voice narration
+- **Payments**: Stripe for subscription management
+- **Analytics**: Built-in analytics with Supabase
+
+### Performance Requirements
+- **Page Load Time**: < 3 seconds for all main views
+- **Bundle Size**: < 1MB gzipped for main bundle
+- **API Response Time**: < 2 seconds for story generation
+- **Mobile Performance**: 90+ Lighthouse score
+- **Accessibility**: WCAG 2.1 AA compliance
+
+## Implementation Phases
+
+### Phase 1: Foundation (Week 1)
+**Deliverables**: Basic app structure, authentication, core layout
+- Project setup with clean folder structure
+- Authentication system (login, register, logout)
+- Core layout components (header, nav, footer)
+- Routing structure implementation
+- Error handling and loading states
+- Basic responsive design
+
+### Phase 2: User System (Week 2) 
+**Deliverables**: Complete user management and account features
+- User profile management
+- Account settings panel
+- Subscription tier display
+- Personal story library
+- Reading progress tracking
+- User preferences system
+
+### Phase 3: Story Creation (Week 3)
+**Deliverables**: Full story creation workflow
+- 5-step creation wizard implementation
+- Character customization system
+- Genre and theme selection
+- AI prompt generation and optimization
+- Story generation API integration
+- Creation progress tracking
+
+### Phase 4: Story Experience (Week 4)
+**Deliverables**: Story reading and interaction system
+- Interactive story reader interface
+- Choice-driven narrative system
+- Media integration (text, images, audio)
+- Reading progress and bookmarks
+- Story sharing and export features
+
+### Phase 5: Admin & Business (Week 5)
+**Deliverables**: Admin panel and business logic
+- Admin dashboard with user management
+- Content moderation tools
+- Analytics and reporting
+- Subscription management
+- Payment integration and billing
+
+### Phase 6: Polish & Launch (Week 6)
+**Deliverables**: Production-ready application
+- Performance optimization
+- Accessibility improvements
+- Mobile responsiveness fine-tuning
+- Testing and quality assurance
+- Deployment and monitoring setup
+
+## Database Schema Requirements
+
+### Core Tables (Simplified from current 57+ tables)
+- **users**: User accounts and profiles
+- **stories**: Generated stories with metadata
+- **story_segments**: Individual story parts and choices
+- **user_stories**: Personal story library relationships
+- **subscriptions**: User subscription data
+- **usage_tracking**: API usage and billing data
+- **admin_actions**: Admin activity logging
+
+### Key Relationships
+- Users have many stories (created and saved)
+- Stories have many segments (branching narrative)
+- Users have subscription tiers with usage limits
+- All content has moderation status tracking
+
+## Content Safety & Moderation
+
+### Automated Safety Measures
+- **AI Content Filtering**: OpenAI moderation API for generated content
+- **Age Appropriateness**: Content scoring based on target age groups
+- **Language Safety**: Profanity and inappropriate content detection
+- **Image Moderation**: Visual content safety validation
+
+### Manual Moderation Tools
+- **Admin Review Queue**: Flagged content requiring human review
+- **User Reporting**: Community-driven content flagging
+- **Content Guidelines**: Clear policies for acceptable content
+- **Appeal Process**: System for handling moderation disputes
+
+## Privacy & Security
+
+### Data Protection
+- **COPPA Compliance**: Special protections for users under 13
+- **GDPR Compliance**: EU privacy regulation adherence
+- **Data Minimization**: Collect only necessary information
+- **Secure Storage**: Encrypted data at rest and in transit
+
+### Security Features
+- **Authentication Security**: Secure password policies, 2FA options
+- **API Security**: Rate limiting, input validation, authorization
+- **Content Security**: XSS protection, CSRF tokens
+- **Infrastructure Security**: Supabase security best practices
+
+## Monitoring & Analytics
+
+### User Analytics
+- **Engagement Metrics**: Story creation, reading, and completion rates
+- **User Journey**: Onboarding flow and feature adoption
+- **Content Performance**: Most popular stories and themes
+- **Retention Analysis**: User return patterns and churn prediction
+
+### Technical Monitoring
+- **Performance Metrics**: Page load times, API response times
+- **Error Tracking**: JavaScript errors and API failures
+- **Infrastructure Monitoring**: Database performance, edge function health
+- **Cost Tracking**: AI API usage and infrastructure costs
+
+## Success Criteria
+
+### Technical Success
+- ✅ 90% reduction in codebase size (35k vs 350k lines)
+- ✅ Page load times under 3 seconds
+- ✅ Mobile Lighthouse score 90+
+- ✅ Zero critical security vulnerabilities
+- ✅ 99.9% uptime
+
+### User Experience Success
+- ✅ 100% feature parity with current system
+- ✅ Improved mobile experience (responsive design)
+- ✅ Faster story generation (under 30 seconds)
+- ✅ Seamless payment and subscription flow
+- ✅ Accessible to users with disabilities
+
+### Business Success
+- ✅ Maintain current user base during migration
+- ✅ Reduce infrastructure costs by 50%
+- ✅ Improve development velocity by 300%
+- ✅ Enable easy addition of new features
+- ✅ Establish scalable architecture for growth
+
+## Migration Strategy
+
+### Data Migration
+- **User Data**: Preserve all user accounts and preferences
+- **Story Content**: Migrate all existing stories and progress
+- **Subscription Data**: Maintain active subscriptions
+- **Analytics History**: Preserve historical usage data
+
+### Deployment Strategy
+- **Staging Environment**: Full testing environment for validation
+- **Feature Flags**: Gradual rollout of new features
+- **A/B Testing**: Compare old vs new system performance
+- **Rollback Plan**: Ability to revert to old system if needed
+
+This PRD defines a comprehensive rebuild of Tale Forge that maintains all essential functionality while dramatically improving code quality, performance, and maintainability. The 6-phase implementation approach ensures systematic progress while minimizing risk to the existing user base.

@@ -68,6 +68,7 @@ export class Validation implements ValidationService {
     let storyId: string | undefined;
     let choiceIndex: number | undefined;
     let authHeader: string | undefined;
+    let templateContext: any;
     
     // Check authorization header
     authHeader = request.headers.get('Authorization') || undefined;
@@ -80,6 +81,7 @@ export class Validation implements ValidationService {
       const body = await request.json();
       storyId = body.storyId;
       choiceIndex = body.choiceIndex;
+      templateContext = body.templateContext; // Extract template context
       
       // Validate storyId
       if (!storyId || typeof storyId !== 'string') {
@@ -110,6 +112,7 @@ export class Validation implements ValidationService {
       storyId,
       choiceIndex,
       authHeader,
+      templateContext,
       errors: errors.length > 0 ? errors : undefined
     };
   }

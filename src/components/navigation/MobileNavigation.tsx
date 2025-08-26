@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthContext';
+import { CreditBalanceIndicator } from '@/components/business/CreditDisplay';
 import Text from '@/components/atoms/Text';
-import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 
 const MobileNavigation: React.FC = () => {
@@ -19,8 +19,7 @@ const MobileNavigation: React.FC = () => {
         { name: 'Home', path: '/dashboard', icon: 'home' },
         { name: 'Stories', path: '/stories', icon: 'book' },
         { name: 'Create', path: '/create', icon: 'plus' },
-        { name: 'Search', path: '/search', icon: 'search' },
-        { name: 'Account', path: '/account', icon: 'user' },
+        { name: 'More', path: '#more', icon: 'menu', isDropdown: true },
       ]
     : [
         { name: 'Home', path: '/', icon: 'home' },
@@ -28,6 +27,11 @@ const MobileNavigation: React.FC = () => {
         { name: 'Showcase', path: '/showcase', icon: 'star' },
         { name: 'Sign In', path: '/signin', icon: 'key' },
       ];
+
+  const comingSoonItems = [
+    { name: 'Templates', path: '/templates', icon: 'book' },
+    { name: 'Achievements', path: '/achievements', icon: 'trophy' },
+  ];
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -43,21 +47,24 @@ const MobileNavigation: React.FC = () => {
             Tale Forge
           </Text>
         </Link>
-        <button
-          onClick={toggleMenu}
-          className="inline-flex items-center justify-center p-2 rounded-md text-white/80 hover:text-white hover:bg-white/10 focus:outline-none transition-colors duration-200"
-        >
-          <span className="sr-only">Open main menu</span>
-          {isOpen ? (
-            <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          {user && <CreditBalanceIndicator size="sm" />}
+          <button
+            onClick={toggleMenu}
+            className="inline-flex items-center justify-center p-2 rounded-md text-white/80 hover:text-white hover:bg-white/10 focus:outline-none transition-colors duration-200"
+          >
+            <span className="sr-only">Open main menu</span>
+            {isOpen ? (
+              <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -94,6 +101,14 @@ const MobileNavigation: React.FC = () => {
                 </div>
               </div>
               <div className="mt-3 space-y-1">
+                <Link
+                  to="/pricing"
+                  className="block px-4 py-2 text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 flex items-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Icon name="star" size={16} className="mr-3" />
+                  Pricing
+                </Link>
                 <Link
                   to="/notifications"
                   className="block px-4 py-2 text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 flex items-center"

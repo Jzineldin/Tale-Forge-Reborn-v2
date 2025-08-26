@@ -11,6 +11,8 @@ import { choiceParser } from './services/choice-parser.ts';
 import { database } from './services/database-service.ts';
 import { promptBuilder } from './services/prompt-builder.ts';
 import { validation } from './services/validation-service.ts';
+import { imagePromptBuilder } from './services/image-prompt-builder.ts';
+import { characterReferenceManager } from './services/character-reference-service.ts';
 import { CORS_HEADERS } from './types/interfaces.ts';
 
 console.log("Generate Story Segment function started (REFACTORED + 2025 STREAMING)");
@@ -51,7 +53,7 @@ serve(async (req) => {
     }
 
     // Extract validated data
-    const { storyId, choiceIndex, authHeader } = validationResult.requestValidation!;
+    const { storyId, choiceIndex, authHeader, templateContext } = validationResult.requestValidation!;
     
     // 2. SUPABASE CLIENT SETUP
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -84,7 +86,7 @@ serve(async (req) => {
       ? previousSegment.choices[choiceIndex].text
       : undefined;
       
-    const prompt = promptBuilder.buildPrompt(story, previousSegment, userChoice, userCharacters);
+    const prompt = promptBuilder.buildPrompt(story, previousSegment, userChoice, userCharacters, templateContext);
 
     // 5. AI GENERATION PHASE - Using AIProviderService
     console.log('🤖 Generating story content with AI providers...');
@@ -97,7 +99,31 @@ serve(async (req) => {
     
     const choices = await choiceParser.parseChoices(aiResponse.choicesText, aiResponse.segmentText);
 
-    // 7. DATABASE PERSISTENCE PHASE - Using DatabaseService
+    // 7. ENHANCED IMAGE PROMPT GENERATION - With character consistency
+    console.log('🎨 Generating enhanced intelligent image prompt...');
+    
+    // Check if we need character consistency
+    const needsConsistency = characterReferenceManager.needsCharacterConsistency(
+      aiResponse.segmentText, 
+      ''
+    );
+    
+    const imagePrompt = imagePromptBuilder.buildImagePrompt(
+      story, 
+      aiResponse.segmentText, 
+      [previousSegment].filter(Boolean), // Previous segments for context
+      userCharacters // Character consistency
+    );
+    
+    console.log('🎨 Enhanced image prompt generated:', imagePrompt.substring(0, 120) + '...');
+    
+    if (needsConsistency) {
+      console.log('🎯 Character consistency will be applied during image generation');
+      const mainCharacter = characterReferenceManager.extractMainCharacter(aiResponse.segmentText);
+      console.log('👤 Main character detected:', mainCharacter);
+    }
+    
+    // 8. DATABASE PERSISTENCE PHASE - Using DatabaseService
     console.log('💾 Saving new segment to database...');
     
     const nextPosition = await database.getNextPosition(storyId!, supabase);
@@ -105,12 +131,48 @@ serve(async (req) => {
       storyId!,
       aiResponse.segmentText,
       choices,
-      previousSegment?.id || null
+      previousSegment?.id || null,
+      imagePrompt // Pass image prompt to be saved
     );
     
     const newSegment = await database.saveSegment(newSegmentData, supabase);
 
-    // 8. ANALYTICS & RESPONSE PHASE
+    // 9. IMAGE GENERATION PHASE - Generate image for the new segment
+    console.log('🖼️ Triggering background image generation...');
+    try {
+      // Call regenerate-image function to generate the image
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const authHeader = req.headers.get('Authorization');
+      
+      if (supabaseUrl && authHeader && imagePrompt) {
+        // Make async call to regenerate-image function
+        fetch(`${supabaseUrl}/functions/v1/regenerate-image`, {
+          method: 'POST',
+          headers: {
+            'Authorization': authHeader,
+            'Content-Type': 'application/json',
+            'apikey': Deno.env.get('SUPABASE_ANON_KEY') || ''
+          },
+          body: JSON.stringify({
+            segmentId: newSegment.id,
+            imagePrompt: imagePrompt
+          })
+        }).then(response => {
+          if (response.ok) {
+            console.log('✅ Image generation started successfully for segment:', newSegment.id);
+          } else {
+            console.error('❌ Image generation failed for segment:', newSegment.id, response.status);
+          }
+        }).catch(error => {
+          console.error('❌ Error triggering image generation:', error);
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error setting up image generation:', error);
+      // Don't fail the entire segment creation if image generation fails
+    }
+
+    // 10. ANALYTICS & RESPONSE PHASE
     console.log(`📈 AI PROVIDER PERFORMANCE METRICS:`);
     console.log(`   • Provider used: ${aiResponse.provider}`);
     console.log(`   • Method: SINGLE STRUCTURED JSON CALL`);
@@ -123,10 +185,7 @@ serve(async (req) => {
       console.log(`⚠️ NOTICE: Primary OpenAI provider not used - using ${aiResponse.provider} fallback`);
     }
 
-    // Generate image prompt for this segment
-    const imagePrompt = `Illustration for a children's story segment: ${aiResponse.segmentText.substring(0, 100)}...`;
-
-    // 9. SUCCESS RESPONSE
+    // 11. SUCCESS RESPONSE
     return new Response(
       JSON.stringify({ 
         success: true, 

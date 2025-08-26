@@ -3,6 +3,11 @@ import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 import { useAuth } from '@/providers/AuthContext';
 import { supabase } from '@/lib/supabase';
+import DatabaseExaminer from '@/components/debug/DatabaseExaminer';
+import AdminCreditTest from '@/components/debug/AdminCreditTest';
+import RouteProtectionTest from '@/components/debug/RouteProtectionTest';
+import AuthSecurityTest from '@/components/debug/AuthSecurityTest';
+import ButtonStyleTest from '@/components/debug/ButtonStyleTest';
 
 interface SystemStats {
   version: string;
@@ -18,7 +23,7 @@ interface SystemStats {
 }
 
 const AdminSystemPage: React.FC = () => {
-  const { user: currentUser } = useAuth();
+  const { } = useAuth();
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [cacheCleared, setCacheCleared] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -404,6 +409,31 @@ const AdminSystemPage: React.FC = () => {
               </Button>
             </div>
           </div>
+        </div>
+
+        {/* Route Protection System Test */}
+        <div className="mt-8">
+          <RouteProtectionTest />
+        </div>
+
+        {/* Enhanced Authentication Security Test */}
+        <div className="mt-8">
+          <AuthSecurityTest />
+        </div>
+
+        {/* Admin Credit System Test */}
+        <div className="mt-8">
+          <AdminCreditTest />
+        </div>
+
+        {/* Button Style Test */}
+        <div className="mt-8">
+          <ButtonStyleTest />
+        </div>
+
+        {/* Database Examination Section */}
+        <div className="mt-8">
+          <DatabaseExaminer />
         </div>
       </div>
     </div>

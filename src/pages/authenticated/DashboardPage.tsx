@@ -146,24 +146,31 @@ const DashboardPage: React.FC = () => {
   const quickActions = [
     {
       title: 'Create New Story',
-      description: 'Start crafting a magical tale',
+      description: 'Start the 5-step wizard',
       icon: 'plus',
       color: 'bg-green-500',
       link: '/create'
     },
     {
-      title: 'Discover Stories',
-      description: 'Browse community tales',
-      icon: 'search',
-      color: 'bg-purple-500',
-      link: '/stories/discover'
-    },
-    {
-      title: 'My Story Library',
+      title: 'My Stories',
       description: 'View all your stories',
       icon: 'book',
       color: 'bg-blue-500',
-      link: '/stories/library'
+      link: '/stories'
+    },
+    {
+      title: 'Template Gallery',
+      description: 'Coming soon!',
+      icon: 'book',
+      color: 'bg-purple-500/50',
+      link: '/templates'
+    },
+    {
+      title: 'Achievements',
+      description: 'Coming soon!',
+      icon: 'trophy',
+      color: 'bg-amber-500/50',
+      link: '/achievements'
     }
   ];
 
@@ -176,205 +183,171 @@ const DashboardPage: React.FC = () => {
             Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! ✨
           </h1>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            Ready to continue your storytelling journey? Here's what's waiting for you in your magical universe.
+            Ready to continue your storytelling journey? Create magical tales with our 5-step wizard and discover new adventures.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content - Recent Stories */}
-          <div className="lg:col-span-2 space-y-8">
+          {/* Main Content - Stats Dashboard */}
+          <div className="lg:col-span-2">
+            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
+              <h2 className="fantasy-heading-cinzel text-2xl font-bold mb-6 text-center">
+                📊 Your Story Journey
+              </h2>
+              
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-green-400 mb-1">
+                    {userStats.storiesCreated}
+                  </div>
+                  <div className="text-white/70 text-sm">Stories Created</div>
+                </div>
+                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-blue-400 mb-1">
+                    {userStats.storiesRead}
+                  </div>
+                  <div className="text-white/70 text-sm">Stories Read</div>
+                </div>
+                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-purple-400 mb-1">
+                    {userStats.readingStreak}
+                  </div>
+                  <div className="text-white/70 text-sm">Day Streak</div>
+                </div>
+                <div className="glass-card bg-white/10 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-amber-400 mb-1">
+                    {userStats.readingTime}
+                  </div>
+                  <div className="text-white/70 text-sm">Hours Read</div>
+                </div>
+              </div>
+
+              {/* Motivational Section */}
+              <div className="text-center">
+                <div className="text-4xl mb-4">✨</div>
+                <h3 className="text-xl font-bold text-white mb-2">Keep Creating Magic!</h3>
+                <p className="text-white/70 mb-6">
+                  Every story you create adds to your amazing collection of adventures.
+                </p>
+                
+                {userStats.storiesCreated === 0 ? (
+                  <Link
+                    to="/create"
+                    className="inline-block bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
+                  >
+                    Create Your First Story! 🎉
+                  </Link>
+                ) : (
+                  <Link
+                    to="/create"
+                    className="inline-block bg-gradient-to-r from-purple-500 to-amber-500 hover:from-purple-600 hover:to-amber-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
+                  >
+                    Create Another Adventure! 🚀
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Sidebar - Recent Stories & Quick Actions */}
+          <div className="space-y-6">
             {/* Recent Stories */}
             <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="fantasy-heading-cinzel text-2xl font-bold">
+                <h2 className="fantasy-heading-cinzel text-xl font-bold">
                   📚 Recent Stories
                 </h2>
                 <Link 
-                  to="/stories/library"
-                  className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                  to="/stories"
+                  className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-colors font-medium text-sm"
                 >
-                  View All Stories →
+                  View All →
                 </Link>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
                 {loading ? (
                   // Loading skeleton
-                  Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-                      <div className="h-32 bg-white/10 animate-pulse"></div>
-                      <div className="p-4 space-y-2">
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                      <div className="p-3 space-y-2">
                         <div className="h-4 bg-white/20 rounded animate-pulse"></div>
                         <div className="h-3 bg-white/15 rounded animate-pulse w-3/4"></div>
-                        <div className="h-3 bg-white/10 rounded animate-pulse w-1/2"></div>
                       </div>
                     </div>
                   ))
                 ) : recentStories.length > 0 ? (
-                  recentStories.map((story) => (
-                  <Link
-                    key={story.id}
-                    to={`/stories/${story.id}`}
-                    className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 group"
-                  >
-                    {/* Story Image */}
-                    <div className="relative h-32 bg-gradient-to-br from-purple-900/20 to-blue-900/20">
-                      <img 
-                        src={story.imageUrl} 
-                        alt={story.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                        }}
-                      />
-                      <div className="hidden w-full h-full bg-gradient-to-br from-purple-900/50 to-blue-900/50 flex items-center justify-center">
-                        <Icon name="book" size={32} className="text-amber-400/50" />
+                  recentStories.slice(0, 3).map((story) => (
+                    <Link
+                      key={story.id}
+                      to={`/stories/${story.id}`}
+                      className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all duration-300 group flex items-center space-x-3"
+                    >
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-lg flex items-center justify-center">
+                        <Icon name="book" size={20} className="text-amber-400/80" />
                       </div>
-                      
-                      {/* Status Badge */}
-                      <div className="absolute top-2 right-2">
-                        {story.isCompleted ? (
-                          <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                            ✓ Complete
-                          </span>
-                        ) : (
-                          <span className="bg-amber-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                            {story.progress}% Read
-                          </span>
-                        )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-white font-medium group-hover:text-amber-400 transition-colors truncate">
+                          {story.title}
+                        </h3>
+                        <p className="text-white/60 text-xs">
+                          {story.isCompleted ? 'Complete' : `${story.progress}% read`} • {story.lastRead}
+                        </p>
                       </div>
-
-                      {/* Genre Badge */}
-                      <div className="absolute top-2 left-2">
-                        <span className="bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
-                          {story.genreLabel}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Story Info */}
-                    <div className="p-4">
-                      <h3 className="text-white font-bold mb-2 group-hover:text-amber-400 transition-colors line-clamp-1">
-                        {story.title}
-                      </h3>
-                      <p className="text-white/70 text-sm mb-3 line-clamp-2">
-                        {story.description}
-                      </p>
-
-                      {/* Progress Bar */}
-                      {!story.isCompleted && (
-                        <div className="mb-3">
-                          <div className="w-full bg-white/20 rounded-full h-2">
-                            <div 
-                              className="bg-amber-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${story.progress}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex justify-between items-center text-xs text-white/60">
-                        <span>Age {story.ageGroup}</span>
-                        <span>{story.lastRead}</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))
+                    </Link>
+                  ))
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-white/60">No stories found. Create your first story to get started!</p>
+                    <Icon name="book" size={32} className="text-amber-400/50 mx-auto mb-2" />
+                    <p className="text-white/60 text-sm">No stories yet. Create your first story!</p>
                   </div>
                 )}
               </div>
+
+              {/* Continue Reading Prompt */}
+              {recentStories.length > 0 && !recentStories[0].isCompleted && (
+                <div className="mt-4 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-lg">
+                  <div className="text-center">
+                    <p className="text-white text-sm mb-2">
+                      📖 Continue "{recentStories[0].title}"
+                    </p>
+                    <Link 
+                      to={`/stories/${recentStories[0].id}`}
+                      className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm inline-block"
+                    >
+                      Continue Reading →
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Continue Reading Prompt */}
-            {recentStories.length > 0 && !recentStories[0].isCompleted && (
-              <div className="glass-enhanced backdrop-blur-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-2xl p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">
-                      📖 Ready to continue reading?
-                    </h3>
-                    <p className="text-white/80">
-                      Pick up where you left off in "{recentStories[0].title}"
-                    </p>
-                  </div>
-                  <Link 
-                    to={`/stories/${recentStories[0].id}`}
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold hover:scale-105 transform duration-200"
-                  >
-                    Continue Story →
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Sidebar */}
-          <div className="space-y-6">
             {/* Quick Actions */}
             <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
               <h3 className="fantasy-heading-cinzel text-xl font-bold mb-6 text-center">
                 ⚡ Quick Actions
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {quickActions.map((action, index) => (
                   <Link
                     key={index}
                     to={action.link}
-                    className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex items-center space-x-4"
+                    className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex items-center space-x-3"
                   >
-                    <div className={`${action.color} rounded-lg p-3 group-hover:scale-110 transition-transform`}>
-                      <Icon name={action.icon as any} size={20} className="text-white" />
+                    <div className={`${action.color} rounded-lg p-2 group-hover:scale-110 transition-transform`}>
+                      <Icon name={action.icon as any} size={16} className="text-white" />
                     </div>
                     <div>
-                      <div className="text-white font-semibold group-hover:text-amber-400 transition-colors">
+                      <div className="text-white font-medium group-hover:text-amber-400 transition-colors text-sm">
                         {action.title}
                       </div>
-                      <div className="text-white/60 text-sm">
+                      <div className="text-white/60 text-xs">
                         {action.description}
                       </div>
                     </div>
                   </Link>
                 ))}
-              </div>
-            </div>
-            
-            {/* Stats */}
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6">
-              <h3 className="fantasy-heading-cinzel text-xl font-bold mb-6 text-center">
-                📊 Your Story Journey
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/80">Stories Created</span>
-                  <span className="text-2xl font-bold text-amber-400">{userStats.storiesCreated}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/80">Stories Read</span>
-                  <span className="text-2xl font-bold text-blue-400">{userStats.storiesRead}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/80">Reading Streak</span>
-                  <span className="text-2xl font-bold text-green-400">{userStats.readingStreak} days</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/80">Reading Time</span>
-                  <span className="text-2xl font-bold text-purple-400">{userStats.readingTime}h</span>
-                </div>
-              </div>
-              
-              {/* Achievement */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">🏆</span>
-                  <div>
-                    <div className="text-white font-semibold">Story Explorer!</div>
-                    <div className="text-white/70 text-sm">You've read 5+ different genres</div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

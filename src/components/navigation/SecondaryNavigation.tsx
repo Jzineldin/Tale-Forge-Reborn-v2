@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Text from '@/components/atoms/Text';
 
 interface SecondaryNavigationProps {
   context: 'stories' | 'account' | 'admin' | 'none';

@@ -1,0 +1,140 @@
+{
+  "mcpServers": {
+    "taskmaster-ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "task-master-ai"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "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",
+        "MODEL": "gpt-4",
+        "MAX_TOKENS": "64000",
+        "TEMPERATURE": "0.2",
+        "DEFAULT_SUBTASKS": "5",
+        "DEFAULT_PRIORITY": "medium"
+      }
+    },
+    "claude-context": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@zilliz/claude-context-mcp"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "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",
+        "ZILLIZ_CLOUD_URI": "https://in03-6fb19920893bb33.serverless.aws-eu-central-1.cloud.zilliz.com",
+        "ZILLIZ_CLOUD_TOKEN": "db_6fb19920893bb33:Tj5;&*?K1[VQ(WZE",
+        "CLAUDE_CONTEXT_INDEX_NAME": "tale-forge-context"
+      }
+    },
+    "replicate": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "replicate-mcp"
+      ],
+      "env": {
+        "REPLICATE_API_TOKEN": "r8_B9klqBtMauV8sjoOSGywoE8r75Xoh4M2Eej8P"
+      }
+    },
+    "linear": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@linear/cli",
+        "mcp-server"
+      ]
+    },
+    "stripe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@stripe/mcp",
+        "--tools=all",
+        "--api-key=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"
+      ]
+    },
+    "sentry": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sentry/mcp-server@latest",
+        "--access-token=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"
+      ]
+    },
+    "notion": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/notion-mcp@latest"
+      ]
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@vercel/cli",
+        "mcp"
+      ]
+    },
+    "supabase": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=fyihypkigbcmsxyvseca"
+      ],
+      "env": {
+        "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWh5cGtpZ2JjbXN4eXZzZWNhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTIzMzc2MCwiZXhwIjoyMDY2ODA5NzYwfQ.3w-YsZFoHGkQ_uBoZBVaV0fBShWm5o-w1xrTva-buL0"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_vtJjBvqOKJDYBL9BQzxBvMl8XPRUEz2zNkJ9"
+      }
+    },
+    "openai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-server-openai"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "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"
+      }
+    },
+    "@21st-dev/magic": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@21st-dev/magic@latest",
+        "API_KEY=\"YOUR_21ST_DEV_API_KEY_HERE\""
+      ]
+    },
+    "ref-tools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "ref-tools-mcp"
+      ],
+      "env": {
+        "REF_API_KEY": "ref-ddf86d26283e6ab7a374"
+      }
+    }
+  }
+}

@@ -13,10 +13,26 @@ interface User {
   welcome_email_sent?: boolean;
   signup_method?: string;
   role?: 'user' | 'admin';
+  // Gamification data
+  credits_balance?: number;
+  total_achievements?: number;
+  current_streak?: number;
+  subscription_tier?: 'free' | 'creator' | 'master';
+  is_premium?: boolean;
+}
+
+interface UserProfile {
+  subscription_tier: 'free' | 'creator' | 'master';
+  is_premium: boolean;
+  credits_balance: number;
+  total_achievements: number;
+  current_streak: number;
+  templates_public_count?: number;
 }
 
 interface AuthContextType {
   user: User | null;
+  userProfile: UserProfile | null;
   session: Session | null;
   isAuthenticated: boolean | null; // null means loading
   isAdmin: boolean;
@@ -37,11 +53,12 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Helper function to transform Supabase user to our User interface
-  const transformUser = (supabaseUser: SupabaseUser, profile?: any, userProfile?: any): User => {
+  const transformUser = (supabaseUser: SupabaseUser, profile?: any, _userProfile?: any): User => {
     return {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
@@ -59,144 +76,69 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check if user is authenticated on app load
   useEffect(() => {
-    console.log('AuthProvider: Initializing Supabase authentication check');
+    console.log('🔍 AuthProvider: Starting useEffect hook');
+    console.log('🔍 AuthProvider: Initializing SIMPLIFIED authentication check - BYPASSING DATABASE CALLS');
 
-    // Add a timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      console.error('AuthProvider: Authentication check timed out after 10 seconds');
-      setLoading(false);
-    }, 10000);
-
-    // Skip database connection test for now - focus on basic auth
-    console.log('AuthProvider: Skipping database test, checking auth only...');
-
-    // Get initial session
+    // SIMPLIFIED VERSION: Just check basic auth session without any database calls
     const getInitialSession = async () => {
       try {
-        console.log('AuthProvider: Getting initial session...');
+        console.log('🔍 AuthProvider: About to call supabase.auth.getSession()');
 
-        // Get session without timeout (let Supabase handle its own timeout)
         const result = await supabase.auth.getSession();
+        console.log('🔍 AuthProvider: getSession() returned:', result);
         const { data: { session }, error } = result;
 
         if (error) {
           console.error('AuthProvider: Error getting session:', error);
-          setLoading(false);
-          return;
         }
 
         if (session) {
           console.log('AuthProvider: Initial session found:', session.user.email);
           setSession(session);
 
-          // Try to fetch user profile and user_profile data
-          console.log('AuthProvider: Fetching user profile data...');
-          
-          // Always set user first, then try to enhance with profile data
+          // Set user with minimal data - NO DATABASE CALLS
           const basicUserData = {
             role: session.user.email === 'jzineldin@gmail.com' ? 'admin' : 'user'
           };
 
           setUser(transformUser(session.user, basicUserData));
-
-          // Try to fetch profile data in background (don't block auth)
-          try {
-            console.log('AuthProvider: Fetching profile data in background...');
-            
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-
-            const { data: userProfileData } = await supabase
-              .from('user_profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-
-            console.log('AuthProvider: Profile data:', profileData);
-            console.log('AuthProvider: User profile data:', userProfileData);
-
-            if (profileData || userProfileData) {
-              const enhancedProfileData = {
-                ...profileData,
-                role: session.user.email === 'jzineldin@gmail.com' ? 'admin' : (profileData?.role || 'user'),
-                subscription_tier: userProfileData?.subscription_tier || 'regular',
-                is_premium: userProfileData?.is_premium || false
-              };
-
-              setUser(transformUser(session.user, enhancedProfileData, userProfileData));
-              console.log('AuthProvider: Enhanced user data loaded');
-            }
-          } catch (profileError) {
-            console.log('AuthProvider: Profile fetch failed, keeping basic user data:', profileError);
-          }
+          console.log('AuthProvider: Basic user data set - SKIPPING DATABASE PROFILE CALLS');
         } else {
           console.log('AuthProvider: No initial session found');
         }
       } catch (error) {
-        console.error('AuthProvider: Unexpected error in getInitialSession:', error);
+        console.error('🚨 AuthProvider: Unexpected error in getInitialSession:', error);
       } finally {
-        console.log('AuthProvider: Setting loading to false');
-        clearTimeout(timeoutId);
+        console.log('🔍 AuthProvider: Reached finally block - Setting loading to false');
+        console.log('🔍 AuthProvider: APP SHOULD NOW RENDER');
         setLoading(false);
+        console.log('🔍 AuthProvider: setLoading(false) called');
       }
     };
 
+    console.log('🔍 AuthProvider: About to call getInitialSession()');
     getInitialSession();
+    console.log('🔍 AuthProvider: getInitialSession() called (async)');
 
-    // Listen for auth changes
+    // Listen for auth changes - SIMPLIFIED VERSION
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('AuthProvider: Auth state changed:', event, session);
+        console.log('AuthProvider: Auth state changed (SIMPLIFIED):', event, session?.user?.email || 'no session');
 
         setSession(session);
 
         if (session) {
-          console.log('AuthProvider: Auth state change - setting user immediately');
-          
-          // Set user immediately with basic data
+          // Set user immediately with basic data - NO DATABASE CALLS
           const basicUserData = {
             role: session.user.email === 'jzineldin@gmail.com' ? 'admin' : 'user'
           };
 
           setUser(transformUser(session.user, basicUserData));
-
-          // Enhance with profile data in background
-          setTimeout(async () => {
-            try {
-              console.log('AuthProvider: Enhancing user with profile data...');
-              
-              const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-
-              const { data: userProfileData } = await supabase
-                .from('user_profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-
-              if (profileData || userProfileData) {
-                const enhancedProfileData = {
-                  ...profileData,
-                  role: session.user.email === 'jzineldin@gmail.com' ? 'admin' : (profileData?.role || 'user'),
-                  subscription_tier: userProfileData?.subscription_tier || 'regular',
-                  is_premium: userProfileData?.is_premium || false
-                };
-
-                setUser(transformUser(session.user, enhancedProfileData, userProfileData));
-                console.log('AuthProvider: User enhanced with profile data');
-              }
-            } catch (error) {
-              console.log('AuthProvider: Profile enhancement failed, keeping basic data:', error);
-            }
-          }, 100);
+          console.log('AuthProvider: Auth state change - user set with basic data');
         } else {
           setUser(null);
+          setUserProfile(null);
+          console.log('AuthProvider: Auth state change - user cleared');
         }
 
         setLoading(false);
@@ -317,6 +259,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     user,
+    userProfile,
     session,
     isAuthenticated: loading ? null : !!user, // null means loading
     isAdmin: user?.role === 'admin' || false,

@@ -98,7 +98,7 @@ export interface ChoiceParserService {
 }
 
 export interface PromptBuilderService {
-  buildPrompt(story: Story, previousSegment?: Segment | null, userChoice?: string, userCharacters?: Character[]): string;
+  buildPrompt(story: Story, previousSegment?: Segment | null, userChoice?: string, userCharacters?: Character[], templateContext?: any): string;
   getTemplateForGenreAndAge(genre: string, targetAge: string): string;
 }
 
@@ -131,6 +131,7 @@ export interface ValidationResult {
   storyId?: string;
   choiceIndex?: number;
   authHeader?: string;
+  templateContext?: any; // Template data passed from create-story
   errors?: string[];
 }
 

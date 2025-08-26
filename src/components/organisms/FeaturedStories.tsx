@@ -2,7 +2,6 @@ import React from 'react';
 import Text from '@/components/atoms/Text';
 import StoryCard from '@/components/molecules/StoryCard';
 import { useQuery } from 'react-query';
-import { fetchWithCache } from '@/utils/performance';
 
 interface FeaturedStory {
   id: string;

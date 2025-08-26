@@ -1,3 +1,12 @@
 {
-    "claudeCodeChat.permissions.yoloMode": true
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.associations": {
+    "*.md": "markdown"
+  },
+  "taskmaster.enabled": true,
+  "mcp.servers.enabled": true
 }

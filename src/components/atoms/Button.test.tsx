@@ -11,13 +11,17 @@ describe('Button Component', () => {
 
   test('applies correct variant classes', () => {
     const { rerender } = render(<Button variant="primary">Primary</Button>);
-    expect(screen.getByText('Primary')).toHaveClass('bg-blue-600');
+    expect(screen.getByText('Primary')).toHaveClass('bg-gradient-to-r');
+    expect(screen.getByText('Primary')).toHaveClass('from-amber-500');
+    expect(screen.getByText('Primary')).toHaveClass('to-amber-600');
     
     rerender(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByText('Secondary')).toHaveClass('bg-gray-200');
+    expect(screen.getByText('Secondary')).toHaveClass('bg-white/5');
+    expect(screen.getByText('Secondary')).toHaveClass('text-amber-400');
+    expect(screen.getByText('Secondary')).toHaveClass('border-amber-400/30');
     
     rerender(<Button variant="danger">Danger</Button>);
-    expect(screen.getByText('Danger')).toHaveClass('bg-red-600');
+    expect(screen.getByText('Danger')).toHaveClass('bg-red-500');
   });
 
   test('applies correct size classes', () => {

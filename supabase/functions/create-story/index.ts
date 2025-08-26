@@ -28,12 +28,17 @@ interface StoryCreationRequest {
   characters: any[];
   conflict: string;
   quest: string;
-  moralLesson: string;
+  moral_lesson?: string; // Note: frontend sends 'moral_lesson'
+  moralLesson?: string;  // Fallback for legacy
   additional_details?: string;
   setting_description?: string;
   time_period?: string;
   atmosphere?: string;
   words_per_chapter?: number;
+  child_name?: string;
+  story_type?: 'short' | 'medium' | 'long'; // Story length type
+  include_images?: boolean;
+  include_audio?: boolean;
 }
 
 // Normalize age group values from frontend to database-compatible values
@@ -60,6 +65,130 @@ function normalizeAgeGroup(ageGroup: string, targetAge?: number): string {
   }
 }
 
+// Check if user has sufficient credits and calculate story cost
+async function checkAndCalculateCredits(
+  supabaseAdmin: any,
+  userId: string,
+  storyType: 'short' | 'medium' | 'long' = 'short',
+  includeImages = true,
+  includeAudio = true
+) {
+  try {
+    // Calculate story cost using the database function
+    const { data: costData, error: costError } = await supabaseAdmin.rpc('calculate_story_cost', {
+      story_type: storyType,
+      include_images: includeImages,
+      include_audio: includeAudio
+    });
+
+    if (costError) {
+      console.error('❌ Error calculating story cost:', costError);
+      throw new Error(`Failed to calculate story cost: ${costError.message}`);
+    }
+
+    if (!costData || costData.length === 0) {
+      throw new Error('No cost data returned');
+    }
+
+    const storyCost = costData[0];
+    
+    // Get user's current credit balance
+    const { data: creditsData, error: creditsError } = await supabaseAdmin.rpc('get_user_credits', {
+      user_uuid: userId
+    });
+
+    if (creditsError) {
+      console.error('❌ Error fetching user credits:', creditsError);
+      throw new Error(`Failed to fetch user credits: ${creditsError.message}`);
+    }
+
+    let currentBalance = 0;
+    if (creditsData && creditsData.length > 0) {
+      currentBalance = creditsData[0].current_balance;
+    } else {
+      // Initialize credits for new user
+      await supabaseAdmin.rpc('initialize_user_credits', {
+        user_uuid: userId
+      });
+      currentBalance = 15; // Default free tier credits
+    }
+
+    return {
+      storyCost: {
+        chapters: storyCost.chapters,
+        textCost: storyCost.text_cost,
+        imageCost: storyCost.image_cost,
+        audioCost: storyCost.audio_cost,
+        totalCost: storyCost.total_cost
+      },
+      userBalance: currentBalance,
+      canAfford: currentBalance >= storyCost.total_cost
+    };
+  } catch (error) {
+    console.error('❌ Error in checkAndCalculateCredits:', error);
+    throw error;
+  }
+}
+
+// Spend credits for story creation
+async function spendCreditsForStory(
+  supabaseAdmin: any,
+  userId: string,
+  storyId: string,
+  storyCost: any,
+  storyType: string
+) {
+  try {
+    const { data: success, error: spendError } = await supabaseAdmin.rpc('spend_credits', {
+      user_uuid: userId,
+      credits_to_spend: storyCost.totalCost,
+      description_text: `Story creation: ${storyType} story with ${storyCost.chapters} chapters`,
+      ref_id: storyId,
+      ref_type: 'story',
+      transaction_metadata: {
+        story_type: storyType,
+        chapters: storyCost.chapters,
+        text_cost: storyCost.textCost,
+        image_cost: storyCost.imageCost,
+        audio_cost: storyCost.audioCost
+      }
+    });
+
+    if (spendError) {
+      console.error('❌ Error spending credits:', spendError);
+      throw new Error(`Failed to spend credits: ${spendError.message}`);
+    }
+
+    return success;
+  } catch (error) {
+    console.error('❌ Error in spendCreditsForStory:', error);
+    throw error;
+  }
+}
+
+// Refund credits if story creation fails
+async function refundCreditsForStory(
+  supabaseAdmin: any,
+  userId: string,
+  storyId: string,
+  amount: number,
+  reason: string
+) {
+  try {
+    await supabaseAdmin.rpc('add_credits', {
+      user_uuid: userId,
+      credits_to_add: amount,
+      description_text: `Refund: ${reason}`,
+      ref_id: storyId,
+      ref_type: 'refund'
+    });
+    console.log(`✅ Refunded ${amount} credits to user ${userId} for story ${storyId}`);
+  } catch (error) {
+    console.error('❌ Error refunding credits:', error);
+    // Don't throw here as this is cleanup - log the error but continue
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -79,7 +208,7 @@ serve(async (req) => {
     }
     
     // 2. Validate authentication
-    const authResult = await validateUserAuth(req, env.supabaseUrl!, env.supabaseServiceKey!);
+    const authResult = await validateUserAuth(req, env.supabaseUrl!, env.supabaseAnonKey!);
     if (!authResult.isValid) {
       console.error('❌ Authentication failed:', authResult.error);
       return createCorsResponse({
@@ -112,19 +241,83 @@ serve(async (req) => {
     // 4. Normalize age group for database compatibility
     const normalizedAgeGroup = normalizeAgeGroup(storyData.age_group, storyData.target_age);
     
+    // 5. Create authenticated Supabase client
+    const authHeader = req.headers.get('Authorization')!;
+    const supabaseAdmin = createAuthenticatedSupabaseClient(env.supabaseUrl!, env.supabaseAnonKey!, authHeader);
+    
+    // 6. Check credits and calculate costs
+    const storyType = storyData.story_type || 'short'; // Default to short story
+    const includeImages = storyData.include_images !== false; // Default true
+    const includeAudio = storyData.include_audio !== false; // Default true
+    
+    console.log('💰 Checking credits for story creation:', {
+      storyType,
+      includeImages,
+      includeAudio,
+      userId: authResult.user!.id
+    });
+    
+    const creditCheck = await checkAndCalculateCredits(
+      supabaseAdmin,
+      authResult.user!.id,
+      storyType,
+      includeImages,
+      includeAudio
+    );
+    
+    if (!creditCheck.canAfford) {
+      console.log('❌ Insufficient credits:', {
+        required: creditCheck.storyCost.totalCost,
+        available: creditCheck.userBalance
+      });
+      return createCorsResponse({
+        error: 'Insufficient credits',
+        details: {
+          required: creditCheck.storyCost.totalCost,
+          available: creditCheck.userBalance,
+          storyCost: creditCheck.storyCost
+        }
+      }, { status: 402 }); // 402 Payment Required
+    }
+    
+    console.log('✅ Credit check passed:', {
+      required: creditCheck.storyCost.totalCost,
+      available: creditCheck.userBalance,
+      remaining: creditCheck.userBalance - creditCheck.storyCost.totalCost
+    });
+    
     console.log('📝 Creating story:', {
       title: storyData.title,
       genre: storyData.genre,
       age_group: storyData.age_group,
       normalized_age_group: normalizedAgeGroup,
+      story_type: storyType,
       userId: authResult.user!.id
     });
     
-    // 5. Create authenticated Supabase client
-    const authHeader = req.headers.get('Authorization')!;
-    const supabaseAdmin = createAuthenticatedSupabaseClient(env.supabaseUrl!, env.supabaseServiceKey!, authHeader);
+    // 7. Create story record in database with FULL template data
+    const generationSettings = {
+      theme: storyData.theme,
+      setting: storyData.setting,
+      characters: storyData.characters,
+      conflict: storyData.conflict,
+      quest: storyData.quest,
+      moral_lesson: storyData.moral_lesson || storyData.moralLesson,
+      additional_details: storyData.additional_details,
+      setting_description: storyData.setting_description,
+      time_period: storyData.time_period,
+      atmosphere: storyData.atmosphere,
+      words_per_chapter: storyData.words_per_chapter,
+      child_name: storyData.child_name,
+      age_group: storyData.age_group,
+      target_age: storyData.target_age,
+      story_type: storyType,
+      include_images: includeImages,
+      include_audio: includeAudio
+    };
     
-    // 6. Create story record in database
+    console.log('🎯 Storing complete template data in generation_settings:', generationSettings);
+    
     const { data: newStory, error: storyError } = await supabaseAdmin
       .from('stories')
       .insert({
@@ -132,11 +325,13 @@ serve(async (req) => {
         description: storyData.description || '',
         user_id: authResult.user!.id,
         story_mode: storyData.genre,
+        genre: storyData.genre, // Also store in genre field for compatibility
         target_age: normalizedAgeGroup,
         is_public: false,
         is_completed: false,
         segment_count: 0,
         audio_generation_status: 'not_started',
+        generation_settings: generationSettings, // 🎯 CRITICAL: Store all template data
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
@@ -153,7 +348,29 @@ serve(async (req) => {
     
     console.log('✅ Story record created:', newStory.id);
     
-    // 7. Generate first story segment using the refactored generate-story-segment function
+    // 8. Spend credits for story creation
+    console.log('💳 Spending credits for story creation...');
+    const creditSpendSuccess = await spendCreditsForStory(
+      supabaseAdmin,
+      authResult.user!.id,
+      newStory.id,
+      creditCheck.storyCost,
+      storyType
+    );
+    
+    if (!creditSpendSuccess) {
+      // This shouldn't happen since we already checked affordability, but handle it
+      console.error('❌ Failed to spend credits after story creation');
+      await supabaseAdmin.from('stories').delete().eq('id', newStory.id);
+      return createCorsResponse({
+        error: 'Failed to process payment',
+        details: 'Credit spending failed unexpectedly'
+      }, { status: 500 });
+    }
+    
+    console.log('✅ Credits spent successfully:', creditCheck.storyCost.totalCost);
+    
+    // 9. Generate first story segment using the refactored generate-story-segment function
     console.log('🤖 Generating first story segment...');
     
     try {
@@ -166,6 +383,8 @@ serve(async (req) => {
         body: JSON.stringify({
           storyId: newStory.id,
           // choiceIndex is undefined for first segment
+          // 🎯 CRITICAL: Pass template context for AI generation
+          templateContext: generationSettings
         })
       });
       
@@ -196,10 +415,17 @@ serve(async (req) => {
             description: newStory.description,
             genre: storyData.genre,
             age_group: storyData.age_group,
+            story_type: storyType,
             created_at: newStory.created_at,
             updated_at: newStory.updated_at
           },
           firstSegment: segmentData.segment,
+          creditInfo: {
+            creditsSpent: creditCheck.storyCost.totalCost,
+            previousBalance: creditCheck.userBalance,
+            remainingBalance: creditCheck.userBalance - creditCheck.storyCost.totalCost,
+            storyCost: creditCheck.storyCost
+          },
           message: 'Story and first segment created successfully'
         });
         
@@ -268,16 +494,31 @@ serve(async (req) => {
               description: newStory.description,
               genre: storyData.genre,
               age_group: storyData.age_group,
+              story_type: storyType,
               created_at: newStory.created_at,
               updated_at: new Date().toISOString()
             },
             firstSegment: placeholderSegment,
+            creditInfo: {
+              creditsSpent: creditCheck.storyCost.totalCost,
+              previousBalance: creditCheck.userBalance,
+              remainingBalance: creditCheck.userBalance - creditCheck.storyCost.totalCost,
+              storyCost: creditCheck.storyCost
+            },
             message: 'Story created with development placeholder segment (configure AI provider API keys for real content)',
             developmentMode: true
           });
         }
         
-        // Production mode or other error - delete the story and return error
+        // Production mode or other error - delete the story, refund credits, and return error
+        await refundCreditsForStory(
+          supabaseAdmin,
+          authResult.user!.id,
+          newStory.id,
+          creditCheck.storyCost.totalCost,
+          'Story generation failed'
+        );
+        
         await supabaseAdmin
           .from('stories')
           .delete()
@@ -293,7 +534,15 @@ serve(async (req) => {
     } catch (segmentError: any) {
       console.error('🚨 CRITICAL: Error calling segment generation:', segmentError);
       
-      // Delete the story since we can't generate the first segment
+      // Refund credits and delete the story since we can't generate the first segment
+      await refundCreditsForStory(
+        supabaseAdmin,
+        authResult.user!.id,
+        newStory.id,
+        creditCheck.storyCost.totalCost,
+        'Segment generation service failed'
+      );
+      
       await supabaseAdmin
         .from('stories')
         .delete()

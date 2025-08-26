@@ -96,7 +96,7 @@ const Step3StorySetting: React.FC<Step3StorySettingProps> = ({
       </div>
 
       {/* Location Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6" data-testid="setting-select">
         <h3 className="text-xl font-bold text-white mb-6 text-center">
           📍 Choose Location
         </h3>

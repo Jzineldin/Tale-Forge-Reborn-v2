@@ -270,6 +270,7 @@ const AccountExportPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-gray-200">
               <Text variant="h2" weight="semibold" className="text-xl">
+                Export Your Stories
               </Text>
             </div>
             

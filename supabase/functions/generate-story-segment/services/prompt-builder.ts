@@ -18,15 +18,27 @@ export class PromptBuilder implements PromptBuilderService {
     story: Story, 
     previousSegment?: Segment | null, 
     userChoice?: string, 
-    userCharacters?: Character[]
+    userCharacters?: Character[],
+    templateContext?: any
   ): string {
     console.log(`📝 Building prompt for story: ${story.title} (${story.target_age})`);
+    
+    // 🎯 USE TEMPLATE CONTEXT: Priority order: templateContext > story fields > defaults
+    if (templateContext) {
+      console.log('🎯 Using template context for enhanced prompt generation:', {
+        setting: templateContext.setting,
+        theme: templateContext.theme,
+        characters: templateContext.characters?.length || 0,
+        conflict: templateContext.conflict,
+        quest: templateContext.quest
+      });
+    }
     
     // Get base template for genre and age
     let prompt = this.getTemplateForGenreAndAge(story.story_mode || story.genre || 'fantasy', story.target_age || '7-9');
     
-    // Replace placeholders with actual story data
-    prompt = this.replacePlaceholders(prompt, story, userCharacters);
+    // Replace placeholders with actual story data (prioritizing template context)
+    prompt = this.replacePlaceholders(prompt, story, userCharacters, templateContext);
     
     // Add previous segment context if available
     if (previousSegment) {
@@ -104,29 +116,53 @@ export class PromptBuilder implements PromptBuilderService {
   /**
    * Replace all placeholders in the prompt template
    */
-  private replacePlaceholders(prompt: string, story: Story, userCharacters?: Character[]): string {
+  private replacePlaceholders(prompt: string, story: Story, userCharacters?: Character[], templateContext?: any): string {
     console.log('🔄 Replacing prompt placeholders...');
     
-    // Replace theme placeholder
-    const theme = story.title || story.description || 'an adventure';
+    // 🎯 CRITICAL: Use template context data with fallbacks
+    const theme = templateContext?.theme || story.title || story.description || 'an adventure';
+    const setting = templateContext?.setting || templateContext?.setting_description || story.story_mode || 'a magical place';
+    const charactersText = this.buildCharactersText(userCharacters, templateContext?.characters);
+    
+    console.log('🎯 Using template values:', { theme, setting, charactersFromTemplate: templateContext?.characters?.length || 0 });
+    
     prompt = prompt.replace(/\{theme\}/g, theme);
-    
-    // Replace setting placeholder
-    const setting = story.story_mode || 'a magical place';
     prompt = prompt.replace(/\{setting\}/g, setting);
-    
-    // Replace characters placeholder
-    const charactersText = this.buildCharactersText(userCharacters);
     prompt = prompt.replace(/\{characters\}/g, charactersText);
     
-    console.log('✅ Placeholders replaced successfully');
+    // Add additional template context if available
+    if (templateContext) {
+      // Include conflict and quest in the prompt for better story direction
+      if (templateContext.conflict) {
+        prompt += `\n\nStory Conflict: ${templateContext.conflict}`;
+      }
+      if (templateContext.quest) {
+        prompt += `\nMain Quest: ${templateContext.quest}`;
+      }
+      if (templateContext.moral_lesson) {
+        prompt += `\nMoral Lesson: ${templateContext.moral_lesson}`;
+      }
+      if (templateContext.atmosphere) {
+        prompt += `\nAtmosphere: ${templateContext.atmosphere}`;
+      }
+    }
+    
+    console.log('✅ Placeholders replaced with template context');
     return prompt;
   }
 
   /**
    * Build characters text for prompt inclusion
    */
-  private buildCharactersText(userCharacters?: Character[]): string {
+  private buildCharactersText(userCharacters?: Character[], templateCharacters?: any[]): string {
+    // Priority: template characters > user characters > default
+    if (templateCharacters && templateCharacters.length > 0) {
+      console.log('🎯 Using template characters for story generation');
+      return templateCharacters
+        .map(char => `${char.name}: ${char.description} (${char.role})`)
+        .join(', ');
+    }
+    
     if (!userCharacters || userCharacters.length === 0) {
       return 'a brave main character';
     }

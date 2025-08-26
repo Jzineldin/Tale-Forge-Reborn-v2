@@ -1,5 +1,7 @@
 import React from 'react';
 import Icon from '@/components/atoms/Icon';
+import { CreditCostDisplay } from '@/components/business/CreditDisplay';
+import { useCredits } from '@/hooks/useCredits';
 
 interface Step5ReviewGenerateProps {
   storyData: any;
@@ -19,14 +21,44 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
   onUpdateChildName
 }) => {
   const [isNavigating, setIsNavigating] = React.useState(false);
+  const [storyCost, setStoryCost] = React.useState<any>(null);
+  const [canAfford, setCanAfford] = React.useState(true);
+  
+  // Get user credits and check affordability
+  const { credits, calculateStoryCost, canAffordStory, loading: creditsLoading } = useCredits();
+  
+  // Calculate story cost when component mounts or story type changes
+  React.useEffect(() => {
+    const checkAffordability = async () => {
+      try {
+        const storyType = 'short'; // Default to short for now - could be configurable
+        const cost = await calculateStoryCost(storyType, true, true);
+        const affordability = await canAffordStory(storyType, true, true);
+        
+        setStoryCost(cost);
+        setCanAfford(affordability.canAfford);
+      } catch (error) {
+        console.error('Error checking story affordability:', error);
+        // In case of error, assume user can afford it (graceful fallback)
+        setCanAfford(true);
+      }
+    };
+    
+    checkAffordability();
+  }, [calculateStoryCost, canAffordStory]);
   
   const handleSubmit = () => {
+    if (!canAfford) {
+      // Don't allow submission if user can't afford it
+      return;
+    }
+    
     setIsNavigating(true);
     onSubmit();
   };
   
-  // Button should be disabled during generation OR navigation
-  const isButtonDisabled = isGenerating || isNavigating;
+  // Button should be disabled during generation, navigation, or if user can't afford
+  const isButtonDisabled = isGenerating || isNavigating || creditsLoading || !canAfford;
   // Genre mapping for display with emojis
   const genreMap: Record<string, { name: string; emoji: string }> = {
     'bedtime': { name: 'Bedtime Stories', emoji: '🌙' },
@@ -204,6 +236,69 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
         </div>
       )}
 
+      {/* Credit Information */}
+      <div className="space-y-4">
+        {/* User Credits Display */}
+        <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center text-xl mr-3">
+                💳
+              </div>
+              <h4 className="text-lg font-semibold text-white">Your Credits</h4>
+            </div>
+            {storyCost && (
+              <CreditCostDisplay storyType="short" />
+            )}
+          </div>
+          
+          {creditsLoading ? (
+            <div className="animate-pulse h-8 bg-white/20 rounded"></div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="text-white/90">
+                <div className="text-2xl font-bold text-white">
+                  {credits?.currentBalance || 0} Credits Available
+                </div>
+                <div className="text-sm text-white/60">
+                  {canAfford 
+                    ? '✅ You have enough credits for this story!'
+                    : '❌ Insufficient credits for this story'
+                  }
+                </div>
+              </div>
+              
+              {!canAfford && (
+                <button className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors">
+                  Get More Credits
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Insufficient Credits Warning */}
+        {!canAfford && !creditsLoading && (
+          <div className="glass-card backdrop-blur-md bg-red-500/10 border border-red-400/30 rounded-xl p-6">
+            <div className="flex items-start">
+              <div className="bg-red-500 w-12 h-12 rounded-full flex items-center justify-center text-xl mr-4 flex-shrink-0">
+                ⚠️
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-semibold text-red-300 mb-2">Insufficient Credits</h4>
+                <p className="text-red-100/90 mb-3">
+                  You need {storyCost?.totalCost || 15} credits to create this story, but you only have {credits?.currentBalance || 0} credits remaining.
+                </p>
+                <div className="flex items-center text-sm text-red-200/80 space-x-4">
+                  <span>• Upgrade to Premium for unlimited stories</span>
+                  <span>• Get 15 credits free each month</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Generation Notice */}
       <div className="glass-card backdrop-blur-md bg-amber-500/10 border border-amber-400/30 rounded-xl p-6">
         <div className="flex items-start">
@@ -241,12 +336,19 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
           onClick={handleSubmit}
           disabled={isButtonDisabled}
           className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
-            isButtonDisabled
-              ? 'bg-amber-500/50 text-white/70 cursor-not-allowed'
-              : 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-xl hover:scale-105'
+            !canAfford
+              ? 'bg-red-500/50 text-white/70 cursor-not-allowed border border-red-400/30'
+              : isButtonDisabled
+                ? 'bg-amber-500/50 text-white/70 cursor-not-allowed'
+                : 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-xl hover:scale-105'
           }`}
         >
-          {isButtonDisabled ? (
+          {!canAfford ? (
+            <div className="flex items-center">
+              <Icon name="lock" size={20} className="mr-2" />
+              Insufficient Credits
+            </div>
+          ) : isButtonDisabled ? (
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white mr-3"></div>
               {isNavigating ? 'Launching Your Story...' : 'Creating Your Story...'}
@@ -254,7 +356,7 @@ const Step5ReviewGenerate: React.FC<Step5ReviewGenerateProps> = ({
           ) : (
             <div className="flex items-center">
               <Icon name="plus" size={20} className="mr-2" />
-              Create My Story! 🪄
+              Create My Story! 🪄 ({storyCost?.totalCost || 15} credits)
             </div>
           )}
         </button>

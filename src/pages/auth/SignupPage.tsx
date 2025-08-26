@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthContext';
 
 const SignupPage: React.FC = () => {
@@ -12,7 +12,6 @@ const SignupPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { register, signInWithGoogle, signInWithGitHub } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,7 +217,7 @@ const SignupPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full fantasy-cta px-6 py-3 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full fantasy-cta btn btn-md text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">

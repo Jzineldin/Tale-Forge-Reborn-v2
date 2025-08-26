@@ -1,0 +1,25 @@
+{
+  "project": {
+    "name": "Tale Forge Reborn",
+    "description": "Interactive storytelling platform with AI-powered narrative generation",
+    "version": "1.0.0"
+  },
+  "settings": {
+    "maxTasks": 50,
+    "defaultPriority": "medium",
+    "defaultSubtasks": 5,
+    "enableShellAliases": true
+  },
+  "ai": {
+    "model": "claude-3-5-sonnet-20241022",
+    "maxTokens": 64000,
+    "temperature": 0.2
+  },
+  "profiles": [
+    {
+      "name": "Full-Stack Development",
+      "description": "Complete web application development with React, Node.js, and database integration",
+      "tasks": []
+    }
+  ]
+}

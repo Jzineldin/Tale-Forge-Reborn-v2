@@ -1,5 +1,4 @@
 import React from 'react';
-import Text from '@/components/atoms/Text';
 
 interface DashboardTemplateProps {
   header?: React.ReactNode;

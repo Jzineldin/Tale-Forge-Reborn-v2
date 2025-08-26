@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Text from '@/components/atoms/Text';
-import Input from '@/components/atoms/Input';
-import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
-import StoryCard from '@/components/molecules/StoryCard';
+// Removed unused imports: Text, Input, Button, StoryCard
 import ShareStoryModal from '@/components/organisms/story-management/ShareStoryModal';
 import { useStories } from '@/utils/performance.tsx';
 import { useAuth } from '@/providers/AuthContext';

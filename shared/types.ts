@@ -39,6 +39,7 @@ export interface StorySegment {
   story_id: string;
   content: string;
   image_url?: string;
+  image_prompt?: string;
   audio_url?: string;
   choices: StoryChoice[];
   position: number;

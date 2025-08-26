@@ -65,7 +65,7 @@ const validateStoryChoice = (choice: Partial<StoryChoice>): string[] => {
 };
 
 // Mock data storage (in a real app, this would be API calls to Supabase)
-let mockStories: (Story & { user_id: string })[] = [];
+let mockStories: Story[] = [];
 let mockSegments: (StorySegment & { user_id: string })[] = [];
 let mockChoices: (StoryChoice & { user_id: string })[] = [];
 
@@ -75,9 +75,7 @@ export const storyQueries = {
   async getStoriesPaginated(userId: string, page: number = 1, limit: number = 10): Promise<{ stories: Story[], totalCount: number }> {
     try {
       // Filter stories by user (in a real app, this would be done in the database)
-      const userStories = mockStories
-        .filter(story => story.user_id === userId)
-        .map(({ user_id, ...story }) => story);
+      const userStories = mockStories.filter(story => story.user_id === userId);
       
       // Calculate pagination
       const totalCount = userStories.length;
@@ -94,9 +92,7 @@ export const storyQueries = {
   // Get stories by status
   async getStoriesByStatus(userId: string, status: Story['status']): Promise<Story[]> {
     try {
-      return mockStories
-        .filter(story => story.user_id === userId && story.status === status)
-        .map(({ user_id, ...story }) => story);
+      return mockStories.filter(story => story.user_id === userId && story.status === status);
     } catch (error) {
       throw new StoryServiceError('Failed to fetch stories by status', 'FETCH_STORIES_ERROR');
     }
@@ -105,9 +101,7 @@ export const storyQueries = {
   // Get stories by genre
   async getStoriesByGenre(userId: string, genre: string): Promise<Story[]> {
     try {
-      return mockStories
-        .filter(story => story.user_id === userId && story.genre === genre)
-        .map(({ user_id, ...story }) => story);
+      return mockStories.filter(story => story.user_id === userId && story.genre === genre);
     } catch (error) {
       throw new StoryServiceError('Failed to fetch stories by genre', 'FETCH_STORIES_ERROR');
     }
@@ -117,13 +111,11 @@ export const storyQueries = {
   async searchStories(userId: string, searchTerm: string): Promise<Story[]> {
     try {
       const term = searchTerm.toLowerCase();
-      return mockStories
-        .filter(story =>
-          story.user_id === userId &&
-          (story.title.toLowerCase().includes(term) ||
-           story.description.toLowerCase().includes(term))
-        )
-        .map(({ user_id, ...story }) => story);
+      return mockStories.filter(story =>
+        story.user_id === userId &&
+        (story.title.toLowerCase().includes(term) ||
+         story.description.toLowerCase().includes(term))
+      );
     } catch (error) {
       throw new StoryServiceError('Failed to search stories', 'SEARCH_STORIES_ERROR');
     }
@@ -133,12 +125,10 @@ export const storyQueries = {
   async getRecentStories(userId: string, limit: number = 5): Promise<Story[]> {
     try {
       // Filter by user and sort by created_at date
-      const userStories = mockStories
+      return mockStories
         .filter(story => story.user_id === userId)
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(({ user_id, ...story }) => story);
-      
-      return userStories.slice(0, limit);
+        .slice(0, limit);
     } catch (error) {
       throw new StoryServiceError('Failed to fetch recent stories', 'FETCH_STORIES_ERROR');
     }
@@ -157,7 +147,7 @@ export const storyService = {
       }
       
       // Create story object
-      const newStory: Story & { user_id: string } = {
+      const newStory: Story = {
         id: `story-${Date.now()}`,
         ...storyData,
         user_id: userId,
@@ -168,9 +158,7 @@ export const storyService = {
       // In a real app, this would be an API call to Supabase
       mockStories.push(newStory);
       
-      // Return the story without the user_id property
-      const { user_id, ...story } = newStory;
-      return story;
+      return newStory;
     } catch (error) {
       if (error instanceof StoryServiceError) {
         throw error;
@@ -183,9 +171,7 @@ export const storyService = {
   async getStories(userId: string): Promise<Story[]> {
     try {
       // In a real app, this would be an API call to Supabase
-      return mockStories
-        .filter(story => story.user_id === userId)
-        .map(({ user_id, ...story }) => story);
+      return mockStories.filter(story => story.user_id === userId);
     } catch (error) {
       throw new StoryServiceError('Failed to fetch stories', 'FETCH_STORIES_ERROR');
     }
@@ -196,11 +182,7 @@ export const storyService = {
     try {
       // In a real app, this would be an API call to Supabase
       const story = mockStories.find(s => s.id === storyId && s.user_id === userId);
-      if (!story) return null;
-      
-      // Return the story without the user_id property
-      const { user_id, ...storyWithoutUserId } = story;
-      return storyWithoutUserId;
+      return story || null;
     } catch (error) {
       throw new StoryServiceError('Failed to fetch story', 'FETCH_STORY_ERROR');
     }
@@ -230,9 +212,7 @@ export const storyService = {
       
       mockStories[storyIndex] = updatedStory;
       
-      // Return the story without the user_id property
-      const { user_id, ...story } = updatedStory;
-      return story;
+      return updatedStory;
     } catch (error) {
       if (error instanceof StoryServiceError) {
         throw error;

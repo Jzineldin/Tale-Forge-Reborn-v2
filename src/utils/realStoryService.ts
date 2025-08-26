@@ -1,6 +1,6 @@
 // Real Story Service - Connects to Supabase instead of mock data
 import { supabase } from '@/lib/supabase';
-import { Story, StorySegment, StoryChoice } from '@shared/types';
+import { Story, StorySegment, StoryChoice, UserCharacter } from '@shared/types';
 import { MockAIService } from './mockAIService';
 
 // Error types
@@ -128,7 +128,7 @@ export const realStoryService = {
               description: mockResult.story.description,
               user_id: userId,
               genre: mockResult.story.genre,
-              target_age: String(storyData.target_age || storyData.ageGroup || "7-9"),
+              target_age: String(storyData.target_age || storyData.age_group || "7-9"),
               story_mode: 'interactive',
               is_completed: false,
               is_public: false,
@@ -176,7 +176,7 @@ export const realStoryService = {
             description: savedStory.description,
             genre: savedStory.genre,
             age_group: savedStory.target_age,
-            status: savedStory.is_completed ? 'completed' : 'draft',
+            status: (savedStory.is_completed ? 'completed' : 'draft') as Story['status'],
             created_at: savedStory.created_at,
             updated_at: savedStory.updated_at,
             user_id: savedStory.user_id,
@@ -241,7 +241,7 @@ export const realStoryService = {
         description: story.description || 'A wonderful adventure awaits',
         genre: story.genre || 'fantasy',
         age_group: story.target_age || 'All Ages',
-        status: story.is_completed ? 'completed' : 'draft',
+        status: (story.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: story.created_at,
         updated_at: story.updated_at,
         user_id: story.user_id,
@@ -332,7 +332,7 @@ export const realStoryService = {
         description: updatedStory.description,
         genre: updatedStory.genre,
         age_group: updatedStory.target_age,
-        status: updatedStory.is_completed ? 'completed' : 'draft',
+        status: (updatedStory.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: updatedStory.created_at,
         updated_at: updatedStory.updated_at,
         user_id: updatedStory.user_id,
@@ -367,7 +367,7 @@ export const realStoryService = {
   },
 
   // Story Segment operations
-  async createStorySegment(userId: string, segmentData: Omit<StorySegment, 'id' | 'created_at'>): Promise<StorySegment> {
+  async createStorySegment(segmentData: Omit<StorySegment, 'id' | 'created_at'>): Promise<StorySegment> {
     try {
       console.log('📝 Creating story segment for story:', segmentData.story_id);
 
@@ -395,7 +395,7 @@ export const realStoryService = {
   },
 
   // Get segments for a story
-  async getStorySegments(userId: string, storyId: string): Promise<StorySegment[]> {
+  async getStorySegments(storyId: string): Promise<StorySegment[]> {
     try {
       console.log('📄 Fetching segments for story:', storyId);
 
@@ -416,7 +416,7 @@ export const realStoryService = {
   },
 
   // Generate next story segment using backend function
-  async generateStorySegment(userId: string, storyId: string, choiceIndex?: number): Promise<StorySegment> {
+  async generateStorySegment(storyId: string, choiceIndex?: number): Promise<StorySegment> {
     try {
       console.log('🤖 Generating story segment for:', storyId);
 
@@ -500,7 +500,7 @@ export const realStoryService = {
   },
 
   // Other segment operations...
-  async getStorySegmentById(userId: string, segmentId: string): Promise<StorySegment | null> {
+  async getStorySegmentById(segmentId: string): Promise<StorySegment | null> {
     try {
       const { data: segment, error } = await supabase
         .from('story_segments')
@@ -522,7 +522,7 @@ export const realStoryService = {
     }
   },
 
-  async updateStorySegment(userId: string, segmentId: string, segmentData: Partial<StorySegment>): Promise<StorySegment> {
+  async updateStorySegment(segmentId: string, segmentData: Partial<StorySegment>): Promise<StorySegment> {
     try {
       const { data: updatedSegment, error } = await supabase
         .from('story_segments')
@@ -545,7 +545,7 @@ export const realStoryService = {
     }
   },
 
-  async deleteStorySegment(userId: string, segmentId: string): Promise<void> {
+  async deleteStorySegment(segmentId: string): Promise<void> {
     try {
       const { error } = await supabase
         .from('story_segments')
@@ -560,7 +560,7 @@ export const realStoryService = {
   },
 
   // Story Choice operations (if using separate table)
-  async createStoryChoice(userId: string, choiceData: Omit<StoryChoice, 'id'>): Promise<StoryChoice> {
+  async createStoryChoice(choiceData: Omit<StoryChoice, 'id'>): Promise<StoryChoice> {
     try {
       const { data: newChoice, error } = await supabase
         .from('story_choices')
@@ -577,7 +577,7 @@ export const realStoryService = {
     }
   },
 
-  async getStoryChoices(userId: string, segmentId: string): Promise<StoryChoice[]> {
+  async getStoryChoices(segmentId: string): Promise<StoryChoice[]> {
     try {
       const { data: choices, error } = await supabase
         .from('story_choices')
@@ -594,7 +594,7 @@ export const realStoryService = {
     }
   },
 
-  async updateStoryChoice(userId: string, choiceId: string, choiceData: Partial<StoryChoice>): Promise<StoryChoice> {
+  async updateStoryChoice(choiceId: string, choiceData: Partial<StoryChoice>): Promise<StoryChoice> {
     try {
       const { data: updatedChoice, error } = await supabase
         .from('story_choices')
@@ -612,7 +612,7 @@ export const realStoryService = {
     }
   },
 
-  async deleteStoryChoice(userId: string, choiceId: string): Promise<void> {
+  async deleteStoryChoice(choiceId: string): Promise<void> {
     try {
       const { error } = await supabase
         .from('story_choices')
@@ -745,7 +745,7 @@ export const realStoryQueries = {
         description: story.description,
         genre: story.genre,
         age_group: story.target_age,
-        status: story.is_completed ? 'completed' : 'draft',
+        status: (story.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: story.created_at,
         updated_at: story.updated_at,
         user_id: story.user_id,
@@ -778,7 +778,7 @@ export const realStoryQueries = {
         description: story.description,
         genre: story.genre,
         age_group: story.target_age,
-        status: story.is_completed ? 'completed' : 'draft',
+        status: (story.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: story.created_at,
         updated_at: story.updated_at,
         user_id: story.user_id,
@@ -807,7 +807,7 @@ export const realStoryQueries = {
         description: story.description,
         genre: story.genre,
         age_group: story.target_age,
-        status: story.is_completed ? 'completed' : 'draft',
+        status: (story.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: story.created_at,
         updated_at: story.updated_at,
         user_id: story.user_id,
@@ -836,7 +836,7 @@ export const realStoryQueries = {
         description: story.description,
         genre: story.genre,
         age_group: story.target_age,
-        status: story.is_completed ? 'completed' : 'draft',
+        status: (story.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: story.created_at,
         updated_at: story.updated_at,
         user_id: story.user_id,
@@ -865,7 +865,7 @@ export const realStoryQueries = {
         description: story.description,
         genre: story.genre,
         age_group: story.target_age,
-        status: story.is_completed ? 'completed' : 'draft',
+        status: (story.is_completed ? 'completed' : 'draft') as Story['status'],
         created_at: story.created_at,
         updated_at: story.updated_at,
         user_id: story.user_id,

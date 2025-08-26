@@ -4,7 +4,7 @@
 [project]
 # Project ID is required for most CLI commands
 # Get this from your Supabase project dashboard
-project_id = "tale-forge"
+project_id = "fyihypkigbcmsxyvseca"
 
 [functions]
 # Directory where your functions are located

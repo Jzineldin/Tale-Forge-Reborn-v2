@@ -1,1 +1,0 @@
-// Authenticated pages index file

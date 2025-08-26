@@ -38,12 +38,12 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Hero Section */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center max-w-6xl mx-auto">
+      <section className="section-hero relative z-10 flex-1 flex items-center justify-center">
+        <div className="container-default text-center">
           {/* Refined Hero Container */}
           <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}
-            <h1 className="fantasy-heading-cinzel text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
+            <h1 className="h1-hero fantasy-heading-cinzel mb-8 text-center gradient-text">
               TALE FORGE
             </h1>
 
@@ -120,10 +120,10 @@ const HomePage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Featured Stories Section */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-16">
+      <section className="section-features relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
             <h2 className="fantasy-heading-cinzel text-3xl md:text-4xl font-bold text-center mb-12">
@@ -177,7 +177,7 @@ const HomePage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

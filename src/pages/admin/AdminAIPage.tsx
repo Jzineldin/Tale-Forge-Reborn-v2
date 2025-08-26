@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 import { useAuth } from '@/providers/AuthContext';
-import { supabase } from '@/lib/supabase';
 
 interface AIModel {
   id: string;
   name: string;
-  provider: 'ovh' | 'openai' | 'anthropic';
+  provider: 'ovh' | 'openai' | 'anthropic' | 'elevenlabs';
   type: 'text' | 'image' | 'audio';
   costPerToken: number;
   isActive: boolean;
@@ -39,7 +38,7 @@ interface AIStats {
 }
 
 const AdminAIPage: React.FC = () => {
-  const { user: currentUser } = useAuth();
+  const { } = useAuth();
   const [activeTab, setActiveTab] = useState<'models' | 'prompts' | 'stats' | 'settings'>('models');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -150,7 +149,7 @@ Create the next chapter (200-300 words) that:
   ]);
 
   // AI Stats State
-  const [aiStats, setAiStats] = useState<AIStats>({
+  const [aiStats] = useState<AIStats>({
     totalRequests: 1247,
     successRate: 98.7,
     avgResponseTime: 2.3,
@@ -328,7 +327,7 @@ Create the next chapter (200-300 words) that:
               <Button
                 onClick={() => handleTestPrompt(prompt)}
                 variant="secondary"
-                size="sm"
+                size="small"
                 className="text-sm"
               >
                 🧪 Test
@@ -377,7 +376,7 @@ Create the next chapter (200-300 words) that:
             <Button
               onClick={() => handleSavePrompt(prompt)}
               variant="primary"
-              size="sm"
+              size="small"
               disabled={saving}
               className="text-sm"
             >

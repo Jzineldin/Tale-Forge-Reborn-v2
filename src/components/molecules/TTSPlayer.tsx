@@ -21,12 +21,6 @@ interface TTSMetadata {
   textLength: number;
 }
 
-interface AudioData {
-  data: string;
-  format: string;
-  sampleRate: number;
-  duration: number;
-}
 
 const CHARACTER_OPTIONS = [
   { value: 'narrator', label: 'Narrator', emoji: '📖', description: 'Warm storytelling voice' },

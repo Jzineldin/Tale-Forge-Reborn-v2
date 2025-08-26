@@ -3,12 +3,13 @@ import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthContext';
+import { StandardPage, UnifiedCard } from '@/components/design-system';
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: 'user' | 'admin' | 'moderator';
+  role: 'user' | 'admin' | 'moderator' | 'suspended';
   status: 'active' | 'suspended' | 'inactive';
   joinDate: string;
   storiesCreated: number;
@@ -199,8 +200,8 @@ const AdminUsersPage: React.FC = () => {
         switch (action) {
           case 'edit':
             // For edit, we could open a modal - for now just log
-            console.log(`✏️ Edit user: ${user.full_name || user.email}`);
-            alert(`Edit functionality for ${user.full_name || user.email} - would open edit modal`);
+            console.log(`✏️ Edit user: ${user.name || user.email}`);
+            alert(`Edit functionality for ${user.name || user.email} - would open edit modal`);
             break;
 
           case 'suspend':
@@ -217,7 +218,7 @@ const AdminUsersPage: React.FC = () => {
               console.error('Error suspending user:', suspendError);
               alert(`Failed to suspend user: ${suspendError.message}`);
             } else {
-              console.log(`✅ User suspended: ${user.full_name || user.email}`);
+              console.log(`✅ User suspended: ${user.name || user.email}`);
               // Update local state
               setUsers(prev => prev.map(u => 
                 u.id === id ? { ...u, role: u.role === 'admin' ? 'admin' : 'suspended' } : u
@@ -239,7 +240,7 @@ const AdminUsersPage: React.FC = () => {
               console.error('Error activating user:', activateError);
               alert(`Failed to activate user: ${activateError.message}`);
             } else {
-              console.log(`✅ User activated: ${user.full_name || user.email}`);
+              console.log(`✅ User activated: ${user.name || user.email}`);
               // Update local state
               setUsers(prev => prev.map(u => 
                 u.id === id ? { ...u, role: 'user' } : u
@@ -250,7 +251,7 @@ const AdminUsersPage: React.FC = () => {
           case 'delete':
             // Confirm before deletion
             const confirmDelete = window.confirm(
-              `Are you sure you want to delete ${user.full_name || user.email}? This cannot be undone.`
+              `Are you sure you want to delete ${user.name || user.email}? This cannot be undone.`
             );
             
             if (confirmDelete) {
@@ -264,7 +265,7 @@ const AdminUsersPage: React.FC = () => {
                 console.error('Error deleting user:', deleteError);
                 alert(`Failed to delete user: ${deleteError.message}`);
               } else {
-                console.log(`✅ User deleted: ${user.full_name || user.email}`);
+                console.log(`✅ User deleted: ${user.name || user.email}`);
                 // Remove from local state
                 setUsers(prev => prev.filter(u => u.id !== id));
                 setSelectedUsers(prev => prev.filter(uid => uid !== id));
@@ -312,10 +313,13 @@ const AdminUsersPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <StandardPage 
+      title="👥 User Management" 
+      subtitle={`Manage platform users • Total: ${filteredUsers.length} users`}
+      containerSize="large"
+    >
         {/* Header */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-8">
+        <UnifiedCard variant="enhanced" className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-2" 
@@ -382,11 +386,11 @@ const AdminUsersPage: React.FC = () => {
               <option value="storiesCreated-asc">Least Stories</option>
             </select>
           </div>
-        </div>
+        </UnifiedCard>
 
         {/* Bulk Actions */}
         {selectedUsers.length > 0 && (
-          <div className="glass-enhanced backdrop-blur-lg bg-amber-500/20 border border-amber-400/30 rounded-2xl p-4 mb-6">
+          <UnifiedCard variant="refined" className="mb-6 bg-amber-500/20 border-amber-400/30">
             <div className="flex items-center justify-between">
               <span className="text-white font-medium">
                 {selectedUsers.length} user(s) selected
@@ -415,11 +419,11 @@ const AdminUsersPage: React.FC = () => {
                 </Button>
               </div>
             </div>
-          </div>
+          </UnifiedCard>
         )}
 
         {/* Users Table */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl overflow-hidden">
+        <UnifiedCard variant="enhanced" className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/5 border-b border-white/10">
@@ -506,11 +510,11 @@ const AdminUsersPage: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </UnifiedCard>
 
         {/* Empty State */}
         {filteredUsers.length === 0 && !loading && (
-          <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-12 text-center">
+          <UnifiedCard variant="enhanced" className="text-center" padding="large">
             <Icon name="users" size={64} className="text-white/40 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-white mb-4">No Users Found</h3>
             <p className="text-white/70 mb-8">
@@ -527,7 +531,7 @@ const AdminUsersPage: React.FC = () => {
                 Add First User
               </Button>
             )}
-          </div>
+          </UnifiedCard>
         )}
 
         {/* Add User Modal */}
@@ -591,8 +595,7 @@ const AdminUsersPage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </StandardPage>
   );
 };
 

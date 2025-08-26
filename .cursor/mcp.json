@@ -1,0 +1,55 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "E:/Tale-Forge-Reborn-2025"
+      ]
+    },
+    "obsidian": {
+      "command": "node",
+      "args": [
+        "E:/Tale-Forge-Reborn-2025/docs/Obsidian-MCP/build/index.js",
+        "E:/Tale-Forge-Reborn-2025/docs/Obsidian-MCP"
+      ]
+    },
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-supabase"
+      ],
+      "env": {
+        "SUPABASE_URL": "https://fyihypkigbcmsxyvseca.supabase.co",
+        "SUPABASE_ANON_KEY": "${env.VITE_SUPABASE_ANON_KEY}"
+      }
+    },
+    "elevenlabs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "elevenlabs-streaming-mcp-server"
+      ],
+      "env": {
+        "ELEVENLABS_API_KEY": "sk_a80f65231b7de570afeca390727bfa32368429d9a359a960"
+      }
+    }
+  },
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "mcp__filesystem__*",
+      "mcp__ide__*",
+      "mcp__supabase__*"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(*)"
+    ]
+  }
+}

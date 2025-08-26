@@ -36,7 +36,7 @@ describe('Input Component', () => {
     render(<Input onChange={handleChange} />);
     
     await user.type(screen.getByRole('textbox'), 'test input');
-    expect(handleChange).toHaveBeenCalledTimes(9); // One for each character
+    expect(handleChange).toHaveBeenCalledTimes(10); // One for each character including space
   });
 
   test('applies ref correctly', () => {

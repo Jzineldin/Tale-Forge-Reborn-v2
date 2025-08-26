@@ -7,8 +7,15 @@ export interface StoryTemplate {
   description: string;
   icon: string;
   category: string;
+  // NEW: Template metadata
+  difficulty: number; // 1-10 scale (replaces targetAge)
+  chapterCount: number; // How many chapters this template creates  
+  estimatedReadTime: string; // "10-15 min read"
+  baseCost: number; // Base cost for Text + Images (cheap to provide)
+  audioCost: number; // Premium ElevenLabs TTS (expensive, paid users only)
+  requiresPremiumForAudio: boolean; // Audio requires subscription
   settings: {
-    targetAge: number;
+    difficulty: number; // 1-10 scale (matches template difficulty)
     wordsPerChapter: number;
     genre: string;
     theme: string;
@@ -37,8 +44,14 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     description: 'A classic fantasy quest with magic, friendship, and wonder',
     icon: '🧙‍♂️',
     category: 'Fantasy',
+    difficulty: 4,
+    chapterCount: 5,
+    estimatedReadTime: '5 min read',
+    baseCost: 5, // 5 chapters × 1 credit (text + images are cheap!)
+    audioCost: 25, // Premium ElevenLabs TTS (expensive, subscribers only)
+    requiresPremiumForAudio: true,
     settings: {
-      targetAge: 8,
+      difficulty: 4,
       wordsPerChapter: 200,
       genre: 'Fantasy',
       theme: 'Friendship and Magic',
@@ -74,8 +87,14 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     description: 'An exciting journey among the stars with alien friends',
     icon: '🚀',
     category: 'Science Fiction',
+    difficulty: 5,
+    chapterCount: 4,
+    estimatedReadTime: '4 min read',
+    baseCost: 4, // 4 chapters × 1 credit (text + images are cheap!)
+    audioCost: 20, // Premium ElevenLabs TTS (expensive, subscribers only)
+    requiresPremiumForAudio: true,
     settings: {
-      targetAge: 9,
+      difficulty: 5,
       wordsPerChapter: 250,
       genre: 'Science Fiction',
       theme: 'Exploration and Discovery',
@@ -111,8 +130,14 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     description: 'Ahoy! A swashbuckling adventure on the high seas',
     icon: '🏴‍☠️',
     category: 'Adventure',
+    difficulty: 6,
+    chapterCount: 6,
+    estimatedReadTime: '6 min read',
+    baseCost: 6, // 6 chapters × 1 credit (text + images are cheap!)
+    audioCost: 30, // Premium ElevenLabs TTS (expensive, subscribers only)
+    requiresPremiumForAudio: true,
     settings: {
-      targetAge: 7,
+      difficulty: 6,
       wordsPerChapter: 180,
       genre: 'Adventure',
       theme: 'Courage and Teamwork',
@@ -148,8 +173,14 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     description: 'Help endangered animals in this heartwarming tale',
     icon: '🐾',
     category: 'Nature',
+    difficulty: 3,
+    chapterCount: 3,
+    estimatedReadTime: '3 min read',
+    baseCost: 3, // 3 chapters × 1 credit (text + images are cheap!)
+    audioCost: 15, // Premium ElevenLabs TTS (expensive, subscribers only)
+    requiresPremiumForAudio: true,
     settings: {
-      targetAge: 6,
+      difficulty: 3,
       wordsPerChapter: 150,
       genre: 'Adventure',
       theme: 'Animal Care and Environment',
@@ -185,8 +216,14 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     description: 'Journey through different time periods and meet historical figures',
     icon: '⏰',
     category: 'Educational',
+    difficulty: 7,
+    chapterCount: 5,
+    estimatedReadTime: '8 min read',
+    baseCost: 5, // 5 chapters × 1 credit (text + images are cheap!)
+    audioCost: 25, // Premium ElevenLabs TTS (expensive, subscribers only)
+    requiresPremiumForAudio: true,
     settings: {
-      targetAge: 10,
+      difficulty: 7,
       wordsPerChapter: 300,
       genre: 'Science Fiction',
       theme: 'History and Learning',
@@ -222,8 +259,14 @@ export const STORY_TEMPLATES: StoryTemplate[] = [
     description: 'Dive into an oceanic adventure with mermaids and sea creatures',
     icon: '🧜‍♀️',
     category: 'Fantasy',
+    difficulty: 5,
+    chapterCount: 4,
+    estimatedReadTime: '4 min read',
+    baseCost: 4, // 4 chapters × 1 credit (text + images are cheap!)
+    audioCost: 20, // Premium ElevenLabs TTS (expensive, subscribers only)
+    requiresPremiumForAudio: true,
     settings: {
-      targetAge: 7,
+      difficulty: 5,
       wordsPerChapter: 200,
       genre: 'Fantasy',
       theme: 'Ocean Conservation and Friendship',

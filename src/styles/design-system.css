@@ -1,0 +1,284 @@
+/* Tale Forge Design System v1.0 */
+/* Standardized UI components and utilities */
+
+/* ===== TYPOGRAPHY SYSTEM ===== */
+
+/* Hero/Landing Headers */
+.h1-hero {
+  @apply text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight;
+  line-height: 1.1;
+}
+
+/* Page Headers */
+.h1-page {
+  @apply text-4xl md:text-5xl font-bold;
+  line-height: 1.2;
+}
+
+/* Section Headers */
+.h2-section {
+  @apply text-2xl md:text-3xl lg:text-4xl font-bold;
+  line-height: 1.3;
+}
+
+/* Card Headers */
+.h3-card {
+  @apply text-lg md:text-xl font-semibold;
+  line-height: 1.4;
+}
+
+/* Sub Headers */
+.h4-sub {
+  @apply text-base md:text-lg font-semibold;
+  line-height: 1.5;
+}
+
+/* Body Text */
+.text-body {
+  @apply text-base md:text-lg leading-relaxed;
+}
+
+.text-body-small {
+  @apply text-sm md:text-base leading-relaxed;
+}
+
+/* ===== BUTTON SYSTEM ===== */
+
+/* Base button styles */
+.btn {
+  @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500;
+}
+
+/* Button sizes - STANDARDIZED */
+.btn-sm {
+  @apply px-4 py-2 text-sm;
+}
+
+.btn-md {
+  @apply px-6 py-3 text-base;
+}
+
+.btn-lg {
+  @apply px-8 py-4 text-lg;
+}
+
+.btn-xl {
+  @apply px-10 py-5 text-xl;
+}
+
+/* Button variants */
+.btn-primary {
+  @apply bg-amber-500 text-white hover:bg-amber-600 shadow-lg hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl;
+}
+
+.btn-dark {
+  @apply bg-gray-800 text-white hover:bg-gray-900;
+}
+
+.btn-outline {
+  @apply border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white;
+}
+
+.btn-outline-white {
+  @apply border-2 border-white text-white hover:bg-white hover:text-gray-900;
+}
+
+.btn-ghost {
+  @apply text-gray-300 hover:text-white hover:bg-gray-800/50;
+}
+
+/* ===== SPACING SYSTEM ===== */
+
+/* Section spacing */
+.section-spacing {
+  @apply py-16 md:py-20 lg:py-24;
+}
+
+.section-spacing-sm {
+  @apply py-8 md:py-12 lg:py-16;
+}
+
+.section-spacing-lg {
+  @apply py-20 md:py-28 lg:py-32;
+}
+
+/* Content spacing */
+.content-spacing {
+  @apply space-y-8 md:space-y-12;
+}
+
+.content-spacing-sm {
+  @apply space-y-4 md:space-y-6;
+}
+
+.content-spacing-lg {
+  @apply space-y-12 md:space-y-16;
+}
+
+/* ===== CONTAINER SYSTEM ===== */
+
+.container-default {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.container-narrow {
+  @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.container-wide {
+  @apply max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* ===== CARD SYSTEM ===== */
+
+.card {
+  @apply bg-gray-800 rounded-xl p-6 md:p-8 shadow-xl;
+}
+
+.card-sm {
+  @apply bg-gray-800 rounded-lg p-4 md:p-6 shadow-lg;
+}
+
+.card-lg {
+  @apply bg-gray-800 rounded-2xl p-8 md:p-10 shadow-2xl;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+}
+
+.card-gradient {
+  @apply bg-gradient-to-br from-gray-800 to-gray-900;
+}
+
+/* ===== FORM SYSTEM ===== */
+
+.form-input {
+  @apply w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-300 mb-2;
+}
+
+.form-error {
+  @apply text-red-400 text-sm mt-1;
+}
+
+.form-group {
+  @apply space-y-2;
+}
+
+/* ===== GRID SYSTEM ===== */
+
+.grid-features {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8;
+}
+
+.grid-cards {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8;
+}
+
+.grid-stories {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+/* ===== SEMANTIC SECTIONS ===== */
+
+.section {
+  @apply relative w-full;
+}
+
+.section-hero {
+  @apply section section-spacing-lg bg-gradient-to-b from-purple-900/20 to-gray-900;
+}
+
+.section-features {
+  @apply section section-spacing bg-gray-900/50;
+}
+
+.section-content {
+  @apply section section-spacing;
+}
+
+.section-cta {
+  @apply section section-spacing bg-gradient-to-r from-amber-500/10 to-purple-600/10;
+}
+
+/* ===== ANIMATION UTILITIES ===== */
+
+.animate-fade-in {
+  @apply animate-[fadeIn_0.5s_ease-in-out];
+}
+
+.animate-slide-up {
+  @apply animate-[slideUp_0.5s_ease-out];
+}
+
+.animate-scale-in {
+  @apply animate-[scaleIn_0.3s_ease-out];
+}
+
+/* ===== GRADIENT TEXT ===== */
+
+.gradient-text {
+  @apply bg-gradient-to-r from-amber-400 to-orange-600 bg-clip-text text-transparent;
+}
+
+.gradient-text-purple {
+  @apply bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent;
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.backdrop-blur-dark {
+  @apply backdrop-blur-md bg-gray-900/80;
+}
+
+.divider {
+  @apply border-t border-gray-700/50;
+}
+
+.divider-thick {
+  @apply border-t-2 border-gray-700;
+}
+
+/* ===== RESPONSIVE UTILITIES ===== */
+
+.stack-mobile {
+  @apply flex flex-col md:flex-row;
+}
+
+.center-content {
+  @apply flex items-center justify-center;
+}
+
+.text-center-mobile {
+  @apply text-center md:text-left;
+}
+
+/* ===== Z-INDEX SCALE ===== */
+
+.z-dropdown {
+  z-index: 10;
+}
+
+.z-modal {
+  z-index: 50;
+}
+
+.z-tooltip {
+  z-index: 60;
+}
+
+.z-notification {
+  z-index: 70;
+}

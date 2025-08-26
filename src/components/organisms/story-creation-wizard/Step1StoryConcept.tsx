@@ -11,8 +11,7 @@ interface Step1StoryConceptProps {
 const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
   storyData,
   handleInputChange,
-  onNext,
-  onPrevious
+  onNext
 }) => {
   // Difficulty-based system (1-10 scale)
   const getDifficultyDescription = (difficulty: number) => {
@@ -95,7 +94,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
     }
   ];
 
-  const isValid = storyData.difficulty && storyData.wordsPerChapter && storyData.genre;
+  const isValid = storyData.difficulty && storyData.wordsPerChapter && storyData.genre && storyData.ageGroup;
 
   return (
     <div className="space-y-8">
@@ -117,6 +116,8 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
         <div className="relative">
           <input
             type="text"
+            name="childName"
+            data-testid="character-name-input"
             placeholder="Enter the hero's name for personalization..."
             value={storyData.childName}
             onChange={(e) => handleInputChange('childName', e.target.value)}
@@ -127,6 +128,42 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
         <p className="text-sm text-white/60 mt-2">
           We'll use this name to make the story extra special and personal
         </p>
+      </div>
+
+      {/* Age Group Selection */}
+      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6" data-testid="age-group-select">
+        <h3 className="text-xl font-bold text-white mb-6 text-center">
+          👶 Target Age Group
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {[
+            { id: '3-4', label: '3-4 years', emoji: '👶', description: 'Very simple stories' },
+            { id: '4-6', label: '4-6 years', emoji: '🧒', description: 'Early learning tales' },
+            { id: '6-8', label: '6-8 years', emoji: '👧', description: 'Elementary adventures' },
+            { id: '8-12', label: '8-12 years', emoji: '👦', description: 'Chapter book level' }
+          ].map((ageGroup) => (
+            <button
+              key={ageGroup.id}
+              type="button"
+              className={`glass-card backdrop-blur-md border-2 rounded-lg p-4 text-center transition-all duration-300 hover:scale-105 ${
+                storyData.ageGroup === ageGroup.id
+                  ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/25'
+                  : 'bg-white/5 border-white/10 hover:border-white/30'
+              }`}
+              onClick={() => handleInputChange('ageGroup', ageGroup.id)}
+            >
+              <div className="text-2xl mb-2">{ageGroup.emoji}</div>
+              <h4 className={`font-semibold text-sm mb-1 ${
+                storyData.ageGroup === ageGroup.id ? 'text-amber-400' : 'text-white'
+              }`}>
+                {ageGroup.label}
+              </h4>
+              <p className="text-xs text-white/70">
+                {ageGroup.description}
+              </p>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Difficulty and Words Selection */}
@@ -226,7 +263,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
       </div>
 
       {/* Genre Selection */}
-      <div>
+      <div data-testid="theme-select">
         <h3 className="text-xl font-bold text-white mb-6 text-center">
           🎨 Pick Your Story Genre
         </h3>
@@ -313,6 +350,7 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
         <button 
           onClick={onNext}
           disabled={!isValid}
+          data-testid="next-button"
           className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
             isValid
               ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg hover:scale-105'
@@ -320,18 +358,18 @@ const Step1StoryConcept: React.FC<Step1StoryConceptProps> = ({
           }`}
           aria-label="Continue to character creation step"
         >
-          Next: Create Characters → 
+          Next
         </button>
       </div>
 
       {/* Validation Helper */}
-      {(!storyData.difficulty || !storyData.genre || !storyData.wordsPerChapter) && (
+      {(!storyData.difficulty || !storyData.genre || !storyData.wordsPerChapter || !storyData.ageGroup) && (
         <div className="text-center">
           <p className="text-amber-400 text-sm">
-            Please set the difficulty level, words per chapter, and select a genre to continue ✨
+            Please set the age group, difficulty level, words per chapter, and select a genre to continue ✨
           </p>
           <p className="text-xs text-white/60 mt-1">
-            Debug: Difficulty={storyData.difficulty}, Words={storyData.wordsPerChapter}, Genre={storyData.genre ? 'selected' : 'missing'}
+            Debug: Age={storyData.ageGroup ? 'selected' : 'missing'}, Difficulty={storyData.difficulty}, Words={storyData.wordsPerChapter}, Genre={storyData.genre ? 'selected' : 'missing'}
           </p>
         </div>
       )}

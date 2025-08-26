@@ -32,7 +32,15 @@ export const examineCurrentSchema = async () => {
       'user_accounts'
     ];
     
-    const results = {
+    const results: {
+      discoveredTables: Array<{ table_name: string }>;
+      existingTables: Array<{ name: string; recordCount: number | null; sampleStructure: string[] }>;
+      userInfo: { tableName: string; count: number | null; sampleColumns: string[]; sampleRecord: any } | null;
+      storyInfo: { tableName: string; count: number | null; sampleColumns: string[]; sampleRecord: any } | null;
+      totalUsers: number;
+      totalStories: number;
+      authUsersCount: number | string;
+    } = {
       discoveredTables: tablesData || [],
       existingTables: [],
       userInfo: null,
@@ -61,32 +69,32 @@ export const examineCurrentSchema = async () => {
         if (!error) {
           results.existingTables.push({
             name: tableName,
-            recordCount: count,
-            sampleStructure: data?.[0] ? Object.keys(data[0]) : []
+            recordCount: count || 0,
+            sampleStructure: data && data[0] ? Object.keys(data[0]) : []
           });
           
           console.log(`✅ Found table: ${tableName} (${count} records)`);
           
           // Get sample user data structure (try various user table names)
-          if ((tableName.toLowerCase().includes('user') || tableName.toLowerCase() === 'profile') && count > 0) {
+          if ((tableName.toLowerCase().includes('user') || tableName.toLowerCase() === 'profile') && (count || 0) > 0 && data && data[0]) {
             results.userInfo = {
               tableName: tableName,
-              count: count,
+              count: count || 0,
               sampleColumns: Object.keys(data[0]),
               sampleRecord: data[0] // Will help us understand the structure
             };
-            results.totalUsers = Math.max(results.totalUsers, count);
+            results.totalUsers = Math.max(results.totalUsers, count || 0);
           }
           
           // Get sample story data structure (try various story table names)
-          if ((tableName.toLowerCase().includes('story') || tableName.toLowerCase().includes('tale')) && count > 0) {
+          if ((tableName.toLowerCase().includes('story') || tableName.toLowerCase().includes('tale')) && (count || 0) > 0 && data && data[0]) {
             results.storyInfo = {
               tableName: tableName,
-              count: count,
+              count: count || 0,
               sampleColumns: Object.keys(data[0]),
               sampleRecord: data[0]
             };
-            results.totalStories = Math.max(results.totalStories, count);
+            results.totalStories = Math.max(results.totalStories, count || 0);
           }
         }
       } catch (err) {
@@ -192,7 +200,7 @@ export const getUserSample = async (limit = 3) => {
     }
     
     // Remove any sensitive data from logs
-    const safeSample = users?.map(user => ({
+    const safeSample = users?.map((user: any) => ({
       id: user.id,
       email: user.email ? `${user.email.substring(0, 3)}***` : 'no email',
       columns: Object.keys(user)
@@ -222,8 +230,8 @@ export const getStorySample = async (limit = 3) => {
           .select('*')
           .limit(limit);
         
-        if (!error && stories?.length > 0) {
-          const safeSample = stories.map(story => ({
+        if (!error && stories && stories.length > 0) {
+          const safeSample = stories.map((story: any) => ({
             id: story.id,
             title: story.title || story.name || 'untitled',
             columns: Object.keys(story)

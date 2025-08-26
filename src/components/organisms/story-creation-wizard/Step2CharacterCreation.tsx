@@ -1,4 +1,4 @@
-import React, { useState, useTransition, useDeferredValue } from 'react';
+import React, { useState } from 'react';
 import Icon from '@/components/atoms/Icon';
 import { useUserCharacters, useSaveCharacter, useDeleteCharacter } from '@/utils/characterHooks';
 import { UserCharacter } from '@shared/types';
@@ -412,7 +412,7 @@ const Step2CharacterCreation: React.FC<Step2CharacterCreationProps> = ({
                     <div>
                       <p className="text-white/70 text-xs mb-2">Traits:</p>
                       <div className="flex flex-wrap gap-1">
-                        {savedChar.traits.map((trait, index) => (
+                        {savedChar.traits.map((trait: string, index: number) => (
                           <span 
                             key={index} 
                             className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-400/30"

@@ -35,7 +35,7 @@ serve(async (req) => {
     }
     
     // 2. Validate authentication
-    const authResult = await validateUserAuth(req, env.supabaseUrl!, env.supabaseServiceKey!);
+    const authResult = await validateUserAuth(req, env.supabaseUrl!, env.supabaseAnonKey!);
     if (!authResult.isValid) {
       console.error('❌ Authentication failed:', authResult.error);
       return createCorsResponse({
@@ -61,7 +61,7 @@ serve(async (req) => {
     
     // 4. Create authenticated Supabase client
     const authHeader = req.headers.get('Authorization')!;
-    const supabase = createAuthenticatedSupabaseClient(env.supabaseUrl!, env.supabaseServiceKey!, authHeader);
+    const supabase = createAuthenticatedSupabaseClient(env.supabaseUrl!, env.supabaseAnonKey!, authHeader);
     
     // 5. Fetch story data
     const { data: story, error: storyError } = await supabase
@@ -111,6 +111,7 @@ serve(async (req) => {
       story_id: segment.story_id,
       content: segment.segment_text || segment.content, // Handle both field names
       image_url: segment.image_url,
+      image_prompt: segment.image_prompt, // CRITICAL: Include image prompt for frontend polling
       audio_url: segment.audio_url,
       choices: segment.choices || [],
       position: segment.position || 1,

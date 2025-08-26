@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '@/components/atoms/Button';
-import Icon from '@/components/atoms/Icon';
 import { useAuth } from '@/providers/AuthContext';
 import DatabaseExaminer from '@/components/debug/DatabaseExaminer';
 import { supabase } from '@/lib/supabase';
+import { StandardPage, UnifiedCard, MetricCard, StatusCard, DESIGN_TOKENS } from '@/components/design-system';
 
 interface DashboardStats {
   totalUsers: number;
@@ -203,65 +202,50 @@ const AdminDashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2" 
-                  style={{ fontFamily: 'Cinzel, serif' }}>
-                ⚡ Admin Dashboard
-              </h1>
-              <p className="text-xl text-white/90">
-                Welcome back, {user?.full_name || user?.email} • Platform overview and management
-              </p>
-            </div>
-            <div className="text-right">
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                stats?.systemHealth === 'good' ? 'bg-green-500/20 text-green-400' :
-                stats?.systemHealth === 'warning' ? 'bg-amber-500/20 text-amber-400' :
-                'bg-red-500/20 text-red-400'
-              }`}>
-                <div className={`w-2 h-2 rounded-full mr-2 ${
-                  stats?.systemHealth === 'good' ? 'bg-green-400' :
-                  stats?.systemHealth === 'warning' ? 'bg-amber-400' :
-                  'bg-red-400'
-                }`}></div>
-                System {stats?.systemHealth === 'good' ? 'Healthy' : stats?.systemHealth === 'warning' ? 'Warning' : 'Critical'}
-              </div>
-            </div>
-          </div>
-          <div className="text-white/70 text-sm">
-            Last updated: {new Date().toLocaleString()}
-          </div>
-        </div>
+    <StandardPage 
+      title="⚡ Admin Dashboard" 
+      subtitle={`Welcome back, ${user?.full_name || user?.email} • Platform overview and management`}
+      containerSize="large"
+    >
+      <div className="mb-8 flex justify-end">
+        <StatusCard
+          title="System Status"
+          status={stats?.systemHealth || 'good'}
+          description={`Last updated: ${new Date().toLocaleString()}`}
+          className="max-w-xs"
+        />
+      </div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[
-            { name: 'Total Users', value: stats?.totalUsers.toLocaleString(), icon: '👥', change: '+12%', color: 'blue' },
-            { name: 'Stories Created', value: stats?.totalStories.toLocaleString(), icon: '📚', change: '+8%', color: 'purple' },
-            { name: 'Active Subscriptions', value: stats?.activeSubscriptions.toLocaleString(), icon: '💎', change: '+5%', color: 'amber' },
-            { name: 'Avg. Session Duration', value: stats?.avgSessionDuration, icon: '⏱️', change: '+3%', color: 'green' }
-          ].map((stat, index) => (
-            <div key={index} className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6 hover:bg-black/30 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`text-3xl`}>{stat.icon}</div>
-                <div className={`text-sm font-medium ${
-                  stat.change.startsWith('+') ? 'text-green-400' : 'text-red-400'
-                } bg-white/10 px-2 py-1 rounded`}>
-                  {stat.change}
-                </div>
-              </div>
-              <div className="text-white/70 text-sm mb-1">{stat.name}</div>
-              <div className="text-2xl font-bold text-white">{stat.value}</div>
-            </div>
-          ))}
+          <MetricCard
+            title="Total Users"
+            value={stats?.totalUsers.toLocaleString() || '0'}
+            icon="👥"
+            trend={{ value: '+12%', positive: true }}
+          />
+          <MetricCard
+            title="Stories Created"
+            value={stats?.totalStories.toLocaleString() || '0'}
+            icon="📚"
+            trend={{ value: '+8%', positive: true }}
+          />
+          <MetricCard
+            title="Active Subscriptions"
+            value={stats?.activeSubscriptions.toLocaleString() || '0'}
+            icon="💎"
+            trend={{ value: '+5%', positive: true }}
+          />
+          <MetricCard
+            title="Avg. Session Duration"
+            value={stats?.avgSessionDuration || 'N/A'}
+            icon="⏱️"
+            trend={{ value: '+3%', positive: true }}
+          />
         </div>
 
         {/* Today's Activity */}
-        <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-6 mb-8">
+        <UnifiedCard variant="enhanced" className="mb-8">
           <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
             🌟 Today's Activity
           </h3>
@@ -279,7 +263,7 @@ const AdminDashboardPage: React.FC = () => {
               <div className="text-white/70">Flagged Content</div>
             </div>
           </div>
-        </div>
+        </UnifiedCard>
 
         {/* Database Examination Tool */}
         <DatabaseExaminer />
@@ -287,7 +271,7 @@ const AdminDashboardPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Activity */}
           <div className="lg:col-span-2">
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl overflow-hidden">
+            <UnifiedCard variant="enhanced" className="overflow-hidden">
               <div className="p-6 border-b border-white/10">
                 <h3 className="text-xl font-bold text-white flex items-center">
                   📊 Recent Activity
@@ -296,7 +280,7 @@ const AdminDashboardPage: React.FC = () => {
               <div className="p-6">
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center p-3 glass-card bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-300">
+                    <UnifiedCard key={activity.id} variant="glass" padding="medium" hover className="flex items-center">
                       <div className="flex-shrink-0 text-2xl mr-4">
                         {getActivityIcon(activity.type)}
                       </div>
@@ -312,56 +296,56 @@ const AdminDashboardPage: React.FC = () => {
                       <div className="text-white/50 text-xs">
                         {activity.time}
                       </div>
-                    </div>
+                    </UnifiedCard>
                   ))}
                 </div>
               </div>
-            </div>
+            </UnifiedCard>
           </div>
 
           {/* Quick Actions & System Status */}
           <div className="space-y-8">
             {/* Quick Actions */}
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl">
+            <UnifiedCard variant="enhanced">
               <div className="p-6 border-b border-white/10">
                 <h3 className="text-xl font-bold text-white flex items-center">
                   ⚡ Quick Actions
                 </h3>
               </div>
               <div className="p-6 space-y-3">
-                <Button 
+                <button 
                   onClick={() => navigate('/admin/users')}
-                  className="w-full fantasy-btn bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                  className={`${DESIGN_TOKENS.components.button.primary} w-full flex items-center justify-center space-x-2`}
                 >
                   <span>👥</span>
                   <span>Manage Users</span>
-                </Button>
-                <Button 
+                </button>
+                <button 
                   onClick={() => navigate('/admin/content')}
-                  className="w-full fantasy-btn bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                  className={`${DESIGN_TOKENS.components.button.secondary} w-full flex items-center justify-center space-x-2`}
                 >
                   <span>🛡️</span>
                   <span>Content Moderation</span>
-                </Button>
-                <Button 
+                </button>
+                <button 
                   onClick={() => navigate('/admin/analytics')}
-                  className="w-full fantasy-btn bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                  className={`${DESIGN_TOKENS.components.button.primary} w-full flex items-center justify-center space-x-2`}
                 >
                   <span>📈</span>
                   <span>View Analytics</span>
-                </Button>
-                <Button 
+                </button>
+                <button 
                   onClick={() => navigate('/admin/settings')}
-                  className="w-full fantasy-btn bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                  className={`${DESIGN_TOKENS.components.button.secondary} w-full flex items-center justify-center space-x-2`}
                 >
                   <span>⚙️</span>
                   <span>System Settings</span>
-                </Button>
+                </button>
               </div>
-            </div>
+            </UnifiedCard>
 
             {/* System Status */}
-            <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl">
+            <UnifiedCard variant="enhanced">
               <div className="p-6 border-b border-white/10">
                 <h3 className="text-xl font-bold text-white flex items-center">
                   🔧 System Status
@@ -410,11 +394,10 @@ const AdminDashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </UnifiedCard>
           </div>
         </div>
-      </div>
-    </div>
+    </StandardPage>
   );
 };
 

@@ -46,10 +46,25 @@ serve(async (req) => {
       );
     }
 
-    // Fetch segment data from Supabase
+    // Validate user authentication first
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      console.error('Authentication failed:', userError);
+      return new Response(
+        JSON.stringify({ error: 'Authentication failed' }),
+        { headers: { "Content-Type": "application/json" }, status: 401 }
+      );
+    }
+
+    // Fetch segment data from Supabase with story info for user validation
     const { data: segment, error: segmentError } = await supabase
       .from('story_segments')
-      .select('*')
+      .select(`
+        *,
+        stories!inner(id, user_id)
+      `)
       .eq('id', segmentId)
       .single();
 
@@ -68,16 +83,35 @@ serve(async (req) => {
       );
     }
 
-    // Prepare the image generation request for OVH SDXL (ALWAYS)
+    // Validate user owns this story
+    if (segment.stories.user_id !== user.id) {
+      console.error('Access denied: User does not own this story');
+      return new Response(
+        JSON.stringify({ error: 'Access denied: You can only regenerate images for your own stories' }),
+        { headers: { "Content-Type": "application/json" }, status: 403 }
+      );
+    }
+
+    // Prepare the image generation request for OVH SDXL with 2025 optimizations
     const ovhEndpoint = 'https://stable-diffusion-xl.endpoints.kepler.ai.cloud.ovh.net/api/text2image';
     
+    // Split intelligent prompt to handle NEGATIVE: sections
+    const [mainPrompt, negativeSection] = imagePrompt.includes('NEGATIVE:') 
+      ? imagePrompt.split('NEGATIVE:')
+      : [imagePrompt, ''];
+    
+    // Enhanced negative prompt with children's safety focus
+    const enhancedNegativePrompt = [
+      'scary, violent, inappropriate, adult content, nsfw, frightening, dark, disturbing',
+      'ugly, blurry, low quality, distorted, deformed, malformed, mutation, bad anatomy',
+      'extra limbs, missing limbs, floating limbs, disconnected limbs, bad hands, bad fingers',
+      'text, watermark, signature, username, logo, copyright',
+      negativeSection.trim() // Add any negative elements from intelligent prompt
+    ].filter(Boolean).join(', ');
+    
     const imageRequest = {
-      prompt: imagePrompt,
-      negative_prompt: 'scary, violent, inappropriate, adult content, ugly, blurry, low quality, distorted, nsfw',
-      width: 1024,
-      height: 1024,
-      num_inference_steps: 30,
-      guidance_scale: 7.5
+      prompt: mainPrompt.trim(),
+      negative_prompt: enhancedNegativePrompt
     };
 
     // Call OVH SDXL API to generate image
@@ -85,7 +119,8 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${ovhAccessToken}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'accept': 'application/octet-stream'
       },
       body: JSON.stringify(imageRequest)
     });
@@ -95,36 +130,28 @@ serve(async (req) => {
       throw new Error(`OVH AI API error: ${response.status} - ${errorText}`);
     }
 
-    const imageData = await response.json();
+    // OVH SDXL API returns binary image data directly
+    const imageBuffer = new Uint8Array(await response.arrayBuffer());
     
-    // Assuming the API returns a base64 encoded image or URL
-    let imageUrl = '';
+    // Upload the binary image data to Supabase Storage
+    const fileName = `story-images/${segment.stories.id}/${segmentId}-${Date.now()}.png`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('story-images')
+      .upload(fileName, imageBuffer, {
+        contentType: 'image/png'
+      });
     
-    if (imageData.image_url) {
-      imageUrl = imageData.image_url;
-    } else if (imageData.image_data) {
-      // If we get base64 data, we need to upload it to Supabase Storage
-      const imageBuffer = Uint8Array.from(atob(imageData.image_data), c => c.charCodeAt(0));
-      
-      // Upload to Supabase Storage
-      const fileName = `story-images/${segment.story_id}/${segmentId}-${Date.now()}.png`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('story-images')
-        .upload(fileName, imageBuffer, {
-          contentType: 'image/png'
-        });
-      
-      if (uploadError) {
-        throw new Error(`Failed to upload image to Supabase Storage: ${uploadError.message}`);
-      }
-      
-      // Get public URL for the uploaded image
-      const { data: { publicUrl } } = supabase.storage
-        .from('story-images')
-        .getPublicUrl(fileName);
-      
-      imageUrl = publicUrl;
+    if (uploadError) {
+      console.error('Failed to upload image to Supabase Storage:', uploadError);
+      throw new Error(`Failed to upload image to Supabase Storage: ${uploadError.message}`);
     }
+    
+    // Get public URL for the uploaded image
+    const { data: { publicUrl } } = supabase.storage
+      .from('story-images')
+      .getPublicUrl(fileName);
+    
+    const imageUrl = publicUrl;
 
     // Update the segment with the new image URL
     const { data: updatedSegment, error: updateError } = await supabase

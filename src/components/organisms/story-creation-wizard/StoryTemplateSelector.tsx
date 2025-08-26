@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Text from '@/components/atoms/Text';
 import Button from '@/components/atoms/Button';
-import { STORY_TEMPLATES, TEMPLATE_CATEGORIES, getTemplatesByCategory, type StoryTemplate } from '@/utils/storyTemplates';
+import { TEMPLATE_CATEGORIES, getTemplatesByCategory, type StoryTemplate } from '@/utils/storyTemplates';
+// Removed unused imports: useSocialStats, useTemplateLikes, useTemplateBookmarks, useTemplateSharing
 
 interface StoryTemplateSelectorProps {
   onSelectTemplate: (template: StoryTemplate) => void;
@@ -80,20 +80,36 @@ const StoryTemplateSelector: React.FC<StoryTemplateSelectorProps> = ({
             {/* Template Details */}
             <div className="space-y-2 text-xs text-white/60">
               <div className="flex justify-between">
-                <span>Age:</span>
-                <span className="text-amber-400">{template.settings.targetAge}</span>
+                <span>Difficulty:</span>
+                <span className="text-amber-400">{template.difficulty}/10</span>
               </div>
               <div className="flex justify-between">
-                <span>Genre:</span>
-                <span className="text-amber-400">{template.settings.genre}</span>
+                <span>Chapters:</span>
+                <span className="text-amber-400">{template.chapterCount}</span>
               </div>
               <div className="flex justify-between">
-                <span>Characters:</span>
-                <span className="text-amber-400">{template.settings.characters.length}</span>
+                <span>Read Time:</span>
+                <span className="text-amber-400">{template.estimatedReadTime}</span>
               </div>
               <div className="flex justify-between">
-                <span>Words/Chapter:</span>
-                <span className="text-amber-400">{template.settings.wordsPerChapter}</span>
+                <span>Base Cost:</span>
+                <span className="text-green-400">💳 {template.baseCost} credits</span>
+              </div>
+              <div className="text-xs text-white/50 mt-1">
+                Includes story text + illustrations
+              </div>
+            </div>
+
+            {/* Premium Audio Option */}
+            <div className="mt-3 pt-3 border-t border-white/10">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-purple-400 flex items-center">
+                  🎭 Premium Narration: <span className="ml-1 text-yellow-400">👑</span>
+                </span>
+                <span className="text-purple-400">+{template.audioCost} credits</span>
+              </div>
+              <div className="text-xs text-white/50 mt-1">
+                High-quality ElevenLabs voices (subscribers only)
               </div>
             </div>
 
@@ -117,6 +133,7 @@ const StoryTemplateSelector: React.FC<StoryTemplateSelectorProps> = ({
               </div>
             </div>
 
+
             {/* Quick Start Indicator */}
             {selectedTemplate === template.id && (
               <div className="mt-4 text-center">
@@ -139,9 +156,10 @@ const StoryTemplateSelector: React.FC<StoryTemplateSelectorProps> = ({
         </p>
         <Button
           onClick={onCustomCreate}
+          data-testid="custom-create-button"
           className="fantasy-cta px-8 py-3 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300"
         >
-          Start Custom Creation
+          Custom Creation
         </Button>
       </div>
 

@@ -1,5 +1,6 @@
 /* Import Tale Forge Design System */
 @import './styles/tale-forge-design-system.css';
+@import './styles/design-system.css';
 
 @tailwind base;
 @tailwind components;

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Text from '@/components/atoms/Text';
-import Button from '@/components/atoms/Button';
+import { useAuth } from '@/providers/AuthContext';
+import { achievementService } from '@/services/achievementService';
+import { goalService } from '@/services/goalService';
 import StoryImage from '@/components/atoms/StoryImage';
 import StoryChoices from '@/components/molecules/StoryChoices';
 import StoryProgress from '@/components/molecules/StoryProgress';
-import AudioPlayer from '@/components/molecules/AudioPlayer';
 import { TTSPlayer } from '@/components/molecules/TTSPlayer';
-import { useStory, useGenerateStorySegment, useGenerateStoryEnding, useGenerateAudio, useRegenerateImage } from '@/utils/performance.tsx';
-import { LoadingState, ErrorState } from '@/utils/performance.tsx';
+import { useStory, useGenerateStorySegment, useGenerateStoryEnding, useGenerateAudio } from '@/utils/performance.tsx';
+import { UnifiedCard, FloatingElements, DESIGN_TOKENS } from '@/components/design-system';
+import { CreditBalanceIndicator } from '@/components/business/CreditDisplay';
 
 // Helper function to convert age format back to difficulty display
 const getDifficultyDisplay = (ageGroup: string): string => {
@@ -26,16 +27,60 @@ const getDifficultyDisplay = (ageGroup: string): string => {
 
 const StoryReaderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
   const [fontSize, setFontSize] = useState('medium');
   const [isGenerating, setIsGenerating] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
-  const [imageRenderKey, setImageRenderKey] = useState(0);
+  const [readingStartTime, setReadingStartTime] = useState<Date | null>(null);
+  // Removed unused state: imageRenderKey, setImageRenderKey
   
   // Get story data
   const { data: story, isLoading: isStoryLoading, error: storyError, refetch: refetchStory } = useStory(id || null);
+  
+  // Calculate total word count for audio pricing
+  const calculateTotalWords = () => {
+    if (!story?.segments) return 0;
+    return story.segments.reduce((total, segment) => {
+      const words = segment.content ? segment.content.split(' ').length : 0;
+      return total + words;
+    }, 0);
+  };
+  
+  const totalWords = calculateTotalWords();
+  const audioCreditsNeeded = Math.ceil(totalWords / 100); // 1 credit per 100 words
+
+  // Track reading session start
+  useEffect(() => {
+    setReadingStartTime(new Date());
+  }, []);
+
+  // Track progress for achievements and goals when segments change
+  useEffect(() => {
+    if (user?.id && story && currentSegmentIndex > 0) {
+      const trackReadingProgress = async () => {
+        try {
+          // Update reading progress for achievements
+          await achievementService.updateUserProgress(user.id, {
+            total_reading_time: 1, // Increment by 1 minute per segment read
+            stories_read: currentSegmentIndex === 1 ? 1 : 0, // Count as story started on first segment
+            current_streak: 1
+          });
+
+          // Update daily reading goal
+          await goalService.updateGoalProgress(user.id, 'daily_engagement', 1);
+        } catch (error) {
+          console.error('Error tracking reading progress:', error);
+        }
+      };
+
+      // Debounce progress tracking
+      const timer = setTimeout(trackReadingProgress, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [user?.id, story, currentSegmentIndex]);
   
   // Aggressive tab switching fix - multiple event listeners and interval backup
   useEffect(() => {
@@ -95,9 +140,9 @@ const StoryReaderPage: React.FC = () => {
   
   // AI service hooks
   const { mutate: generateSegment, isLoading: isGeneratingSegment } = useGenerateStorySegment();
-  const { mutate: generateEnding, isLoading: isGeneratingEnding } = useGenerateStoryEnding();
+  const { mutate: generateEnding } = useGenerateStoryEnding();
   const { mutate: generateAudio, isLoading: isGeneratingAudio } = useGenerateAudio();
-  const { mutate: regenerateImage, isLoading: isRegeneratingImage } = useRegenerateImage();
+  // Removed unused hook: regenerateImage, isRegeneratingImage
 
   // Debug: Log the story data only when it changes (moved before conditional returns)
   React.useEffect(() => {
@@ -238,9 +283,16 @@ const StoryReaderPage: React.FC = () => {
     }
   }, [story, currentSegmentIndex, navigate]);
   
-  // Handle audio generation
+  // Handle audio generation - Premium only
   const handleGenerateAudio = () => {
     if (!story) return;
+    
+    // Check if user is premium
+    if (!user?.is_premium && user?.subscription_tier === 'free') {
+      alert('Audio narration is a premium feature. Please upgrade to Basic Creator or Pro Storyteller to unlock audio!');
+      navigate('/pricing');
+      return;
+    }
     
     generateAudio(
       { storyId: story.id },
@@ -251,26 +303,13 @@ const StoryReaderPage: React.FC = () => {
         },
         onError: (error) => {
           console.error('Error generating audio:', error);
+          alert('Failed to generate audio. Please try again.');
         }
       }
     );
   };
   
-  // Handle image regeneration
-  const handleRegenerateImage = (segmentId: string, imagePrompt: string) => {
-    regenerateImage(
-      { segmentId, imagePrompt },
-      {
-        onSuccess: (data) => {
-          // In a real app, we would update the segment with the new image
-          console.log('Image regenerated:', data);
-        },
-        onError: (error) => {
-          console.error('Error regenerating image:', error);
-        }
-      }
-    );
-  };
+  // Removed unused function: handleRegenerateImage
   
   // Handle font size change
   const handleFontSizeChange = (size: string) => {
@@ -292,17 +331,20 @@ const StoryReaderPage: React.FC = () => {
   // Error state - critical errors only
   if (storyError) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-md">
-          <span className="text-6xl mb-4 block">😞</span>
-          <h2 className="text-xl font-bold text-white mb-2">Oops! Something went wrong</h2>
-          <p className="text-white/70 mb-4">Failed to load your story</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="fantasy-cta px-4 py-2 rounded-lg"
-          >
-            Try Again
-          </button>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <FloatingElements />
+        <div className="relative z-10">
+          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-md">
+            <span className="text-6xl mb-4 block">😞</span>
+            <h2 className="text-xl font-bold text-white mb-2">Oops! Something went wrong</h2>
+            <p className="text-white/70 mb-4">Failed to load your story</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={DESIGN_TOKENS.components.button.primary}
+            >
+              Try Again
+            </button>
+          </UnifiedCard>
         </div>
       </div>
     );
@@ -311,17 +353,20 @@ const StoryReaderPage: React.FC = () => {
   // No story found
   if (!story) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-md">
-          <span className="text-6xl mb-4 block">📚</span>
-          <h2 className="text-xl font-bold text-white mb-2">Story not found</h2>
-          <p className="text-white/70 mb-4">This story doesn't exist or you don't have permission to view it</p>
-          <button 
-            onClick={() => window.history.back()}
-            className="fantasy-cta px-4 py-2 rounded-lg"
-          >
-            Go Back
-          </button>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <FloatingElements />
+        <div className="relative z-10">
+          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-md">
+            <span className="text-6xl mb-4 block">📚</span>
+            <h2 className="text-xl font-bold text-white mb-2">Story not found</h2>
+            <p className="text-white/70 mb-4">This story doesn't exist or you don't have permission to view it</p>
+            <button 
+              onClick={() => window.history.back()}
+              className={DESIGN_TOKENS.components.button.primary}
+            >
+              Go Back
+            </button>
+          </UnifiedCard>
         </div>
       </div>
     );
@@ -330,27 +375,30 @@ const StoryReaderPage: React.FC = () => {
   // Story generation failed - show error
   if (story.status === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-md">
-          <span className="text-6xl mb-4 block">🔧</span>
-          <h2 className="text-xl font-bold text-white mb-2">Story Generation Failed</h2>
-          <p className="text-white/70 mb-4">
-            {story.error_message || 'Something went wrong while creating your story'}
-          </p>
-          <div className="space-y-2">
-            <button 
-              onClick={() => window.history.back()}
-              className="fantasy-cta px-4 py-2 rounded-lg w-full"
-            >
-              Create a New Story
-            </button>
-            <button 
-              onClick={() => window.location.reload()}
-              className="glass-card text-white border border-white/20 px-4 py-2 rounded-lg w-full"
-            >
-              Try Again
-            </button>
-          </div>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <FloatingElements />
+        <div className="relative z-10">
+          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-md">
+            <span className="text-6xl mb-4 block">🔧</span>
+            <h2 className="text-xl font-bold text-white mb-2">Story Generation Failed</h2>
+            <p className="text-white/70 mb-4">
+              {story.error_message || 'Something went wrong while creating your story'}
+            </p>
+            <div className="space-y-2">
+              <button 
+                onClick={() => window.history.back()}
+                className={`${DESIGN_TOKENS.components.button.primary} w-full`}
+              >
+                Create a New Story
+              </button>
+              <button 
+                onClick={() => window.location.reload()}
+                className={`${DESIGN_TOKENS.components.button.secondary} w-full`}
+              >
+                Try Again
+              </button>
+            </div>
+          </UnifiedCard>
         </div>
       </div>
     );
@@ -359,33 +407,36 @@ const StoryReaderPage: React.FC = () => {
   // 🎯 UNIFIED LOADING STATE: Story still generating or no segments yet
   if (isStoryLoading || story.status === 'generating' || !story.segments || story.segments.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass-enhanced p-8 rounded-2xl text-center max-w-lg">
-          <div className="animate-bounce text-6xl mb-4 block">✨</div>
-          <h2 className="text-xl font-bold text-white mb-2">Your Story is Being Created</h2>
-          <p className="text-white/70 mb-4">
-            {story?.title ? `"${story.title}" is being crafted by AI...` : 'Loading your magical adventure...'}
-          </p>
-          
-          {/* Live progress indicator */}
-          <div className="space-y-3 mb-6">
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
-              <span className="text-white/80 text-sm">Generating story text & choices</span>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <FloatingElements />
+        <div className="relative z-10">
+          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-lg">
+            <div className="animate-bounce text-6xl mb-4 block">✨</div>
+            <h2 className="text-xl font-bold text-white mb-2">Your Story is Being Created</h2>
+            <p className="text-white/70 mb-4">
+              {story?.title ? `"${story.title}" is being crafted by AI...` : 'Loading your magical adventure...'}
+            </p>
+            
+            {/* Live progress indicator */}
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+                <span className="text-white/80 text-sm">Generating story text & choices</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <span className="text-white/60 text-sm">Creating illustrations</span>
+              </div>
             </div>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <span className="text-white/60 text-sm">Creating illustrations</span>
+            
+            {/* Progress bar */}
+            <div className="w-full bg-white/20 rounded-full h-2 mb-4">
+              <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
             </div>
-          </div>
-          
-          {/* Progress bar */}
-          <div className="w-full bg-white/20 rounded-full h-2 mb-4">
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
-          </div>
-          
-          <p className="text-white/50 text-sm mb-4">This usually takes 15-30 seconds ⚡</p>
-          <p className="text-white/40 text-xs">Page will refresh automatically when ready</p>
+            
+            <p className="text-white/50 text-sm mb-4">This usually takes 15-30 seconds ⚡</p>
+            <p className="text-white/40 text-xs">Page will refresh automatically when ready</p>
+          </UnifiedCard>
         </div>
       </div>
     );
@@ -426,48 +477,54 @@ const StoryReaderPage: React.FC = () => {
   })) || [];
   
   return (
-    <div className="min-h-screen py-6">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Story Header */}
-        <div className="mb-6">
-          <div className="glass-enhanced p-6 rounded-2xl">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="fantasy-heading text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
-                  {story.title}
-                </h1>
-                <p className="text-amber-400 text-lg">
-                  {story.genre} • {getDifficultyDisplay(story.age_group)}
-                </p>
-              </div>
-        
-              {/* Reading Controls */}
-              <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-                <div className="flex glass-card rounded-lg p-1 border border-white/20">
-                  <button 
-                    onClick={() => handleFontSizeChange('small')}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                    aria-label="Small font size"
-                  >
-                    A
-                  </button>
-                  <button 
-                    onClick={() => handleFontSizeChange('medium')}
-                    className={`px-3 py-1 rounded text-base font-medium transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                    aria-label="Medium font size"
-                  >
-                    A
-                  </button>
-                  <button 
-                    onClick={() => handleFontSizeChange('large')}
-                    className={`px-3 py-1 rounded text-lg font-medium transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                    aria-label="Large font size"
-                  >
-                    A
-                  </button>
+    <div className="min-h-screen py-6 relative overflow-hidden">
+      <FloatingElements />
+      <div className="relative z-10">
+        <div className="max-w-4xl mx-auto px-4">
+          {/* Story Header */}
+          <div className="mb-6">
+            <UnifiedCard variant="enhanced" className="transition-all duration-300 hover:border-amber-400/30">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-white" style={{ fontFamily: DESIGN_TOKENS.fonts.heading }}>
+                    {story.title}
+                  </h1>
+                  <div className="flex items-center gap-4">
+                    <p className="text-amber-400 text-lg">
+                      {story.genre} • {getDifficultyDisplay(story.age_group)}
+                    </p>
+                    {user && <CreditBalanceIndicator size="sm" />}
+                  </div>
                 </div>
+        
+                {/* Reading Controls */}
+                <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
+                  <div className="flex bg-white/5 border border-white/20 rounded-lg p-1">
+                    <button 
+                      onClick={() => handleFontSizeChange('small')}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+                      aria-label="Small font size"
+                    >
+                      A
+                    </button>
+                    <button 
+                      onClick={() => handleFontSizeChange('medium')}
+                      className={`px-3 py-1 rounded text-base font-medium transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+                      aria-label="Medium font size"
+                    >
+                      A
+                    </button>
+                    <button 
+                      onClick={() => handleFontSizeChange('large')}
+                      className={`px-3 py-1 rounded text-lg font-medium transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+                      aria-label="Large font size"
+                    >
+                      A
+                    </button>
+                  </div>
                 
-                {story.audio_url || audioUrl ? (
+                {/* Audio generation - Premium only */}
+                {user?.subscription_tier !== 'free' && (story.audio_url || audioUrl ? (
                   <button 
                     onClick={() => setShowAudioPlayer(!showAudioPlayer)}
                     className="glass-card text-white/80 hover:text-white border border-white/20 hover:border-amber-400/50 px-4 py-2 text-sm rounded-lg transition-all duration-300 flex items-center"
@@ -481,28 +538,31 @@ const StoryReaderPage: React.FC = () => {
                     disabled={isGeneratingAudio}
                     className="fantasy-cta px-4 py-2 text-sm rounded-lg disabled:opacity-50 flex items-center"
                     aria-label="Generate audio narration"
+                    title={`Premium feature - ${audioCreditsNeeded} credits (${totalWords} words)`}
                   >
-                    {isGeneratingAudio ? '⏳ Generating...' : '🎵 Generate Audio'}
+                    {isGeneratingAudio ? '⏳ Generating...' : `🎵 Generate Audio (${audioCreditsNeeded} credits)`}
                   </button>
-                )}
+                ))}
+                </div>
               </div>
-            </div>
+            </UnifiedCard>
           </div>
-        </div>
       
-      {/* Enhanced TTS Audio Player */}
-      <div className="mb-6">
-        <TTSPlayer 
-          text={cleanedSegment?.content || ''}
-          storyType={story.genre === 'Bedtime Story' ? 'bedtime' : 
-                    story.genre === 'Adventure' ? 'adventure' : 'fantasy'}
-          className="transform transition-all duration-300"
-        />
-      </div>
+      {/* Enhanced TTS Audio Player - Premium only */}
+      {showAudioPlayer && user?.subscription_tier !== 'free' && (
+        <div className="mb-6">
+          <TTSPlayer 
+            text={cleanedSegment?.content || ''}
+            storyType={story.genre === 'Bedtime Story' ? 'bedtime' : 
+                      story.genre === 'Adventure' ? 'adventure' : 'fantasy'}
+            className="transform transition-all duration-300"
+          />
+        </div>
+      )}
       
         {/* Story Content Card */}
-        <div className="glass-enhanced rounded-2xl overflow-hidden mb-6 transition-all duration-300 hover:transform hover:scale-[1.01]">
-          {/* Story Image - Show placeholder while loading */}
+        <UnifiedCard variant="enhanced" className="overflow-hidden mb-6 transition-all duration-300 hover:transform hover:scale-[1.01]">
+          {/* Story Image - Show appropriate state based on image availability */}
           {cleanedSegment?.image_url ? (
             <div className="relative">
               <StoryImage 
@@ -516,11 +576,21 @@ const StoryReaderPage: React.FC = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>
             </div>
-          ) : (
+          ) : cleanedSegment?.image_prompt ? (
             <div className="relative h-64 md:h-80 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
                 <p className="text-white/60 text-sm">Creating illustration...</p>
+                <p className="text-white/40 text-xs mt-2">This usually takes 10-30 seconds</p>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>
+            </div>
+          ) : (
+            <div className="relative h-64 md:h-80 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-4xl mb-4">📚</div>
+                <p className="text-white/60 text-sm">No illustration available</p>
+                <p className="text-white/40 text-xs mt-2">This segment was created without image generation</p>
               </div>
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>
             </div>
@@ -551,7 +621,7 @@ const StoryReaderPage: React.FC = () => {
                 {/* Check if this is the ending segment */}
                 {cleanedSegment.is_end ? (
                   <div className="mt-8 text-center">
-                    <div className="glass-enhanced p-8 rounded-2xl mb-6">
+                    <UnifiedCard variant="enhanced" padding="large" className="mb-6">
                       <div className="text-6xl mb-4">🎉</div>
                       <h2 className="fantasy-heading text-3xl mb-4">Story Complete!</h2>
                       <p className="text-white/80 text-lg mb-4">
@@ -560,7 +630,7 @@ const StoryReaderPage: React.FC = () => {
                       <div className="flex justify-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
                       </div>
-                    </div>
+                    </UnifiedCard>
                   </div>
                 ) : (
                   // Story Choices for non-ending segments
@@ -592,27 +662,28 @@ const StoryReaderPage: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
+        </UnifiedCard>
       
         {/* Story Progress */}
         {story.segments && story.segments.length > 0 && (
           <div className="mb-6">
-            <div className="glass-card p-4 rounded-lg">
+            <UnifiedCard variant="glass" padding="medium">
               <StoryProgress
                 totalSegments={story.segments.length}
                 currentSegmentIndex={currentSegmentIndex}
                 onSegmentClick={handleSegmentClick}
                 isStoryComplete={cleanedSegment?.is_end === true || (cleanedSegment?.choices && cleanedSegment.choices.length === 0)}
               />
-            </div>
+            </UnifiedCard>
           </div>
         )}
         
         {/* Story Metadata */}
-        <div className="glass-card p-4 rounded-lg text-center">
+        <UnifiedCard variant="glass" className="text-center">
           <p className="text-white/60 text-sm">
             Story ID: {story.id} • Created: {new Date(story.created_at).toLocaleDateString()}
           </p>
+        </UnifiedCard>
         </div>
       </div>
     </div>

@@ -1,46 +1,25 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@/test/test-utils';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { vi } from 'vitest';
 import CreateStoryPage from '@/pages/authenticated/create/CreateStoryPage';
-import { AuthProvider } from '@/providers/AuthContext';
-import { BillingProvider } from '@/providers/BillingContext';
-import { SettingsProvider } from '@/providers/SettingsContext';
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
-// Wrapper component with all providers
-const AllProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <SettingsProvider>
-      <BillingProvider>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-      </BillingProvider>
-    </SettingsProvider>
-  </QueryClientProvider>
-);
+// Mock authentication for integration tests
+vi.mock('@/providers/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user', name: 'Test User', email: 'test@example.com' },
+    isAuthenticated: true,
+    login: vi.fn(),
+    logout: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
 
 describe('Story Creation Integration', () => {
   test('completes full story creation workflow', async () => {
     const user = userEvent.setup();
     
-    render(
-      <BrowserRouter>
-        <AllProviders>
-          <CreateStoryPage />
-        </AllProviders>
-      </BrowserRouter>
-    );
+    render(<CreateStoryPage />);
     
     // Step 1: Story Concept
     expect(screen.getByText('Step 1: Story Concept')).toBeInTheDocument();

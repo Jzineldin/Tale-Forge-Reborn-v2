@@ -39,13 +39,13 @@ export function createCorsResponse(body: any, options: ResponseInit = {}): Respo
 export function validateEnvironment(): {
   isValid: boolean;
   supabaseUrl?: string;
-  supabaseServiceKey?: string;
+  supabaseAnonKey?: string;
   error?: string;
 } {
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
-  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
   
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!supabaseUrl || !supabaseAnonKey) {
     return {
       isValid: false,
       error: 'Missing required Supabase environment variables'
@@ -55,12 +55,12 @@ export function validateEnvironment(): {
   return {
     isValid: true,
     supabaseUrl,
-    supabaseServiceKey
+    supabaseAnonKey
   };
 }
 
 // Authentication validation
-export async function validateUserAuth(request: Request, supabaseUrl: string, supabaseServiceKey: string): Promise<{
+export async function validateUserAuth(request: Request, supabaseUrl: string, supabaseAnonKey: string): Promise<{
   isValid: boolean;
   user?: { id: string; email?: string };
   error?: string;
@@ -76,7 +76,7 @@ export async function validateUserAuth(request: Request, supabaseUrl: string, su
   
   try {
     const token = authHeader.replace('Bearer ', '');
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
     
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
@@ -103,8 +103,8 @@ export async function validateUserAuth(request: Request, supabaseUrl: string, su
 }
 
 // Create authenticated Supabase client
-export function createAuthenticatedSupabaseClient(supabaseUrl: string, supabaseServiceKey: string, authHeader: string) {
-  return createClient(supabaseUrl, supabaseServiceKey, {
+export function createAuthenticatedSupabaseClient(supabaseUrl: string, supabaseAnonKey: string, authHeader: string) {
+  return createClient(supabaseUrl, supabaseAnonKey, {
     global: { 
       headers: { Authorization: authHeader } 
     }

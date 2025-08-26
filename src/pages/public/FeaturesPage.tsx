@@ -45,12 +45,12 @@ const FeaturesPage: React.FC = () => {
       </div>
 
       {/* Hero Section */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center max-w-7xl mx-auto">
+      <section className="section-hero relative z-10 flex-1 flex items-center justify-center">
+        <div className="text-center container-default">
           {/* Refined Hero Container - Same as HomePage */}
           <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}
-            <h1 className="fantasy-heading-cinzel text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 text-center">
+            <h1 className="fantasy-heading-cinzel h1-page gradient-text mb-6 sm:mb-8 text-center">
               Powerful Features for Storytelling
             </h1>
 
@@ -64,25 +64,25 @@ const FeaturesPage: React.FC = () => {
               {features.map((feature, index) => (
                 <div key={index} className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6">
                   <div className="text-4xl mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                  <h3 className="h3-card text-white mb-2">{feature.title}</h3>
                   <p className="text-white/80">{feature.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Why Choose Section - Same structure as HomePage Featured Stories */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-6xl mx-auto">
+      <div className="relative z-10 section-spacing">
+        <div className="container-default">
           <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
-            <h2 className="fantasy-heading-cinzel text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="fantasy-heading-cinzel h2-section text-center mb-12">
               Why Choose Tale Forge?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="h3-card text-white mb-2">
                   Safe & Educational
                 </h3>
                 <p className="text-white/80">
@@ -90,7 +90,7 @@ const FeaturesPage: React.FC = () => {
                 </p>
               </div>
               <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="h3-card text-white mb-2">
                   Time-Saving
                 </h3>
                 <p className="text-white/80">
@@ -98,7 +98,7 @@ const FeaturesPage: React.FC = () => {
                 </p>
               </div>
               <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="h3-card text-white mb-2">
                   Customizable
                 </h3>
                 <p className="text-white/80">
@@ -106,7 +106,7 @@ const FeaturesPage: React.FC = () => {
                 </p>
               </div>
               <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="h3-card text-white mb-2">
                   Engaging
                 </h3>
                 <p className="text-white/80">

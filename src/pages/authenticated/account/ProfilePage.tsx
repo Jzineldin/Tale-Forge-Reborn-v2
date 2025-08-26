@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/providers/AuthContext';
-import Text from '@/components/atoms/Text';
-import Input from '@/components/atoms/Input';
-import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 
 const ProfilePage: React.FC = () => {

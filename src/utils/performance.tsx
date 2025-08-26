@@ -37,6 +37,8 @@ export const fetchWithCache = async <T,>(key: string, url: string, options?: Req
 
 // React Query hooks with 2025 optimizations
 export const useStories = (userId: string | null) => {
+  const queryClient = useQueryClient();
+  
   return useQuery(
     ['stories', userId],
     async () => {
@@ -103,12 +105,11 @@ export const useStory = (storyId: string | null) => {
       }
       
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       console.log('🔑 Session check:', { 
         hasSession: !!session, 
         hasToken: !!session?.access_token, 
-        tokenLength: session?.access_token?.length,
-        sessionError: sessionError?.message 
+        tokenLength: session?.access_token?.length
       });
       
       if (!session?.access_token) {
@@ -151,24 +152,25 @@ export const useStory = (storyId: string | null) => {
           return 2000; // Very frequent polling while fetching initial data
         }
         
-        // CRITICAL FIX: Poll while story or images are generating
+        // CRITICAL FIX: Poll if story is generating OR images are being generated
         const isStoryGenerating = data.status === 'generating' || (data.segments && data.segments.length === 0);
         
-        // Check if any segment has images still generating
+        // Check if any segment has images currently being generated (has prompt but no URL)
         const hasGeneratingImages = data.segments?.some((segment: any) => 
-          segment.is_image_generating === true || 
-          segment.image_generation_status === 'generating' ||
-          (!segment.image_url && segment.image_prompt) // Has prompt but no URL yet
+          segment.image_prompt && !segment.image_url
         ) || false;
         
-        // Poll if story is generating OR images are still being generated
-        if (isStoryGenerating || hasGeneratingImages) {
-          console.log(`🔄 Polling story ${data.id}: storyGenerating=${isStoryGenerating}, imagesGenerating=${hasGeneratingImages}`);
-          return 2000; // Poll every 2 seconds
+        // Poll if story OR images are being generated, but with reasonable limits
+        if (isStoryGenerating) {
+          console.log(`🔄 Polling story ${data.id}: story content generating`);
+          return 2000; // Poll every 2 seconds for story generation
+        } else if (hasGeneratingImages) {
+          console.log(`🔄 Polling story ${data.id}: images generating for ${data.segments?.filter((s: any) => s.image_prompt && !s.image_url).length} segments`);
+          return 5000; // Poll every 5 seconds for image generation (slower)
         }
         
-        console.log(`⏹️ Stopping poll for story ${data.id}: story complete and all images ready`);
-        return false; // Stop polling for completed stories with all images ready
+        console.log(`⏹️ Stopping poll for story ${data.id}: story and images complete`);
+        return false; // Stop polling once story and images are complete
       },
       refetchIntervalInBackground: true, // Allow background polling
       refetchOnWindowFocus: true, // Aggressive refetch when returning to tab
@@ -184,7 +186,7 @@ export const useCreateStoryMutation = () => {
   return useMutation(
     async (storyData: any) => {
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         throw new Error('No authentication session found');
@@ -230,7 +232,7 @@ export const useUpdateStory = () => {
       }
       
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         throw new Error('No authentication session found');
@@ -275,7 +277,7 @@ export const useDeleteStory = () => {
       }
       
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         throw new Error('No authentication session found');
@@ -315,7 +317,7 @@ export const useGenerateStorySegment = () => {
   return useMutation(
     async ({ storyId, choiceIndex }: { storyId: string; choiceIndex?: number }) => {
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         throw new Error('No authentication session found');
@@ -360,7 +362,7 @@ export const useGenerateStoryEnding = () => {
       console.log('🎬 useGenerateStoryEnding called with storyId:', storyId);
       
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         console.error('❌ No authentication session found');
@@ -413,7 +415,7 @@ export const useGenerateAudio = () => {
   return useMutation(
     async ({ storyId }: { storyId: string }) => {
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         throw new Error('No authentication session found');
@@ -445,7 +447,7 @@ export const useRegenerateImage = () => {
   return useMutation(
     async ({ segmentId, imagePrompt }: { segmentId: string; imagePrompt: string }) => {
       // Get current session from Supabase
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.access_token) {
         throw new Error('No authentication session found');
@@ -475,14 +477,16 @@ export const useRegenerateImage = () => {
 
 // Image optimization utilities
 export const useOptimizedImage = (src: string, width?: number, height?: number) => {
-  // In a real app, this would use a service like Cloudinary or Imgix
-  // For now, we'll just return the src with some basic optimization hints
-  const optimizedSrc = width || height ? `${src}?w=${width}&h=${height}&fit=crop` : src;
-  
+  // FIXED: Don't add query parameters to potentially break image URLs
+  // Just return the original src with loading optimizations
   return {
-    src: optimizedSrc,
+    src: src || '/images/placeholder-story.png', // Fallback to placeholder if no src
     loading: 'lazy' as const,
-    decoding: 'async' as const
+    decoding: 'async' as const,
+    onError: (e: React.SyntheticEvent<HTMLImageElement>) => {
+      // Fallback to placeholder on error
+      e.currentTarget.src = '/images/placeholder-story.png';
+    }
   };
 };
 

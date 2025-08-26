@@ -1,0 +1,911 @@
+[
+  {
+    "page": "Home",
+    "path": "/",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  },
+  {
+    "page": "Discover",
+    "path": "/discover",
+    "analysis": {
+      "hasContainer": true,
+      "containerClass": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      "hasNavbar": true,
+      "hasFooter": true,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "0px 0px 0px 8px",
+          "text": "Tale Forge"
+        },
+        {
+          "tag": "H1",
+          "fontSize": "30px",
+          "fontWeight": "700",
+          "lineHeight": "36px",
+          "color": "rgb(245, 158, 11)",
+          "margin": "0px 0px 8px",
+          "text": "🌟 Discover Stories"
+        },
+        {
+          "tag": "H2",
+          "fontSize": "24px",
+          "fontWeight": "700",
+          "lineHeight": "32px",
+          "color": "rgb(245, 158, 11)",
+          "margin": "0px 0px 24px",
+          "text": "✨ Featured Stories"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "The Cosmic Adventure of Luna"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "Bedtime with the Sleepy Dragon"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "Bedtime with the Sleepy Dragon"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "The Cosmic Adventure of Luna"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "The Enchanted Forest Mystery"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "4px 4px 0px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "Coming Soon"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Sign In"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Sign Up"
+        },
+        {
+          "padding": "8px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "Open main menu"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Read Story"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Read Story"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": "🌟All Genres"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "🧙‍♂️Fantasy"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "🚀Sci-Fi"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "🗺️Adventure"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "🔍Mystery"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "🌙Bedtime"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "📚Educational"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "😄Funny"
+        },
+        {
+          "padding": "8px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": ""
+        },
+        {
+          "padding": "8px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.7)",
+          "text": ""
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Read Story"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Read Story"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Read Story"
+        }
+      ],
+      "cardStyles": [
+        {
+          "padding": "6px 12px",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(245, 158, 11, 0.1)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(245, 158, 11, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "8px 16px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        }
+      ],
+      "bodyClasses": "",
+      "mainClasses": "flex-grow pt-16 pb-16 md:pb-0"
+    },
+    "errors": []
+  },
+  {
+    "page": "Features",
+    "path": "/features",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  },
+  {
+    "page": "Pricing",
+    "path": "/pricing",
+    "analysis": {
+      "hasContainer": true,
+      "containerClass": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      "hasNavbar": true,
+      "hasFooter": true,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "0px 0px 0px 8px",
+          "text": "Tale Forge"
+        },
+        {
+          "tag": "H1",
+          "fontSize": "48px",
+          "fontWeight": "700",
+          "lineHeight": "48px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 16px",
+          "text": "Get Story Credits"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 16px",
+          "text": "Simple Credit System"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "18px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "Free Plan"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "18px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "Basic Creator"
+        },
+        {
+          "tag": "H3",
+          "fontSize": "18px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 8px",
+          "text": "Pro Storyteller"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "4px 4px 0px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "Coming Soon"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Sign In"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Sign Up"
+        },
+        {
+          "padding": "8px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "Open main menu"
+        },
+        {
+          "padding": "8px 24px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Monthly Plans"
+        },
+        {
+          "padding": "8px 24px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.7)",
+          "text": "Extra Credits"
+        },
+        {
+          "padding": "12px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgb(34, 197, 94)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Start Free"
+        },
+        {
+          "padding": "12px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Subscribe Now"
+        },
+        {
+          "padding": "12px 16px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Subscribe Now"
+        }
+      ],
+      "cardStyles": [
+        {
+          "padding": "6px 12px",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "backgroundColor": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "0px",
+          "boxShadow": "none",
+          "backgroundColor": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        }
+      ],
+      "bodyClasses": "",
+      "mainClasses": "flex-grow pt-16 pb-16 md:pb-0"
+    },
+    "errors": []
+  },
+  {
+    "page": "Help",
+    "path": "/help",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  },
+  {
+    "page": "Testimonials",
+    "path": "/testimonials",
+    "analysis": {
+      "hasContainer": true,
+      "containerClass": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      "hasNavbar": true,
+      "hasFooter": true,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "20px",
+          "fontWeight": "700",
+          "lineHeight": "28px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "0px 0px 0px 8px",
+          "text": "Tale Forge"
+        },
+        {
+          "tag": "H1",
+          "fontSize": "48px",
+          "fontWeight": "700",
+          "lineHeight": "48px",
+          "color": "rgb(255, 255, 255)",
+          "margin": "0px 0px 16px",
+          "text": "💬 What Our Users Say"
+        },
+        {
+          "tag": "H2",
+          "fontSize": "24px",
+          "fontWeight": "700",
+          "lineHeight": "32px",
+          "color": "rgb(0, 0, 0)",
+          "margin": "0px 0px 16px",
+          "text": "Share Your Experience"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "4px 4px 0px",
+          "fontSize": "14px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "Coming Soon"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Sign In"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgb(245, 158, 11)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Sign Up"
+        },
+        {
+          "padding": "8px",
+          "fontSize": "16px",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgba(255, 255, 255, 0.8)",
+          "text": "Open main menu"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "All Testimonials"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "Parents"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "Educators"
+        },
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "Children"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "Previous"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "1"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "2"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "3"
+        },
+        {
+          "padding": "6px 12px",
+          "fontSize": "14px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)",
+          "color": "rgb(251, 191, 36)",
+          "text": "Next"
+        },
+        {
+          "padding": "12px 24px",
+          "fontSize": "18px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Submit Testimonial"
+        }
+      ],
+      "cardStyles": [
+        {
+          "padding": "6px 12px",
+          "borderRadius": "12px",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "backgroundColor": "rgba(255, 255, 255, 0.05)"
+        },
+        {
+          "padding": "0px",
+          "borderRadius": "0px",
+          "boxShadow": "rgba(0, 0, 0, 0.05) 0px 2px 8px 0px",
+          "backgroundColor": "rgba(30, 41, 59, 0.1)"
+        }
+      ],
+      "bodyClasses": "",
+      "mainClasses": "flex-grow pt-16 pb-16 md:pb-0"
+    },
+    "errors": []
+  },
+  {
+    "page": "Sign In",
+    "path": "/auth/signin",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  },
+  {
+    "page": "Sign Up",
+    "path": "/auth/signup",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  },
+  {
+    "page": "Privacy",
+    "path": "/privacy",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  },
+  {
+    "page": "Terms",
+    "path": "/terms",
+    "analysis": {
+      "hasContainer": false,
+      "hasNavbar": false,
+      "hasFooter": false,
+      "hasHero": false,
+      "sectionCount": 0,
+      "paddings": [],
+      "headingStyles": [
+        {
+          "tag": "H1",
+          "fontSize": "16px",
+          "fontWeight": "700",
+          "lineHeight": "24px",
+          "color": "rgb(17, 24, 39)",
+          "margin": "16px 0px 0px",
+          "text": "Something went wrong"
+        }
+      ],
+      "buttonStyles": [
+        {
+          "padding": "8px 16px",
+          "fontSize": "16px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "text": "Try Again"
+        }
+      ],
+      "cardStyles": [],
+      "bodyClasses": ""
+    },
+    "errors": []
+  }
+]

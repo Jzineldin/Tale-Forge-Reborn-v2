@@ -1,1 +1,0 @@
-// Create story pages index file

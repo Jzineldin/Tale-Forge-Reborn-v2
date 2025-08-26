@@ -1,5 +1,4 @@
 import React from 'react';
-import Text from '@/components/atoms/Text';
 import Button from '@/components/atoms/Button';
 import { useOptimizedImage } from '@/utils/performance';
 

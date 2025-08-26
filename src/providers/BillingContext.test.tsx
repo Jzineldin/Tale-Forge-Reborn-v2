@@ -1,7 +1,17 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 import { BillingProvider, useBilling } from './BillingContext';
+
+// Mock useAuth hook
+vi.mock('@/providers/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'test-user', name: 'Test User', email: 'test@example.com' },
+    isAuthenticated: true,
+    isLoading: false,
+  }),
+}));
 
 // Test component that uses the billing context
 const TestComponent: React.FC = () => {
@@ -95,14 +105,14 @@ describe('BillingContext', () => {
     // Cancel subscription
     await user.click(screen.getByText('Cancel Subscription'));
     
-    // Should now have no subscription
+    // Should now have free plan (cancelled subscription reverts to free)
     await waitFor(() => {
-      expect(screen.getByTestId('subscription-name')).toHaveTextContent('No Subscription');
+      expect(screen.getByTestId('subscription-name')).toHaveTextContent('Free');
     });
   });
 
   test('loads subscription from localStorage', async () => {
-    // Set up localStorage with a subscription
+    // Set up localStorage with a subscription using the correct key format
     const mockSubscription = {
       id: 'premium',
       name: 'Premium',
@@ -112,7 +122,8 @@ describe('BillingContext', () => {
       maxCharacters: Infinity
     };
     
-    localStorage.setItem('subscription', JSON.stringify(mockSubscription));
+    // Use the correct localStorage key format that matches BillingProvider
+    localStorage.setItem('subscription_test-user', JSON.stringify(mockSubscription));
     
     render(
       <BillingProvider>
@@ -124,5 +135,8 @@ describe('BillingContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('subscription-name')).toHaveTextContent('Premium');
     });
+    
+    // Clean up localStorage
+    localStorage.removeItem('subscription_test-user');
   });
 });

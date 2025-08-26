@@ -75,17 +75,13 @@ export async function validateUserAuth(request: Request, supabaseUrl: string, su
   }
   
   try {
-    // SECURITY FIX: Use anon key with Authorization header instead of service key
-    const supabase = createClient(
-      supabaseUrl, 
-      supabaseAnonKey,
-      { 
-        global: { headers: { Authorization: authHeader } },
-        auth: { persistSession: false } // Edge Functions are stateless
-      }
-    );
+    // Extract the JWT token from the Authorization header
+    const token = authHeader.replace('Bearer ', '');
     
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // SECURITY FIX: Use anon key with JWT token for getUser
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
       return {

@@ -19,13 +19,38 @@ END $$;
 ALTER TABLE public.story_segments 
 ALTER COLUMN choices DROP DEFAULT;
 
--- Convert choices column from text[] to jsonb
-ALTER TABLE public.story_segments 
-ALTER COLUMN choices TYPE jsonb USING 
-    CASE 
-        WHEN choices IS NULL THEN '[]'::jsonb
-        ELSE array_to_json(choices)::jsonb
-    END;
+-- Convert choices column to jsonb (handle both text[] and jsonb cases)
+DO $$
+DECLARE
+    current_type TEXT;
+BEGIN
+    SELECT data_type INTO current_type 
+    FROM information_schema.columns 
+    WHERE table_name = 'story_segments' 
+    AND column_name = 'choices' 
+    AND table_schema = 'public';
+    
+    IF current_type = 'ARRAY' THEN
+        -- Column is text[], convert to jsonb
+        ALTER TABLE public.story_segments 
+        ALTER COLUMN choices TYPE jsonb USING 
+            CASE 
+                WHEN choices IS NULL THEN '[]'::jsonb
+                ELSE array_to_json(choices)::jsonb
+            END;
+    ELSIF current_type != 'jsonb' THEN
+        -- Column is some other type, convert to jsonb
+        ALTER TABLE public.story_segments 
+        ALTER COLUMN choices TYPE jsonb USING 
+            CASE 
+                WHEN choices IS NULL THEN '[]'::jsonb
+                ELSE choices::jsonb
+            END;
+    END IF;
+    -- If already jsonb, do nothing
+    
+    RAISE NOTICE 'choices column type conversion completed';
+END $$;
 
 -- Set new default value for choices column
 ALTER TABLE public.story_segments 

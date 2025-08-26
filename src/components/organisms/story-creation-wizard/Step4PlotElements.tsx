@@ -251,7 +251,7 @@ const Step4PlotElements: React.FC<Step4PlotElementsProps> = ({
       </div>
 
       {/* Moral Lesson Selection */}
-      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
+      <div className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6" data-testid="lesson-select">
         <h3 className="text-xl font-bold text-white mb-6 text-center">
           💡 Moral Lesson (Optional)
         </h3>

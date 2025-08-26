@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Text from '@/components/atoms/Text';
 import Button from '@/components/atoms/Button';
+// Removed unused import: Text
+import { StandardPage } from '@/components/design-system';
 
 // Define types for testimonials
 interface Testimonial {
@@ -92,16 +93,12 @@ const TestimonialsPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <Text variant="h1" weight="bold" className="text-3xl md:text-4xl mb-4">
-          What Our Users Say
-        </Text>
-        <Text variant="p" size="xl" color="secondary" className="max-w-2xl mx-auto">
-          Discover how Tale Forge is creating magical experiences for families, educators, and children around the world.
-        </Text>
-      </div>
+    <StandardPage 
+      title="💬 What Our Users Say"
+      subtitle="Discover how Tale Forge is creating magical experiences for families, educators, and children around the world."
+      icon="✨"
+      containerSize="large"
+    >
 
       {/* Filter Controls */}
       <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -148,12 +145,12 @@ const TestimonialsPage: React.FC = () => {
               />
             </div>
             <div className="p-4">
-              <Text variant="p" weight="medium" className="text-gray-900">
+              <p className="text-gray-900 font-medium">
                 {testimonial.userType.charAt(0).toUpperCase() + testimonial.userType.slice(1)}
-              </Text>
-              <Text variant="small" color="secondary" className="mt-1">
+              </p>
+              <p className="mt-1 text-sm text-gray-600">
                 {testimonial.date}
-              </Text>
+              </p>
             </div>
           </div>
         ))}
@@ -198,12 +195,12 @@ const TestimonialsPage: React.FC = () => {
 
       {/* Submission Form */}
       <div className="mt-16 bg-gray-50 rounded-lg p-8">
-        <Text variant="h2" weight="bold" className="text-2xl mb-4 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-center">
           Share Your Experience
-        </Text>
-        <Text variant="p" color="secondary" className="text-center mb-6 max-w-2xl mx-auto">
+        </h2>
+        <p className="text-center mb-6 max-w-2xl mx-auto text-gray-600">
           We'd love to hear how Tale Forge has impacted your storytelling experience. Share your story with our community!
-        </Text>
+        </p>
         
         <form onSubmit={handleSubmission} className="max-w-2xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -294,17 +291,17 @@ const TestimonialsPage: React.FC = () => {
               className="max-w-full max-h-full object-contain"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
-              <Text variant="p" weight="medium">
+              <p className="font-medium">
                 {selectedTestimonial.alt}
-              </Text>
-              <Text variant="small" className="mt-1">
+              </p>
+              <p className="mt-1 text-sm">
                 {selectedTestimonial.userType.charAt(0).toUpperCase() + selectedTestimonial.userType.slice(1)} • {selectedTestimonial.date}
-              </Text>
+              </p>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </StandardPage>
   );
 };
 
