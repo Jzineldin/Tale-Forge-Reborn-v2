@@ -44,80 +44,64 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
 
   // Show "End Story" option if story has multiple segments and onEndStory is provided
   const showEndStoryOption = onEndStory && segmentCount >= 2;
+  
+  // Debug logging
+  console.log('🔍 StoryChoices debug:', {
+    hasOnEndStory: !!onEndStory,
+    segmentCount,
+    showEndStoryOption,
+    validChoices: validChoices.length,
+    isGeneratingEnding
+  });
 
   return (
-    <div className="space-y-4">
-      <Text variant="h3" weight="semibold" className="mb-3 text-white">
+    <div className="space-y-3">
+      <p className="text-white/70 text-xs font-medium">
         What should happen next?
-      </Text>
+      </p>
       
-      {/* Continue story choices */}
-      <div className="grid grid-cols-1 gap-3">
+      {/* Story Choices - Better visibility */}
+      <div className="space-y-2">
         {validChoices.map((choice, index) => (
-          <Button
+          <button
             key={choice.id}
-            variant="primary"
-            className="w-full text-left justify-start py-4 px-5 transition-all duration-200 hover:scale-[1.02] hover:shadow-md glass-card bg-white/10 border border-white/20 hover:bg-white/20"
+            className="w-full text-left py-3 px-4 bg-slate-800/90 hover:bg-slate-700/90 rounded-lg transition-all duration-200 border border-amber-400/30 hover:border-amber-400/50 group"
             onClick={() => onSelect(choice.id)}
             disabled={disabled || loading}
           >
-            <div className="flex items-center">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center mr-3">
-                <Text variant="span" weight="semibold" className="text-slate-800">
-                  {String.fromCharCode(65 + index)}
-                </Text>
-              </div>
-              <Text variant="p" className="flex-grow text-left text-white">
+            <div className="flex items-start gap-2.5">
+              <span className="text-amber-400 font-bold text-sm">
+                {String.fromCharCode(65 + index)}.
+              </span>
+              <span className="text-white text-sm flex-grow">
                 {choice.text}
-              </Text>
-              <div className="flex-shrink-0 ml-2">
-                <svg 
-                  className="h-5 w-5 text-white/60" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M9 5l7 7-7 7" 
-                  />
-                </svg>
-              </div>
+              </span>
+              <span className="text-amber-400/60 group-hover:text-amber-400 transition-colors text-sm">
+                →
+              </span>
             </div>
-          </Button>
+          </button>
         ))}
       </div>
 
-      {/* End Story option */}
+      {/* End Story Option - Matches main theme */}
       {showEndStoryOption && (
-        <div className="pt-4 border-t border-white/20">
-          <Text variant="p" className="text-white/70 text-sm mb-3 text-center">
+        <div className="pt-3 mt-3 border-t border-white/10">
+          <p className="text-white/40 text-[11px] mb-2 text-center">
             Or wrap up your adventure:
-          </Text>
-          <Button
-            variant="secondary"
-            className="w-full py-4 px-5 glass-card bg-gradient-to-r from-green-600/20 to-blue-600/20 border border-green-400/30 hover:from-green-600/30 hover:to-blue-600/30 transition-all duration-200"
+          </p>
+          <button
+            className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 rounded-lg transition-all duration-200 text-white font-medium shadow-lg"
             onClick={() => {
               console.log('🎬 End Story button clicked');
               onEndStory?.();
             }}
             disabled={disabled || loading || isGeneratingEnding}
           >
-            <div className="flex items-center justify-center">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-400 flex items-center justify-center mr-3">
-                {isGeneratingEnding ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-800"></div>
-                ) : (
-                  <span className="text-slate-800 font-bold">✨</span>
-                )}
-              </div>
-              <Text variant="p" className="text-white font-semibold">
-                {isGeneratingEnding ? 'Creating Finale...' : 'End Story & Create Finale'}
-              </Text>
-            </div>
-          </Button>
+            <span className="text-sm">
+              {isGeneratingEnding ? 'Creating Finale...' : '✨ End Story & Create Finale'}
+            </span>
+          </button>
         </div>
       )}
     </div>

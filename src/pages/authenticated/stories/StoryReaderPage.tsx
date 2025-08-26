@@ -8,8 +8,6 @@ import StoryChoices from '@/components/molecules/StoryChoices';
 import StoryProgress from '@/components/molecules/StoryProgress';
 import { TTSPlayer } from '@/components/molecules/TTSPlayer';
 import { useStory, useGenerateStorySegment, useGenerateStoryEnding, useGenerateAudio } from '@/utils/performance.tsx';
-import { UnifiedCard, FloatingElements, DESIGN_TOKENS } from '@/components/design-system';
-import { CreditBalanceIndicator } from '@/components/business/CreditDisplay';
 
 // Helper function to convert age format back to difficulty display
 const getDifficultyDisplay = (ageGroup: string): string => {
@@ -32,8 +30,9 @@ const StoryReaderPage: React.FC = () => {
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
   const [fontSize, setFontSize] = useState('medium');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [segmentAudioUrls, setSegmentAudioUrls] = useState<{[key: number]: string}>({});
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [generatingAudioForSegment, setGeneratingAudioForSegment] = useState<number | null>(null);
   const [readingStartTime, setReadingStartTime] = useState<Date | null>(null);
   // Removed unused state: imageRenderKey, setImageRenderKey
   
@@ -156,19 +155,14 @@ const StoryReaderPage: React.FC = () => {
     }
   }, [story?.id, story?.segments?.length]);
   
-  // Font size classes for immersive reading
+  // Compact font sizes
   const fontSizeClasses = {
-    small: 'text-base md:text-lg leading-relaxed',
-    medium: 'text-lg md:text-xl leading-relaxed',
-    large: 'text-xl md:text-2xl leading-relaxed'
+    small: 'text-sm',
+    medium: 'text-base',
+    large: 'text-lg'
   };
   
-  // Line height classes for better readability
-  const lineHeightClasses = {
-    small: 'leading-relaxed',
-    medium: 'leading-relaxed',
-    large: 'leading-relaxed'
-  };
+  // Removed redundant line height classes
   
   // Handle choice selection
   const handleChoiceSelect = (choiceId: string) => {
@@ -237,6 +231,13 @@ const StoryReaderPage: React.FC = () => {
   
   // Handle story ending
   const handleStoryEnding = () => {
+    console.log('🎯 handleStoryEnding called');
+    console.log('🔍 Story state:', { 
+      hasStory: !!story, 
+      storyId: story?.id,
+      segmentCount: story?.segments?.length 
+    });
+    
     if (!story) {
       console.log('❌ No story found for ending generation');
       return;
@@ -250,9 +251,14 @@ const StoryReaderPage: React.FC = () => {
       {
         onSuccess: (data) => {
           console.log('✅ Story ending generated successfully:', data);
-          // Story ending generated successfully - the story will refresh and detect completion
           setIsGenerating(false);
-          // Don't manually increment - let the story refresh handle the new segment
+          // Navigate to the new ending segment after a brief delay
+          setTimeout(() => {
+            if (story.segments) {
+              const lastIndex = story.segments.length; // The new segment will be at this index
+              setCurrentSegmentIndex(lastIndex);
+            }
+          }, 1500);
         },
         onError: (error) => {
           console.error('❌ Error generating ending:', error);
@@ -264,28 +270,27 @@ const StoryReaderPage: React.FC = () => {
     );
   };
 
-  // Check if story is completed and redirect to completion page
+  // Check if story is completed and show completion modal
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  
   useEffect(() => {
     if (!story || !story.segments || story.segments.length === 0) return;
     
     // Check if current segment is an ending
     const currentSegment = story.segments[currentSegmentIndex];
     if (currentSegment && currentSegment.is_end === true) {
-      // Story is completed, redirect to completion page after a brief moment
+      // Story is completed, show completion modal after a brief moment
       const timer = setTimeout(() => {
-        navigate(`/stories/${story.id}/complete`, { 
-          replace: true,
-          state: { story, currentSegment } 
-        });
+        setShowCompletionModal(true);
       }, 2000); // 2 second delay to show the ending
       
       return () => clearTimeout(timer);
     }
-  }, [story, currentSegmentIndex, navigate]);
+  }, [story, currentSegmentIndex]);
   
-  // Handle audio generation - Premium only
-  const handleGenerateAudio = () => {
-    if (!story) return;
+  // Handle per-chapter audio generation
+  const handleGenerateSegmentAudio = (segmentIndex: number) => {
+    if (!story || !story.segments[segmentIndex]) return;
     
     // Check if user is premium
     if (!user?.is_premium && user?.subscription_tier === 'free') {
@@ -294,16 +299,27 @@ const StoryReaderPage: React.FC = () => {
       return;
     }
     
+    setGeneratingAudioForSegment(segmentIndex);
+    
+    const segmentContent = story.segments[segmentIndex].content;
     generateAudio(
-      { storyId: story.id },
+      { 
+        storyId: story.id,
+        content: segmentContent,
+        segmentIndex 
+      },
       {
         onSuccess: (data) => {
-          setAudioUrl(data.audioUrl);
-          setShowAudioPlayer(true);
+          setSegmentAudioUrls(prev => ({ ...prev, [segmentIndex]: data.audioUrl }));
+          setGeneratingAudioForSegment(null);
+          if (segmentIndex === currentSegmentIndex) {
+            setShowAudioPlayer(true);
+          }
         },
         onError: (error) => {
           console.error('Error generating audio:', error);
           alert('Failed to generate audio. Please try again.');
+          setGeneratingAudioForSegment(null);
         }
       }
     );
@@ -331,20 +347,17 @@ const StoryReaderPage: React.FC = () => {
   // Error state - critical errors only
   if (storyError) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <FloatingElements />
-        <div className="relative z-10">
-          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-md">
-            <span className="text-6xl mb-4 block">😞</span>
-            <h2 className="text-xl font-bold text-white mb-2">Oops! Something went wrong</h2>
-            <p className="text-white/70 mb-4">Failed to load your story</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={DESIGN_TOKENS.components.button.primary}
-            >
-              Try Again
-            </button>
-          </UnifiedCard>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-sm">
+          <span className="text-4xl mb-3 block">😞</span>
+          <h2 className="text-lg font-bold text-white mb-2">Something went wrong</h2>
+          <p className="text-white/60 text-sm mb-4">Failed to load your story</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all font-medium shadow-lg"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -353,20 +366,17 @@ const StoryReaderPage: React.FC = () => {
   // No story found
   if (!story) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <FloatingElements />
-        <div className="relative z-10">
-          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-md">
-            <span className="text-6xl mb-4 block">📚</span>
-            <h2 className="text-xl font-bold text-white mb-2">Story not found</h2>
-            <p className="text-white/70 mb-4">This story doesn't exist or you don't have permission to view it</p>
-            <button 
-              onClick={() => window.history.back()}
-              className={DESIGN_TOKENS.components.button.primary}
-            >
-              Go Back
-            </button>
-          </UnifiedCard>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-sm">
+          <span className="text-4xl mb-3 block">📚</span>
+          <h2 className="text-lg font-bold text-white mb-2">Story not found</h2>
+          <p className="text-white/60 text-sm mb-4">This story doesn't exist</p>
+          <button 
+            onClick={() => window.history.back()}
+            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all font-medium shadow-lg"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
@@ -375,30 +385,27 @@ const StoryReaderPage: React.FC = () => {
   // Story generation failed - show error
   if (story.status === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <FloatingElements />
-        <div className="relative z-10">
-          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-md">
-            <span className="text-6xl mb-4 block">🔧</span>
-            <h2 className="text-xl font-bold text-white mb-2">Story Generation Failed</h2>
-            <p className="text-white/70 mb-4">
-              {story.error_message || 'Something went wrong while creating your story'}
-            </p>
-            <div className="space-y-2">
-              <button 
-                onClick={() => window.history.back()}
-                className={`${DESIGN_TOKENS.components.button.primary} w-full`}
-              >
-                Create a New Story
-              </button>
-              <button 
-                onClick={() => window.location.reload()}
-                className={`${DESIGN_TOKENS.components.button.secondary} w-full`}
-              >
-                Try Again
-              </button>
-            </div>
-          </UnifiedCard>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-sm">
+          <span className="text-4xl mb-3 block">🔧</span>
+          <h2 className="text-lg font-bold text-white mb-2">Generation Failed</h2>
+          <p className="text-white/60 text-sm mb-4">
+            {story.error_message || 'Something went wrong'}
+          </p>
+          <div className="space-y-2">
+            <button 
+              onClick={() => window.history.back()}
+              className="w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all font-medium shadow-lg"
+            >
+              Create New Story
+            </button>
+            <button 
+              onClick={() => window.location.reload()}
+              className="w-full px-4 py-2 bg-black/20 text-white text-sm rounded-lg hover:bg-black/30 transition-all font-medium"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -407,36 +414,22 @@ const StoryReaderPage: React.FC = () => {
   // 🎯 UNIFIED LOADING STATE: Story still generating or no segments yet
   if (isStoryLoading || story.status === 'generating' || !story.segments || story.segments.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <FloatingElements />
-        <div className="relative z-10">
-          <UnifiedCard variant="enhanced" padding="large" className="text-center max-w-lg">
-            <div className="animate-bounce text-6xl mb-4 block">✨</div>
-            <h2 className="text-xl font-bold text-white mb-2">Your Story is Being Created</h2>
-            <p className="text-white/70 mb-4">
-              {story?.title ? `"${story.title}" is being crafted by AI...` : 'Loading your magical adventure...'}
+      <div className="min-h-screen flex items-center justify-center">
+        <div>
+          <div className="bg-black/20 border border-white/10 rounded-xl p-6 text-center max-w-md">
+            <div className="animate-bounce text-5xl mb-3">✨</div>
+            <h2 className="text-lg font-bold text-white mb-2">Creating Your Story</h2>
+            <p className="text-white/60 text-sm mb-4">
+              {story?.title ? `"${story.title}"` : 'Loading adventure...'}
             </p>
             
-            {/* Live progress indicator */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
-                <span className="text-white/80 text-sm">Generating story text & choices</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                <span className="text-white/60 text-sm">Creating illustrations</span>
-              </div>
+            {/* Simple loading indicator */}
+            <div className="flex justify-center mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
             </div>
             
-            {/* Progress bar */}
-            <div className="w-full bg-white/20 rounded-full h-2 mb-4">
-              <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
-            </div>
-            
-            <p className="text-white/50 text-sm mb-4">This usually takes 15-30 seconds ⚡</p>
-            <p className="text-white/40 text-xs">Page will refresh automatically when ready</p>
-          </UnifiedCard>
+            <p className="text-white/40 text-xs">This takes 15-30 seconds</p>
+          </div>
         </div>
       </div>
     );
@@ -477,164 +470,191 @@ const StoryReaderPage: React.FC = () => {
   })) || [];
   
   return (
-    <div className="min-h-screen py-6 relative overflow-hidden">
-      <FloatingElements />
-      <div className="relative z-10">
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Story Header */}
-          <div className="mb-6">
-            <UnifiedCard variant="enhanced" className="transition-all duration-300 hover:border-amber-400/30">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-white" style={{ fontFamily: DESIGN_TOKENS.fonts.heading }}>
+    <div className="min-h-screen relative">
+      <div className="py-3">
+        <div className="max-w-2xl mx-auto px-3">
+          {/* Compact Story Header with better visibility */}
+          <div className="mb-3 bg-slate-900/80 rounded-lg p-3">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h1 className="text-xl font-bold text-white mb-1">
                     {story.title}
                   </h1>
-                  <div className="flex items-center gap-4">
-                    <p className="text-amber-400 text-lg">
-                      {story.genre} • {getDifficultyDisplay(story.age_group)}
-                    </p>
-                    {user && <CreditBalanceIndicator size="sm" />}
+                  <div className="flex items-center gap-2 text-white/70 text-xs">
+                    <span>{story.genre}</span>
+                    <span>•</span>
+                    <span>{getDifficultyDisplay(story.age_group)}</span>
                   </div>
                 </div>
         
-                {/* Reading Controls */}
-                <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-                  <div className="flex bg-white/5 border border-white/20 rounded-lg p-1">
+                {/* Compact Controls */}
+                <div className="flex items-center gap-2">
+                  {/* Font Size Control - Smaller */}
+                  <div className="flex items-center bg-black/20 rounded-lg p-0.5">
                     <button 
                       onClick={() => handleFontSizeChange('small')}
-                      className={`px-3 py-1 rounded text-sm font-medium transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                      aria-label="Small font size"
+                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white' : 'text-white/60 hover:text-white'}`}
+                      aria-label="Small font"
                     >
-                      A
+                      <span className="text-xs font-medium">A</span>
                     </button>
                     <button 
                       onClick={() => handleFontSizeChange('medium')}
-                      className={`px-3 py-1 rounded text-base font-medium transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                      aria-label="Medium font size"
+                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white' : 'text-white/60 hover:text-white'}`}
+                      aria-label="Medium font"
                     >
-                      A
+                      <span className="text-sm font-medium">A</span>
                     </button>
                     <button 
                       onClick={() => handleFontSizeChange('large')}
-                      className={`px-3 py-1 rounded text-lg font-medium transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white shadow' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                      aria-label="Large font size"
+                      className={`px-2 py-1 rounded-md transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white' : 'text-white/60 hover:text-white'}`}
+                      aria-label="Large font"
                     >
-                      A
+                      <span className="text-base font-medium">A</span>
                     </button>
                   </div>
+
+                  {/* End Story Button - Compact */}
+                  {story.segments && story.segments.length >= 2 && !cleanedSegment?.is_end && (
+                    <button
+                      onClick={handleStoryEnding}
+                      disabled={isGenerating}
+                      className="px-3 py-1.5 text-xs bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all disabled:opacity-50 font-medium shadow-lg"
+                      aria-label="End story"
+                    >
+                      End Story
+                    </button>
+                  )}
                 
-                {/* Audio generation - Premium only */}
-                {user?.subscription_tier !== 'free' && (story.audio_url || audioUrl ? (
-                  <button 
-                    onClick={() => setShowAudioPlayer(!showAudioPlayer)}
-                    className="glass-card text-white/80 hover:text-white border border-white/20 hover:border-amber-400/50 px-4 py-2 text-sm rounded-lg transition-all duration-300 flex items-center"
-                    aria-label={showAudioPlayer ? "Hide audio player" : "Show audio player"}
-                  >
-                    {showAudioPlayer ? '🔇 Hide Audio' : '🔊 Show Audio'}
-                  </button>
-                ) : (
-                  <button 
-                    onClick={handleGenerateAudio}
-                    disabled={isGeneratingAudio}
-                    className="fantasy-cta px-4 py-2 text-sm rounded-lg disabled:opacity-50 flex items-center"
-                    aria-label="Generate audio narration"
-                    title={`Premium feature - ${audioCreditsNeeded} credits (${totalWords} words)`}
-                  >
-                    {isGeneratingAudio ? '⏳ Generating...' : `🎵 Generate Audio (${audioCreditsNeeded} credits)`}
-                  </button>
-                ))}
+                  {/* Audio Button - Compact */}
+                  {user?.subscription_tier !== 'free' && cleanedSegment && (
+                    segmentAudioUrls[currentSegmentIndex] ? (
+                      <button 
+                        onClick={() => setShowAudioPlayer(!showAudioPlayer)}
+                        className="px-3 py-1.5 text-xs text-white/60 hover:text-white bg-black/20 hover:bg-black/30 rounded-lg transition-all"
+                        aria-label={showAudioPlayer ? "Hide audio" : "Show audio"}
+                      >
+                        {showAudioPlayer ? '🔇' : '🔊'}
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleGenerateSegmentAudio(currentSegmentIndex)}
+                        disabled={generatingAudioForSegment === currentSegmentIndex}
+                        className="px-3 py-1.5 text-xs text-white/60 hover:text-white bg-black/20 hover:bg-black/30 rounded-lg disabled:opacity-50 transition-all"
+                        aria-label="Generate audio"
+                      >
+                        {generatingAudioForSegment === currentSegmentIndex ? '⏳' : '🎵'}
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
-            </UnifiedCard>
+            </div>
           </div>
       
-      {/* Enhanced TTS Audio Player - Premium only */}
-      {showAudioPlayer && user?.subscription_tier !== 'free' && (
-        <div className="mb-6">
-          <TTSPlayer 
-            text={cleanedSegment?.content || ''}
-            storyType={story.genre === 'Bedtime Story' ? 'bedtime' : 
-                      story.genre === 'Adventure' ? 'adventure' : 'fantasy'}
-            className="transform transition-all duration-300"
+      {/* Chapter Navigation - Compact with better visibility */}
+      {story.segments && story.segments.length > 0 && (
+        <div className="mb-3">
+          <StoryProgress
+            totalSegments={story.segments.length}
+            currentSegmentIndex={currentSegmentIndex}
+            onSegmentClick={handleSegmentClick}
+            isStoryComplete={cleanedSegment?.is_end === true}
+            className="bg-slate-900/80 p-1.5 rounded-lg border border-white/10"
           />
         </div>
       )}
+
+      {/* Audio Player - Compact */}
+      {showAudioPlayer && segmentAudioUrls[currentSegmentIndex] && (
+        <div className="mb-3 bg-black/10 rounded-lg p-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-white/60 text-xs">Chapter {currentSegmentIndex + 1}</span>
+            <button 
+              onClick={() => setShowAudioPlayer(false)}
+              className="text-white/40 hover:text-white/60 text-xs"
+            >
+              ✕
+            </button>
+          </div>
+          <audio 
+            controls 
+            className="w-full h-8"
+            src={segmentAudioUrls[currentSegmentIndex]}
+          >
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
       
-        {/* Story Content Card */}
-        <UnifiedCard variant="enhanced" className="overflow-hidden mb-6 transition-all duration-300 hover:transform hover:scale-[1.01]">
-          {/* Story Image - Show appropriate state based on image availability */}
+        {/* Main Story Content - Compact with better visibility */}
+        <div className="bg-slate-900/90 rounded-xl overflow-hidden mb-4 border border-white/10">
+          {/* Story Image - Balanced size */}
           {cleanedSegment?.image_url ? (
-            <div className="relative">
+            <div className="relative bg-black/5" style={{ height: '200px' }}>
               <StoryImage 
                 src={cleanedSegment.image_url} 
                 alt={`Illustration for segment ${currentSegmentIndex + 1}`} 
-                className="w-full h-64 md:h-80 object-cover"
+                className="w-full h-full object-contain"
                 onImageLoad={() => {
                   console.log('🖼️ Parent: Image loaded');
                 }}
                 onImageError={() => console.log('Image failed to load')}
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>
             </div>
           ) : cleanedSegment?.image_prompt ? (
-            <div className="relative h-64 md:h-80 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+            <div className="relative bg-black/10 flex items-center justify-center" style={{ height: '200px' }}>
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-400 mx-auto mb-3"></div>
                 <p className="text-white/60 text-sm">Creating illustration...</p>
-                <p className="text-white/40 text-xs mt-2">This usually takes 10-30 seconds</p>
+                <p className="text-white/40 text-xs mt-1">This usually takes 10-30 seconds</p>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>
             </div>
           ) : (
-            <div className="relative h-64 md:h-80 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
+            <div className="relative bg-black/10 flex items-center justify-center" style={{ height: '200px' }}>
               <div className="text-center">
-                <div className="text-4xl mb-4">📚</div>
+                <div className="text-4xl mb-3">📚</div>
                 <p className="text-white/60 text-sm">No illustration available</p>
-                <p className="text-white/40 text-xs mt-2">This segment was created without image generation</p>
+                <p className="text-white/40 text-xs mt-1">This segment was created without image generation</p>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"></div>
             </div>
           )}
           
-          {/* Story Text Content */}
-          <div className="p-6 md:p-8">
+          {/* Story Text - Better background for readability */}
+          <div className="p-4 bg-slate-900/95">
             {isGenerating ? (
-              <div className="text-center py-12">
-                <div className="flex justify-center mb-6">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
-                </div>
-                <p className="text-white text-xl mb-2">
-                  Creating your next story segment...
-                </p>
-                <p className="text-white/70">
-                  Our AI is crafting your personalized adventure
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
+                <p className="text-white/80 text-sm">
+                  Creating your next chapter...
                 </p>
               </div>
             ) : cleanedSegment ? (
               <>
                 <div 
-                  className={`${fontSizeClasses[fontSize as keyof typeof fontSizeClasses]} ${lineHeightClasses[fontSize as keyof typeof lineHeightClasses]} text-white mb-8 font-serif leading-relaxed text-shadow-sm`}
+                  className={`${fontSizeClasses[fontSize as keyof typeof fontSizeClasses]} text-white mb-4 leading-relaxed`}
                 >
                   {cleanedSegment.content}
                 </div>
                 
                 {/* Check if this is the ending segment */}
                 {cleanedSegment.is_end ? (
-                  <div className="mt-8 text-center">
-                    <UnifiedCard variant="enhanced" padding="large" className="mb-6">
-                      <div className="text-6xl mb-4">🎉</div>
-                      <h2 className="fantasy-heading text-3xl mb-4">Story Complete!</h2>
-                      <p className="text-white/80 text-lg mb-4">
-                        What an amazing adventure! Redirecting you to celebrate your story...
+                  <div className="mt-4 text-center">
+                    <div className="bg-amber-500/10 border border-amber-400/20 rounded-lg p-3">
+                      <div className="text-3xl mb-2">🎉</div>
+                      <h2 className="text-base font-bold mb-1 text-white">Story Complete!</h2>
+                      <p className="text-white/60 text-xs mb-2">
+                        What an amazing adventure!
                       </p>
                       <div className="flex justify-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400"></div>
                       </div>
-                    </UnifiedCard>
+                    </div>
                   </div>
                 ) : (
-                  // Story Choices for non-ending segments
-                  <div className="mt-8">
+                  // Story Choices - Compact spacing
+                  <div className="mt-4">
                     <StoryChoices
                       choices={formattedChoices}
                       onSelect={handleChoiceSelect}
@@ -648,44 +668,125 @@ const StoryReaderPage: React.FC = () => {
                 )}
               </>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-white text-xl mb-6">
-                  Ready to begin your story adventure?
+              <div className="text-center py-6">
+                <p className="text-white text-base mb-3">
+                  Ready to begin your story?
                 </p>
                 <button 
                   onClick={() => handleChoiceSelect('begin')}
                   disabled={isGeneratingSegment}
-                  className="fantasy-cta px-8 py-3 text-lg rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50"
+                  className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl hover:from-amber-600 hover:to-orange-700 transition-all disabled:opacity-50 font-medium shadow-lg"
                 >
                   {isGeneratingSegment ? 'Starting...' : 'Begin Story'}
                 </button>
               </div>
             )}
           </div>
-        </UnifiedCard>
+        </div>
       
-        {/* Story Progress */}
-        {story.segments && story.segments.length > 0 && (
-          <div className="mb-6">
-            <UnifiedCard variant="glass" padding="medium">
-              <StoryProgress
-                totalSegments={story.segments.length}
-                currentSegmentIndex={currentSegmentIndex}
-                onSegmentClick={handleSegmentClick}
-                isStoryComplete={cleanedSegment?.is_end === true || (cleanedSegment?.choices && cleanedSegment.choices.length === 0)}
-              />
-            </UnifiedCard>
-          </div>
-        )}
         
-        {/* Story Metadata */}
-        <UnifiedCard variant="glass" className="text-center">
-          <p className="text-white/60 text-sm">
-            Story ID: {story.id} • Created: {new Date(story.created_at).toLocaleDateString()}
+        {/* Footer Info - Even smaller */}
+        <div className="text-center">
+          <p className="text-white/20 text-[10px]">
+            Created {new Date(story.created_at).toLocaleDateString()}
           </p>
-        </UnifiedCard>
         </div>
       </div>
+    </div>
+      
+      {/* Story Completion Modal */}
+      {showCompletionModal && story && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900/95 border border-white/10 rounded-xl p-6 max-w-md w-full">
+            {/* Close button */}
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => {
+                  setShowCompletionModal(false);
+                  navigate('/dashboard');
+                }}
+                className="text-white/60 hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="text-center mb-4">
+              <div className="text-5xl mb-3">🎉</div>
+              <h2 className="text-2xl font-bold mb-2 text-white">Story Complete!</h2>
+              <h3 className="text-lg text-amber-400 mb-1">
+                "{story.title}"
+              </h3>
+              <p className="text-white/60 text-sm">
+                Finished {story.segments?.length || 0} chapters!
+              </p>
+            </div>
+            
+            <div>
+              <div className="bg-green-900/20 border border-green-400/20 rounded-lg p-4 mb-4">
+                <div className="text-center">
+                  <div className="text-3xl mb-2">📚</div>
+                  <h3 className="text-base font-semibold text-white mb-1">Story saved!</h3>
+                  <p className="text-white/60 text-xs">You can revisit or share it anytime.</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <button 
+                  onClick={() => {
+                    setCurrentSegmentIndex(0);
+                    setShowCompletionModal(false);
+                  }}
+                  className="w-full bg-black/20 hover:bg-black/30 border border-white/10 hover:border-white/20 py-2.5 rounded-lg text-white text-sm transition-all flex items-center justify-center space-x-2"
+                >
+                  <span>🔁</span>
+                  <span>Read Again</span>
+                </button>
+                
+                <button 
+                  onClick={() => {
+                    navigate(`/stories/${story.id}/complete`);
+                  }}
+                  className="w-full bg-black/20 hover:bg-black/30 border border-white/10 hover:border-white/20 py-2.5 rounded-lg text-white text-sm transition-all flex items-center justify-center space-x-2"
+                >
+                  <span>📤</span>
+                  <span>Share Story</span>
+                </button>
+                
+                <button 
+                  onClick={() => navigate('/create')}
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all"
+                >
+                  Create New Story
+                </button>
+              </div>
+            </div>
+            
+            <div className="mt-4 pt-3 border-t border-white/10">
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div>
+                  <p className="text-lg font-bold text-amber-400">{story.segments?.length || 0}</p>
+                  <p className="text-[10px] text-white/50">Chapters</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-amber-400">
+                    {Math.ceil((story.segments?.reduce((sum, seg) => sum + (seg.content?.split(' ').length || 0), 0) || 0) / 100)}
+                  </p>
+                  <p className="text-[10px] text-white/50">Credits</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-amber-400">100%</p>
+                  <p className="text-[10px] text-white/50">Done</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
