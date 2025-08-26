@@ -54,7 +54,7 @@ const EasyModeFlow: React.FC = () => {
     createStory(storyData, {
       onSuccess: (story) => {
         console.log('Story created successfully:', story);
-        navigate(`/story/${story.id}`);
+        navigate(`/stories/${story.id}`);
       },
       onError: (error: any) => {
         console.error('Failed to create story:', error);

@@ -32,16 +32,16 @@ const PrimaryNavigation: React.FC = () => {
 
   const navLinks = user
     ? [
-        { name: 'Dashboard', path: '/dashboard', icon: 'user' },
-        { name: 'Create', path: '/create', icon: 'plus' },
-        { name: 'Stories', path: '/stories', icon: 'book' },
-        { name: 'Pricing', path: '/pricing', icon: 'star' },
-      ]
+      { name: 'Dashboard', path: '/dashboard', icon: 'user' },
+      { name: 'Create', path: '/create', icon: 'plus' },
+      { name: 'Stories', path: '/stories', icon: 'book' },
+      { name: 'Pricing', path: '/pricing', icon: 'star' },
+    ]
     : [
-        { name: 'Features', path: '/features', icon: 'star' },
-        { name: 'Pricing', path: '/pricing', icon: 'star' },
-        { name: 'Help', path: '/help', icon: 'help-circle' },
-      ];
+      { name: 'Features', path: '/features', icon: 'star' },
+      { name: 'Pricing', path: '/pricing', icon: 'star' },
+      { name: 'Help', path: '/help', icon: 'help-circle' },
+    ];
 
   const comingSoonItems = [
     { name: 'Templates', path: '/templates', icon: 'book', description: 'Browse story templates' },
@@ -53,7 +53,7 @@ const PrimaryNavigation: React.FC = () => {
   };
 
   return (
-    <nav className="glass-enhanced sticky top-0 z-50 border-b border-amber-400/10 bg-slate-900/95">
+    <nav className="nav-glass sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left side - Logo and main navigation */}
@@ -74,26 +74,24 @@ const PrimaryNavigation: React.FC = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`${
-                    isActive(link.path)
+                  className={`${isActive(link.path)
                       ? 'border-amber-400 text-amber-400'
                       : 'border-transparent text-white/80 hover:border-white/30 hover:text-white'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 relative`}
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 relative`}
                 >
                   <Icon name={link.icon} size={16} className="mr-2" />
                   {link.name}
                 </Link>
               ))}
-              
+
               {/* Coming Soon Dropdown */}
               <div className="relative inline-flex items-center" ref={dropdownRef}>
                 <button
                   onClick={() => setShowComingSoonDropdown(!showComingSoonDropdown)}
-                  className={`${
-                    comingSoonItems.some(item => isActive(item.path))
+                  className={`${comingSoonItems.some(item => isActive(item.path))
                       ? 'border-amber-400 text-amber-400'
                       : 'border-transparent text-white/80 hover:border-white/30 hover:text-white'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 relative h-full`}
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 relative h-full`}
                 >
                   <Icon name="clock" size={16} className="mr-2" />
                   Coming Soon
@@ -104,7 +102,7 @@ const PrimaryNavigation: React.FC = () => {
                     </span>
                   )}
                 </button>
-                
+
                 {/* Dropdown Menu */}
                 {showComingSoonDropdown && (
                   <div className="absolute left-0 top-full mt-1 w-64 rounded-lg glass-enhanced bg-slate-900/95 border border-white/20 shadow-xl z-50">
@@ -117,11 +115,10 @@ const PrimaryNavigation: React.FC = () => {
                           key={item.path}
                           to={item.path}
                           onClick={() => setShowComingSoonDropdown(false)}
-                          className={`${
-                            isActive(item.path)
+                          className={`${isActive(item.path)
                               ? 'bg-amber-400/10 text-amber-400'
                               : 'text-white/80 hover:bg-white/10 hover:text-white'
-                          } flex items-center px-4 py-3 transition-colors duration-200 relative group`}
+                            } flex items-center px-4 py-3 transition-colors duration-200 relative group`}
                         >
                           <Icon name={item.icon} size={18} className="mr-3" />
                           <div className="flex-1">
@@ -161,10 +158,10 @@ const PrimaryNavigation: React.FC = () => {
                 >
                   <Icon name="bell" size={18} />
                 </Link>
-                <Button 
-                  variant="secondary" 
-                  size="small" 
-                  onClick={logout} 
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={logout}
                   className="glass-card text-white border-white/30"
                 >
                   Sign Out

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { StandardPage, UnifiedCard } from '@/components/design-system';
 import { CheckCircle, Zap, CreditCard } from 'lucide-react';
 
 interface CreditPackage {
@@ -92,257 +91,258 @@ const PricingPage: React.FC = () => {
   };
 
   return (
-    <StandardPage 
-      title="Get Story Credits"
-      subtitle="Purchase credits to create amazing AI-powered stories"
-      icon="💰"
-      containerSize="large"
-    >
-      {/* Tab Navigation */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-white/5 rounded-lg p-1 backdrop-blur-sm">
-          <button
-            onClick={() => setActiveTab('packages')}
-            className={`px-6 py-2 rounded-md transition-all ${
-              activeTab === 'packages'
-                ? 'bg-amber-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            Monthly Plans
-          </button>
-          <button
-            onClick={() => setActiveTab('subscription')}
-            className={`px-6 py-2 rounded-md transition-all ${
-              activeTab === 'subscription'
-                ? 'bg-amber-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            Extra Credits
-          </button>
-        </div>
+    <div className="page-content">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <h1 className="title-hero mb-4">
+          💰 Get Story Credits
+        </h1>
+        <p className="text-body text-lg sm:text-xl max-w-3xl mx-auto">
+          Purchase credits to create amazing AI-powered stories for your children
+        </p>
       </div>
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-12">
+          <div className="glass-card p-2">
+            <button
+              onClick={() => setActiveTab('packages')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'packages'
+                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+                : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+            >
+              Monthly Plans
+            </button>
+            <button
+              onClick={() => setActiveTab('subscription')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'subscription'
+                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+                : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+            >
+              Extra Credits
+            </button>
+          </div>
+        </div>
 
-      {/* Monthly Plans */}
-      {activeTab === 'packages' && (
-        <>
-          {/* How It Works */}
-          <UnifiedCard variant="enhanced" className="mb-12">
-            <h3 className="text-xl font-bold text-white mb-4">Simple Credit System</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-start space-x-3">
-                <Zap className="w-5 h-5 text-amber-400 mt-1" />
-                <div>
-                  <p className="font-medium text-white">1 Credit = 1 Chapter</p>
-                  <p className="text-white/70 text-sm">Includes AI text + image</p>
+        {/* Monthly Plans */}
+        {activeTab === 'packages' && (
+          <>
+            {/* How It Works */}
+            <div className="glass-card mb-12">
+              <h3 className="title-section text-center mb-8">Simple Credit System</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <Zap className="w-8 h-8 text-amber-400" />
+                  </div>
+                  <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
+                  <p className="text-body">Includes AI text + beautiful illustration</p>
                 </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="w-5 h-5 text-green-400 mt-1" />
-                <div>
-                  <p className="font-medium text-white">Audio = 1cr/100 words</p>
-                  <p className="text-white/70 text-sm">Premium only</p>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-green-400" />
+                  </div>
+                  <h4 className="title-card mb-2">Audio Narration</h4>
+                  <p className="text-body">1 credit per 100 words (premium only)</p>
                 </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <CreditCard className="w-5 h-5 text-blue-400 mt-1" />
-                <div>
-                  <p className="font-medium text-white">Credits Don't Expire</p>
-                  <p className="text-white/70 text-sm">Use at your own pace</p>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <CreditCard className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h4 className="title-card mb-2">Credits Don't Expire</h4>
+                  <p className="text-body">Use at your own pace, whenever you want</p>
                 </div>
               </div>
             </div>
-          </UnifiedCard>
 
-          {/* Monthly Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
-            {monthlyPlans.map((pkg) => (
-              <UnifiedCard
-                key={pkg.id}
-                variant={pkg.popular ? 'enhanced' : 'glass'}
-                className={`relative ${pkg.popular ? 'ring-2 ring-amber-500' : ''}`}
-              >
-                {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                      MOST POPULAR
-                    </span>
-                  </div>
-                )}
-                
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-bold text-white mb-2">{pkg.name}</h3>
-                  <div className="mb-2">
-                    <span className="text-3xl font-bold text-white">{pkg.displayPrice}</span>
-                  </div>
-                  <div className="mb-2">
-                    <span className="text-2xl font-semibold text-amber-400">{pkg.credits}</span>
-                    <span className="text-white/60 text-sm"> credits</span>
-                  </div>
-                  {pkg.savings && (
-                    <span className="text-green-400 text-sm font-medium">{pkg.savings}</span>
-                  )}
-                </div>
-
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span>
-                      {pkg.id === 'free' ? '10 story chapters' : 
-                       pkg.id === 'basic' ? '100 story chapters' : 
-                       '250 story chapters'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span>
-                      {pkg.id === 'free' ? 'No credit card' : 
-                       pkg.id === 'basic' ? 'Audio narration available' : 
-                       'Audio narration available'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span>
-                      {pkg.id === 'free' ? 'Try before you buy' : 
-                       pkg.id === 'basic' ? 'Cancel anytime' : 
-                       'Save $0.02 per credit'}
-                    </span>
-                  </div>
-                  {pkg.id !== 'free' && (
-                    <div className="flex items-center text-white/80 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                      <span>
-                        {pkg.id === 'basic' ? 'Perfect for families' : 'Best for educators'}
+            {/* Monthly Plans Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {monthlyPlans.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className={`glass-card relative transition-all duration-300 hover:scale-105 ${pkg.popular ? 'border-amber-400/40 shadow-xl shadow-amber-500/10' : ''
+                    }`}
+                >
+                  {pkg.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+                        MOST POPULAR
                       </span>
                     </div>
                   )}
-                </div>
 
-                <button
-                  onClick={() => pkg.id === 'free' ? window.location.href = '/signup' : handlePurchaseClick(pkg.stripeLink)}
-                  className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                    pkg.popular
-                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                  <div className="text-center mb-8">
+                    <h3 className="title-card mb-4">{pkg.name}</h3>
+                    <div className="mb-3">
+                      <span className="text-4xl font-bold text-white">{pkg.displayPrice}</span>
+                    </div>
+                    <div className="mb-3">
+                      <span className="text-3xl font-semibold text-amber-400">{pkg.credits}</span>
+                      <span className="text-white/60 text-lg"> credits</span>
+                    </div>
+                    {pkg.savings && (
+                      <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
+                        {pkg.savings}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <span>
+                        {pkg.id === 'free' ? '10 story chapters' :
+                          pkg.id === 'basic' ? '100 story chapters' :
+                            '250 story chapters'}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <span>
+                        {pkg.id === 'free' ? 'No credit card required' :
+                          'Professional audio narration'}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <span>
+                        {pkg.id === 'free' ? 'Try before you buy' :
+                          pkg.id === 'basic' ? 'Cancel anytime' :
+                            'Save $0.02 per credit'}
+                      </span>
+                    </div>
+                    {pkg.id !== 'free' && (
+                      <div className="flex items-center text-white/90">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                        <span>
+                          {pkg.id === 'basic' ? 'Perfect for families' : 'Best for educators & heavy users'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => pkg.id === 'free' ? window.location.href = '/signup' : handlePurchaseClick(pkg.stripeLink)}
+                    className={`btn w-full ${pkg.popular
+                      ? 'btn-primary'
                       : pkg.id === 'free'
-                      ? 'bg-green-500 hover:bg-green-600 text-white'
-                      : 'bg-white/10 hover:bg-white/20 text-white'
-                  }`}
-                >
-                  {pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
-                </button>
-              </UnifiedCard>
-            ))}
-          </div>
-        </>
-      )}
+                        ? 'btn-secondary bg-green-500 hover:bg-green-600 border-green-500'
+                        : 'btn-secondary'
+                      }`}
+                  >
+                    {pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
-      {/* Extra Credit Bundles */}
-      {activeTab === 'subscription' && (
-        <>
-          {/* How Extra Credits Work */}
-          <UnifiedCard variant="enhanced" className="mb-12">
-            <h3 className="text-xl font-bold text-white mb-4">Running Low? Top Up Anytime!</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-start space-x-3">
-                <Zap className="w-5 h-5 text-amber-400 mt-1" />
-                <div>
-                  <p className="font-medium text-white">Instant Delivery</p>
-                  <p className="text-white/70 text-sm">Use immediately</p>
+        {/* Extra Credit Bundles */}
+        {activeTab === 'subscription' && (
+          <>
+            {/* How Extra Credits Work */}
+            <div className="glass-card mb-12">
+              <h3 className="title-section text-center mb-8">Running Low? Top Up Anytime!</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <Zap className="w-8 h-8 text-amber-400" />
+                  </div>
+                  <h4 className="title-card mb-2">Instant Delivery</h4>
+                  <p className="text-body">Credits added to your account immediately</p>
                 </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="w-5 h-5 text-green-400 mt-1" />
-                <div>
-                  <p className="font-medium text-white">Bulk Discounts</p>
-                  <p className="text-white/70 text-sm">Save up to 20%</p>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-green-400" />
+                  </div>
+                  <h4 className="title-card mb-2">Bulk Discounts</h4>
+                  <p className="text-body">Save up to 20% on larger bundles</p>
                 </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <CreditCard className="w-5 h-5 text-blue-400 mt-1" />
-                <div>
-                  <p className="font-medium text-white">Works with All Plans</p>
-                  <p className="text-white/70 text-sm">Even free accounts</p>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <CreditCard className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h4 className="title-card mb-2">Works with All Plans</h4>
+                  <p className="text-body">Compatible with free and premium accounts</p>
                 </div>
               </div>
             </div>
-          </UnifiedCard>
 
-          {/* Extra Credits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {extraCredits.map((pkg) => (
-              <UnifiedCard
-                key={pkg.id}
-                variant={pkg.popular ? 'enhanced' : 'glass'}
-                className={`relative ${pkg.popular ? 'ring-2 ring-amber-500' : ''}`}
-              >
-                {pkg.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                      MOST POPULAR
-                    </span>
-                  </div>
-                )}
-                
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-bold text-white mb-2">{pkg.name}</h3>
-                  <div className="mb-2">
-                    <span className="text-3xl font-bold text-white">{pkg.displayPrice}</span>
-                  </div>
-                  <div className="mb-2">
-                    <span className="text-2xl font-semibold text-amber-400">{pkg.credits}</span>
-                    <span className="text-white/60 text-sm"> credits</span>
-                  </div>
-                  {pkg.savings && (
-                    <span className="text-green-400 text-sm font-medium">{pkg.savings}</span>
-                  )}
-                </div>
-
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span>{pkg.credits} story chapters</span>
-                  </div>
-                  <div className="flex items-center text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span>Add to any plan</span>
-                  </div>
-                  <div className="flex items-center text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                    <span>{pkg.price <= 10 ? 'No discount' : pkg.savings}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handlePurchaseClick(pkg.stripeLink)}
-                  className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
-                    pkg.popular
-                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                      : 'bg-white/10 hover:bg-white/20 text-white'
-                  }`}
+            {/* Extra Credits Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {extraCredits.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className={`glass-card relative transition-all duration-300 hover:scale-105 ${pkg.popular ? 'border-amber-400/40 shadow-xl shadow-amber-500/10' : ''
+                    }`}
                 >
-                  Buy Now
-                </button>
-              </UnifiedCard>
-            ))}
-          </div>
-        </>
-      )}
+                  {pkg.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        MOST POPULAR
+                      </span>
+                    </div>
+                  )}
 
-      {/* Security Notice */}
-      <UnifiedCard variant="glass" className="text-center">
-        <div className="flex items-center justify-center space-x-3">
-          <CreditCard className="w-5 h-5 text-green-400" />
+                  <div className="text-center mb-6">
+                    <h3 className="title-card mb-3">{pkg.name}</h3>
+                    <div className="mb-2">
+                      <span className="text-3xl font-bold text-white">{pkg.displayPrice}</span>
+                    </div>
+                    <div className="mb-2">
+                      <span className="text-2xl font-semibold text-amber-400">{pkg.credits}</span>
+                      <span className="text-white/60 text-lg"> credits</span>
+                    </div>
+                    {pkg.savings && (
+                      <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
+                        {pkg.savings}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span>{pkg.credits} story chapters</span>
+                    </div>
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span>Add to any plan</span>
+                    </div>
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                      <span>{pkg.price <= 10 ? 'No discount' : pkg.savings}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handlePurchaseClick(pkg.stripeLink)}
+                    className={`btn w-full ${pkg.popular ? 'btn-primary' : 'btn-secondary'
+                      }`}
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Security Notice */}
+        <div className="glass-card text-center">
+          <div className="flex items-center justify-center space-x-3 mb-3">
+            <CreditCard className="w-6 h-6 text-green-400" />
+            <p className="text-white/90 text-lg">
+              Secure payments powered by <span className="text-white font-semibold">Stripe</span>
+            </p>
+          </div>
           <p className="text-white/70">
-            Secure payments powered by <span className="text-white font-semibold">Stripe</span>
+            All transactions are encrypted and secure. We never store your payment information.
           </p>
         </div>
-        <p className="text-white/50 text-sm mt-2">
-          All transactions are encrypted and secure. We never store your payment information.
-        </p>
-      </UnifiedCard>
-    </StandardPage>
+    </div>
   );
 };
 

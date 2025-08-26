@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
     {
       title: "Enchanted Forest Tales",
       description: "Discover magical creatures in mystical woodland realms",
-      image: "/images/genres/fantasy/enchanted-world.png", 
+      image: "/images/genres/fantasy/enchanted-world.png",
       genre: "Fantasy",
     },
     {
@@ -133,8 +133,8 @@ const HomePage: React.FC = () => {
               {featuredStories.map((story, index) => (
                 <div key={index} className="glass-card rounded-lg overflow-hidden hover:transform hover:scale-105  transition-all duration-300 group">
                   <div className="relative">
-                    <img 
-                      src={story.image} 
+                    <img
+                      src={story.image}
                       alt={story.title}
                       className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
@@ -164,7 +164,7 @@ const HomePage: React.FC = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Call to Action */}
             <div className="text-center mt-12">
               {!user && (

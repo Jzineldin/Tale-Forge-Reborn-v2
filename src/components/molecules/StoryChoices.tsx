@@ -60,12 +60,12 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
         What should happen next?
       </p>
       
-      {/* Story Choices - Better visibility */}
-      <div className="space-y-2">
+      {/* Story Choices - Enhanced glass effect to match theme */}
+      <div className="space-y-3">
         {validChoices.map((choice, index) => (
           <button
             key={choice.id}
-            className="w-full text-left py-3 px-4 bg-slate-800/90 hover:bg-slate-700/90 rounded-lg transition-all duration-200 border border-amber-400/30 hover:border-amber-400/50 group"
+            className="w-full text-left py-4 px-5 glass-card hover:bg-white/10 rounded-xl transition-all duration-300 border border-amber-400/20 hover:border-amber-400/40 hover:shadow-lg hover:shadow-amber-500/10 group"
             onClick={() => onSelect(choice.id)}
             disabled={disabled || loading}
           >
@@ -91,7 +91,7 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
             Or wrap up your adventure:
           </p>
           <button
-            className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 rounded-lg transition-all duration-200 text-white font-medium shadow-lg"
+            className="w-full py-4 px-5 glass-card bg-gradient-to-r from-amber-500/20 to-orange-600/20 hover:from-amber-500/30 hover:to-orange-600/30 rounded-xl transition-all duration-300 text-amber-400 font-medium border border-amber-400/30 hover:border-amber-400/50 shadow-lg hover:shadow-amber-500/20"
             onClick={() => {
               console.log('🎬 End Story button clicked');
               onEndStory?.();

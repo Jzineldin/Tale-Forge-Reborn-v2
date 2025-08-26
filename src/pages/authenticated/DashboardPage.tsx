@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
 
       try {
         console.log('Fetching dashboard data for user:', user.id);
-        
+
         // Fetch recent stories
         const { data: stories, error: storiesError } = await supabase
           .from('stories')
@@ -35,7 +35,7 @@ const DashboardPage: React.FC = () => {
           setRecentStories([]);
         } else {
           console.log('Fetched stories:', stories);
-          
+
           // Transform stories to match the expected format
           const transformedStories = stories?.map(story => ({
             id: story.id,
@@ -49,7 +49,7 @@ const DashboardPage: React.FC = () => {
             lastRead: formatTimeAgo(story.updated_at || story.created_at),
             isCompleted: story.is_completed || false
           })) || [];
-          
+
           setRecentStories(transformedStories);
         }
 
@@ -85,7 +85,7 @@ const DashboardPage: React.FC = () => {
     const diffMs = now.getTime() - date.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays > 0) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
     if (diffHours > 0) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
     return 'Less than an hour ago';
@@ -175,17 +175,16 @@ const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="page-container">
-      <div className="container-lg">
-        {/* Welcome Header */}
-        <div className="glass-card text-center mb-8">
-          <h1 className="title-hero mb-4">
-            Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! ✨
-          </h1>
-          <p className="text-body text-xl max-w-3xl mx-auto">
-            Ready to continue your storytelling journey? Create magical tales with our 5-step wizard and discover new adventures.
-          </p>
-        </div>
+    <div className="page-content">
+      {/* Welcome Header */}
+      <div className="text-center mb-8">
+        <h1 className="title-hero mb-4">
+          Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! ✨
+        </h1>
+        <p className="text-body text-xl max-w-3xl mx-auto">
+          Ready to continue your storytelling journey? Create magical tales with our 5-step wizard and discover new adventures.
+        </p>
+      </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content - Stats Dashboard */}
@@ -194,32 +193,32 @@ const DashboardPage: React.FC = () => {
               <h2 className="title-section text-center mb-6">
                 📊 Your Story Journey
               </h2>
-              
+
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="stat-card">
-                  <div className="stat-value text-success mb-1">
+                <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="text-2xl font-bold text-green-400 mb-1">
                     {userStats.storiesCreated}
                   </div>
-                  <div className="stat-label">Stories Created</div>
+                  <div className="text-white/70 text-sm">Stories Created</div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-value text-accent mb-1">
+                <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="text-2xl font-bold text-amber-400 mb-1">
                     {userStats.storiesRead}
                   </div>
-                  <div className="stat-label">Stories Read</div>
+                  <div className="text-white/70 text-sm">Stories Read</div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-value text-accent mb-1">
+                <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="text-2xl font-bold text-amber-400 mb-1">
                     {userStats.readingStreak}
                   </div>
-                  <div className="stat-label">Day Streak</div>
+                  <div className="text-white/70 text-sm">Day Streak</div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-value text-primary mb-1">
+                <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="text-2xl font-bold text-blue-400 mb-1">
                     {userStats.readingTime}
                   </div>
-                  <div className="stat-label">Hours Read</div>
+                  <div className="text-white/70 text-sm">Hours Read</div>
                 </div>
               </div>
 
@@ -230,7 +229,7 @@ const DashboardPage: React.FC = () => {
                 <p className="text-muted mb-6">
                   Every story you create adds to your amazing collection of adventures.
                 </p>
-                
+
                 {userStats.storiesCreated === 0 ? (
                   <Link
                     to="/create"
@@ -249,7 +248,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Sidebar - Recent Stories & Quick Actions */}
           <div className="space-y-6">
             {/* Recent Stories */}
@@ -258,20 +257,20 @@ const DashboardPage: React.FC = () => {
                 <h2 className="title-card">
                   📚 Recent Stories
                 </h2>
-                <Link 
+                <Link
                   to="/stories"
                   className="btn btn-primary btn-sm"
                 >
                   View All →
                 </Link>
               </div>
-              
+
               <div className="space-y-3">
                 {loading ? (
                   // Loading skeleton
                   Array.from({ length: 3 }).map((_, index) => (
-                    <div key={index} className="glass-card">
-                      <div className="p-3 space-y-2">
+                    <div key={index} className="p-3 bg-white/5 rounded-lg border border-white/10">
+                      <div className="space-y-2">
                         <div className="h-4 bg-white/20 rounded animate-pulse"></div>
                         <div className="h-3 bg-white/15 rounded animate-pulse w-3/4"></div>
                       </div>
@@ -282,7 +281,7 @@ const DashboardPage: React.FC = () => {
                     <Link
                       key={story.id}
                       to={`/stories/${story.id}`}
-                      className="glass-card hover:bg-white/10 transition-all duration-300 group flex items-center space-x-3"
+                      className="p-3 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 group flex items-center space-x-3"
                     >
                       <div className="w-12 h-12 bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-lg flex items-center justify-center">
                         <Icon name="book" size={20} className="text-amber-400/80" />
@@ -307,12 +306,12 @@ const DashboardPage: React.FC = () => {
 
               {/* Continue Reading Prompt */}
               {recentStories.length > 0 && !recentStories[0].isCompleted && (
-                <div className="alert alert-info mt-4">
+                <div className="mt-4 p-4 bg-blue-500/10 border border-blue-400/20 rounded-lg">
                   <div className="text-center">
                     <p className="text-white text-sm mb-2">
                       📖 Continue "{recentStories[0].title}"
                     </p>
-                    <Link 
+                    <Link
                       to={`/stories/${recentStories[0].id}`}
                       className="btn btn-primary btn-sm"
                     >
@@ -333,7 +332,7 @@ const DashboardPage: React.FC = () => {
                   <Link
                     key={index}
                     to={action.link}
-                    className="glass-card hover:bg-white/10 transition-all duration-300 hover:scale-105 group flex items-center space-x-3"
+                    className="p-3 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 group flex items-center space-x-3"
                   >
                     <div className={`${action.color} rounded-lg p-2 group-hover:scale-110 transition-transform`}>
                       <Icon name={action.icon as any} size={16} className="text-white" />
@@ -352,7 +351,6 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

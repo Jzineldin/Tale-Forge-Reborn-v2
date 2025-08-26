@@ -9,10 +9,16 @@
    BASE STYLES
    ======================================== */
 
-/* Global Background */
-html, body {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-  background-attachment: fixed;
+/* Global Background with Astronaut */
+html,
+body {
+  background-image:
+    url('/images/backgrounds/main-astronaut.png'),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-attachment: fixed, fixed;
+  background-repeat: no-repeat, no-repeat;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -30,18 +36,26 @@ html, body {
 
 /* Mobile optimization for background */
 @media (max-width: 768px) {
-  html, body {
-    background-attachment: scroll; /* Fixed backgrounds can cause performance issues on mobile */
+
+  html,
+  body {
+    background-attachment: scroll, scroll;
+    /* Fixed backgrounds can cause performance issues on mobile */
+    background-size: cover, cover;
+    /* Ensure both backgrounds remain properly sized */
   }
 }
 
 /* Override Tailwind background utilities that might interfere */
-.bg-gray-50, .bg-white, .bg-gray-100 {
+.bg-gray-50,
+.bg-white,
+.bg-gray-100 {
   background: transparent !important;
 }
 
 /* Ensure main content areas don't override background */
-main, .main-content {
+main,
+.main-content {
   background: transparent !important;
 }
 
@@ -60,37 +74,37 @@ main, .main-content {
   --color-primary-hover: #d97706;
   --color-primary-active: #b45309;
   --color-primary-dark: #92400e;
-  
+
   /* Background Colors - Dark Theme */
   --color-bg-primary: #0f172a;
   --color-bg-secondary: #1e293b;
   --color-bg-tertiary: #334155;
   --color-bg-card: rgba(30, 41, 59, 0.5);
   --color-bg-card-hover: rgba(30, 41, 59, 0.7);
-  
+
   /* Text Colors */
   --color-text-primary: #ffffff;
   --color-text-secondary: #e2e8f0;
   --color-text-muted: #94a3b8;
   --color-text-dark: #0f172a;
-  
+
   /* Glass Effects */
   --glass-bg: rgba(15, 23, 42, 0.4);
   --glass-bg-hover: rgba(15, 23, 42, 0.6);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-blur: 10px;
-  
+
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.1);
   --border-default: rgba(255, 255, 255, 0.2);
   --border-strong: rgba(245, 158, 11, 0.3);
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.25);
   --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.35);
-  
+
   /* Status Colors */
   --color-success: #10b981;
   --color-warning: #f59e0b;
@@ -101,7 +115,7 @@ main, .main-content {
   --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Cinzel', serif;
   --font-mono: 'JetBrains Mono', monospace;
-  
+
   /* Font Sizes */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -114,7 +128,7 @@ main, .main-content {
   --text-5xl: 3rem;
   --text-6xl: 3.75rem;
   --text-7xl: 4.5rem;
-  
+
   /* Line Heights */
   --leading-tight: 1.25;
   --leading-normal: 1.5;
@@ -128,7 +142,7 @@ main, .main-content {
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --space-3xl: 4rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
@@ -136,13 +150,13 @@ main, .main-content {
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
-  
+
   /* Transitions */
   --transition-fast: 150ms;
   --transition-base: 200ms;
   --transition-slow: 300ms;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Z-index */
   --z-dropdown: 10;
   --z-sticky: 20;
@@ -152,10 +166,28 @@ main, .main-content {
   --z-tooltip: 60;
 }
 
-/* Optional astronaut background for special pages */
+/* Optional specific background classes for special sections */
 .astronaut-bg {
-  background-image: 
+  background-image:
     url('/images/backgrounds/main-astronaut.png'),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.nebula-bg {
+  background-image:
+    url('/images/backgrounds/magical-space-nebula-2.png'),
+    linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.cosmic-bg {
+  background-image:
+    url('/images/backgrounds/cosmic-core.png'),
     linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   background-size: cover;
   background-position: center;
@@ -189,7 +221,7 @@ main, .main-content {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 /* Section Title */
@@ -199,6 +231,7 @@ main, .main-content {
   font-weight: 700;
   line-height: 1.2;
   color: var(--color-text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Card Title */
@@ -208,14 +241,35 @@ main, .main-content {
   font-weight: 600;
   line-height: 1.3;
   color: var(--color-text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Body Text */
 .text-body {
   font-family: var(--font-primary);
   font-size: 1rem;
-  line-height: 1.6;
-  color: var(--color-text-secondary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Fantasy Heading - Main display font for titles */
+.fantasy-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Global text shadow for better readability */
+.text-white,
+.text-white\\/90,
+.text-white\\/80,
+.text-white\\/70 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* ========================================
@@ -250,12 +304,11 @@ main, .main-content {
 
 .btn-primary:hover {
   background: linear-gradient(135deg, #d97706, #b45309);
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  opacity: 0.9;
 }
 
 /* Secondary Button - Glass */
@@ -270,7 +323,6 @@ main, .main-content {
 .btn-secondary:hover {
   background: var(--glass-bg-hover);
   border-color: var(--border-default);
-  transform: translateY(-1px);
 }
 
 /* Ghost Button */
@@ -286,9 +338,20 @@ main, .main-content {
 }
 
 /* Button Sizes */
-.btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
-.btn-lg { padding: 1rem 2rem; font-size: 1.125rem; }
-.btn-xl { padding: 1.25rem 2.5rem; font-size: 1.25rem; }
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+.btn-xl {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.25rem;
+}
 
 /* ========================================
    GLASS MORPHISM
@@ -303,20 +366,47 @@ main, .main-content {
 }
 
 .glass-card {
-  background: var(--color-bg-card);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-2xl);
   padding: 1.5rem;
   transition: all var(--transition-base) var(--ease);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .glass-card:hover {
-  background: var(--color-bg-card-hover);
-  border-color: var(--border-default);
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.glass-enhanced {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  transition: all var(--transition-base) var(--ease);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-enhanced:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Navigation specific glass style - no hover transforms */
+.nav-glass {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.1);
 }
 
 .glass-panel {
@@ -394,29 +484,64 @@ main, .main-content {
    ======================================== */
 
 /* Text Shadows */
-.text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); }
-.text-shadow-sm { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); }
-.text-shadow-lg { text-shadow: 0 4px 8px rgba(0, 0, 0, 0.35); }
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+}
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.animate-fadeIn { animation: fadeIn 0.5s ease-out; }
-.animate-slideUp { animation: slideUp 0.5s ease-out; }
-.animate-pulse { animation: pulse 2s infinite; }
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
 
 /* ========================================
    PAGE LAYOUTS
@@ -1080,29 +1205,70 @@ main, .main-content {
   justify-content: center;
 }
 
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
 
 /* ========================================
    SPACING UTILITIES
    ======================================== */
 
-.space-y-sm > * + * { margin-top: 0.5rem; }
-.space-y-md > * + * { margin-top: 1rem; }
-.space-y-lg > * + * { margin-top: 1.5rem; }
-.space-y-xl > * + * { margin-top: 2rem; }
+.space-y-sm>*+* {
+  margin-top: 0.5rem;
+}
 
-.gap-sm { gap: 0.5rem; }
-.gap-md { gap: 1rem; }
-.gap-lg { gap: 1.5rem; }
-.gap-xl { gap: 2rem; }
+.space-y-md>*+* {
+  margin-top: 1rem;
+}
+
+.space-y-lg>*+* {
+  margin-top: 1.5rem;
+}
+
+.space-y-xl>*+* {
+  margin-top: 2rem;
+}
+
+.gap-sm {
+  gap: 0.5rem;
+}
+
+.gap-md {
+  gap: 1rem;
+}
+
+.gap-lg {
+  gap: 1.5rem;
+}
+
+.gap-xl {
+  gap: 2rem;
+}
 
 /* Consolidated spacing patterns */
-.p-content { padding: 1.5rem; }
-.p-section { padding: 3rem 1rem; }
-.mb-section { margin-bottom: 3rem; }
-.gap-content { gap: 1.5rem; }
+.p-content {
+  padding: 1.5rem;
+}
+
+.p-section {
+  padding: 3rem 1rem;
+}
+
+.mb-section {
+  margin-bottom: 3rem;
+}
+
+.gap-content {
+  gap: 1.5rem;
+}
 
 /* ========================================
    STORY CARD COMPONENTS
@@ -1234,44 +1400,52 @@ main, .main-content {
   .dashboard-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
-  
+
   .template-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  .container { padding: 0 0.75rem; }
-  .title-hero { font-size: clamp(2rem, 6vw, 3rem); }
-  .title-section { font-size: clamp(1.5rem, 3vw, 2rem); }
-  
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .title-hero {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+
+  .title-section {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
   .dashboard-grid,
   .template-grid,
   .completion-stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .nav-links {
     display: none;
   }
-  
+
   .story-choice-container {
     flex-direction: column;
   }
-  
+
   .modal-content {
     max-width: 100%;
     margin: 1rem;
   }
-  
+
   .auth-card {
     padding: 1.5rem;
   }
-  
+
   .story-segment {
     padding: 1.5rem;
   }
-  
+
   .page-hero {
     padding: 2rem 1rem;
   }
@@ -1282,16 +1456,16 @@ main, .main-content {
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   .btn-xl {
     padding: 1rem 2rem;
     font-size: 1.125rem;
   }
-  
+
   .table-container {
     font-size: 0.875rem;
   }
-  
+
   .metric-value {
     font-size: 2rem;
   }

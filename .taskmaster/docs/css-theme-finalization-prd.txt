@@ -1,0 +1,110 @@
+# Tale-Forge CSS Theme Finalization & Story Selection Enhancement PRD
+
+## Project Overview
+Complete the CSS theme implementation across the entire Tale-Forge website and finalize the new 3-choice story selection feature with proper background integration.
+
+## Current State
+- New CSS theme has been created and is currently in use
+- 3-choice story selection feature has been implemented
+- HomePage container class has been updated for consistency
+- Background images are available: main-astronaut.png, magical-space-nebula-2.png, etc.
+
+## Key Requirements
+
+### 1. CSS Theme Consistency Implementation
+**Objective**: Ensure the new CSS theme is applied consistently across all pages and components
+
+**Requirements**:
+- Audit all pages and components for CSS theme consistency
+- Update components that don't match the current theme
+- Standardize container classes (container vs container-lg usage)
+- Ensure proper spacing, typography, and color scheme consistency
+- Verify responsive design works across all breakpoints
+
+**Acceptance Criteria**:
+- All pages use consistent CSS classes and styling
+- No visual inconsistencies between different sections of the website
+- All components follow the established design system
+- Mobile and desktop layouts are consistent
+
+### 2. Background Image Integration
+**Objective**: Implement consistent background imagery across the website
+
+**Requirements**:
+- Set main-astronaut.png as the default background across the website
+- Use magical-space-nebula-2.png and other space-themed backgrounds strategically on specific pages/sections
+- Ensure backgrounds don't interfere with content readability
+- Optimize background loading and performance
+- Maintain accessibility standards with proper contrast
+
+**Acceptance Criteria**:
+- main-astronaut.png is the primary background across all main pages
+- Additional themed backgrounds are used appropriately for specific sections
+- All text remains readable over background images
+- Backgrounds are responsive and look good on all screen sizes
+
+### 3. Story Selection Feature Finalization
+**Objective**: Complete and polish the 3-choice story selection functionality
+
+**Requirements**:
+- Ensure the 3-choice story selection works seamlessly
+- Integrate proper styling that matches the overall theme
+- Add appropriate hover states and interactive feedback
+- Implement proper error handling and loading states
+- Connect to the backend story generation system
+- Add proper accessibility features (ARIA labels, keyboard navigation)
+
+**Acceptance Criteria**:
+- Users can select from 3 story options without issues
+- Selection interface matches the overall website design
+- Smooth transitions and animations where appropriate
+- Proper feedback for user interactions
+- Feature works on all devices and browsers
+
+### 4. Component Theme Adaptation
+**Objective**: Update any components that don't follow the new CSS theme
+
+**Requirements**:
+- Identify components using outdated styling
+- Update button styles, form elements, cards, and modals
+- Ensure consistent spacing using the design system
+- Update typography to match the theme
+- Verify icon consistency and theming
+
+**Acceptance Criteria**:
+- All components follow the established design patterns
+- No visual outliers or inconsistent elements
+- Proper hover states and interactive feedback
+- Components work seamlessly together
+
+## Technical Specifications
+
+### CSS Architecture
+- Use Tailwind CSS utility classes consistently
+- Leverage custom CSS classes for complex components
+- Maintain the glass-morphism effect and cosmic theme
+- Ensure proper CSS variable usage for theming
+
+### Performance Requirements
+- Background images should be optimized for web
+- CSS should be minified and efficient
+- No layout shifts during loading
+- Smooth animations and transitions
+
+### Browser Support
+- Modern browsers (Chrome, Firefox, Safari, Edge)
+- Mobile Safari and Chrome mobile
+- Responsive design for tablets and phones
+
+## Implementation Priority
+1. CSS theme consistency audit and fixes (High Priority)
+2. Background image integration (High Priority)  
+3. Story selection feature finalization (Medium Priority)
+4. Component theme adaptation (Medium Priority)
+
+## Success Metrics
+- Visual consistency score of 95%+ across all pages
+- No reported UI/UX issues from users
+- All automated tests passing
+- Performance metrics within acceptable ranges
+- Accessibility compliance maintained

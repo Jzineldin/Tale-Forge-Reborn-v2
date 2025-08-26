@@ -89,7 +89,7 @@ const DEFAULT_MORALS = {
  */
 function generateTitle(easyMode: EasyModeData): string {
   if (!easyMode.characterName) return 'An Amazing Adventure';
-  
+
   const genreTitles: Record<string, string[]> = {
     'FANTASY': [
       `${easyMode.characterName} and the Magic Quest`,
@@ -147,14 +147,14 @@ function generateTitle(easyMode: EasyModeData): string {
  */
 function extractTheme(storySeed: string, genre: string): string {
   const backendGenre = GENRE_MAP[genre as keyof typeof GENRE_MAP] || 'adventure';
-  
+
   // Try to extract theme from seed, otherwise use default
   if (storySeed.includes('friend')) return 'friendship and cooperation';
   if (storySeed.includes('magic')) return 'magic and wonder';
   if (storySeed.includes('brave') || storySeed.includes('courage')) return 'bravery and courage';
   if (storySeed.includes('kind') || storySeed.includes('help')) return 'kindness and helping others';
   if (storySeed.includes('learn') || storySeed.includes('discover')) return 'learning and discovery';
-  
+
   return GENRE_THEMES[backendGenre] || 'adventure and growth';
 }
 
@@ -163,7 +163,7 @@ function extractTheme(storySeed: string, genre: string): string {
  */
 function extractSetting(storySeed: string, genre: string): string {
   const backendGenre = GENRE_MAP[genre as keyof typeof GENRE_MAP] || 'adventure';
-  
+
   // Try to extract setting from seed
   if (storySeed.includes('forest')) return 'An enchanted forest full of wonder';
   if (storySeed.includes('space') || storySeed.includes('planet')) return 'A fascinating space adventure';
@@ -172,7 +172,7 @@ function extractSetting(storySeed: string, genre: string): string {
   if (storySeed.includes('home') || storySeed.includes('house')) return 'A cozy home with hidden secrets';
   if (storySeed.includes('garden')) return 'A beautiful secret garden';
   if (storySeed.includes('kingdom')) return 'A magnificent fairy tale kingdom';
-  
+
   return GENRE_SETTINGS[backendGenre] || 'An exciting place full of possibilities';
 }
 
@@ -187,7 +187,7 @@ function extractConflict(storySeed: string): string {
   if (storySeed.includes('mystery')) return 'A puzzling mystery that needs to be solved';
   if (storySeed.includes('help') || storySeed.includes('save')) return 'Someone or something needs rescue or assistance';
   if (storySeed.includes('find')) return 'An important discovery or quest needs to be completed';
-  
+
   return 'An exciting challenge that needs our hero\'s special talents to overcome';
 }
 
@@ -201,7 +201,7 @@ export function convertToBackendFormat(easyMode: EasyModeData) {
 
   const difficulty = DIFFICULTY_TO_BACKEND[easyMode.difficulty];
   const backendGenre = GENRE_MAP[easyMode.genre as keyof typeof GENRE_MAP];
-  
+
   if (!difficulty || !backendGenre) {
     throw new Error('Invalid difficulty or genre');
   }
@@ -212,7 +212,7 @@ export function convertToBackendFormat(easyMode: EasyModeData) {
     name: easyMode.characterName || 'Hero',
     role: 'protagonist',
     traits: easyMode.characterTraits,
-    description: easyMode.characterTraits.length > 0 
+    description: easyMode.characterTraits.length > 0
       ? `A ${easyMode.characterTraits.join(', ').toLowerCase()} child`
       : 'A brave and curious child'
   };
@@ -221,36 +221,36 @@ export function convertToBackendFormat(easyMode: EasyModeData) {
   const theme = extractTheme(easyMode.storySeed, easyMode.genre);
   const setting = extractSetting(easyMode.storySeed, easyMode.genre);
   const conflict = extractConflict(easyMode.storySeed);
-  
+
   return {
     // Required backend fields
     title: generateTitle(easyMode),
     description: easyMode.storySeed || `An amazing ${backendGenre} adventure for ${easyMode.characterName || 'a special child'}`,
     genre: backendGenre,
     age_group: difficulty.age_group,
-    
+
     // Story configuration
     story_type: difficulty.story_type,
     target_age: difficulty.target_age,
     words_per_chapter: difficulty.words_per_chapter,
-    
+
     // Character data
     child_name: easyMode.characterName || '',
     characters: [mainCharacter],
-    
+
     // Story elements (from AI seed and defaults)
     theme: theme,
     setting: setting,
     conflict: conflict,
     quest: easyMode.storySeed || `Help ${easyMode.characterName || 'our hero'} on an amazing adventure`,
-    
+
     // Additional optional fields
     additional_details: easyMode.storySeed,
     atmosphere: GENRE_ATMOSPHERE[backendGenre] || 'exciting and engaging',
     moral_lesson: DEFAULT_MORALS[difficulty.target_age as keyof typeof DEFAULT_MORALS] || 'Every adventure teaches us something new',
     time_period: 'present day',
     setting_description: setting,
-    
+
     // Feature flags - Easy Mode always includes images and audio
     include_images: true,
     include_audio: true
