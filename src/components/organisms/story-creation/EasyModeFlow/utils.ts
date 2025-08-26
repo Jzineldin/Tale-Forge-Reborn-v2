@@ -223,7 +223,7 @@ export function convertToBackendFormat(easyMode: EasyModeData) {
   const conflict = extractConflict(easyMode.storySeed);
 
   return {
-    // Required backend fields
+    // Required fields matching StoryCreationRequest interface
     title: generateTitle(easyMode),
     description: easyMode.storySeed || `An amazing ${backendGenre} adventure for ${easyMode.characterName || 'a special child'}`,
     genre: backendGenre,
@@ -244,14 +244,14 @@ export function convertToBackendFormat(easyMode: EasyModeData) {
     conflict: conflict,
     quest: easyMode.storySeed || `Help ${easyMode.characterName || 'our hero'} on an amazing adventure`,
 
-    // Additional optional fields
+    // Additional optional fields (matching backend interface)
     additional_details: easyMode.storySeed,
     atmosphere: GENRE_ATMOSPHERE[backendGenre] || 'exciting and engaging',
     moral_lesson: DEFAULT_MORALS[difficulty.target_age as keyof typeof DEFAULT_MORALS] || 'Every adventure teaches us something new',
     time_period: 'present day',
     setting_description: setting,
 
-    // Feature flags - Easy Mode always includes images and audio
+    // Easy Mode specific fields for backend processing
     include_images: true,
     include_audio: true
   };
