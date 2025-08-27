@@ -113,9 +113,9 @@ const getFallbackSeeds = (context: string, difficulty: string, genre: string, ch
   const genreLower = genre.toLowerCase()
   const availableSeeds = fallbackSeeds[genreLower] || fallbackSeeds.fantasy
   
-  // Add randomization - shuffle the seeds and return a random selection
+  // Add randomization - shuffle the seeds and return 3 random seeds
   const shuffled = [...availableSeeds].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, 1) // Return only 1 seed to match "1 seeds" in your log
+  return shuffled.slice(0, 3) // Return 3 seeds
 }
 
 serve(async (req) => {
@@ -220,9 +220,9 @@ serve(async (req) => {
         const randomSeed = Math.random().toString(36).substring(7)
         const timestamp = new Date().getTime()
         
-        const prompt = `You are a creative children's story seed generator. Create exactly 1 completely unique and original story seed for ${context} time.
+        const prompt = `You are a creative children's story seed generator. Create exactly 3 completely unique and original story seeds for ${context} time.
 
-IMPORTANT: Generate a BRAND NEW story concept that hasn't been created before. Be creative and unique!
+IMPORTANT: Generate 3 BRAND NEW story concepts that haven't been created before. Each seed must be completely different from the others. Be creative and unique!
 
 Context: ${contextPrompts[context]}
 Difficulty: ${difficultyPrompts[difficulty]}
@@ -230,7 +230,7 @@ Genre: ${genre}
 Child's name: ${childName}
 Random ID: ${randomSeed}_${timestamp}
 
-For the story seed, provide:
+For each story seed, provide:
 - title: An engaging, unique title that incorporates ${childName}'s name
 - teaser: A 2-3 sentence description that hooks the reader and features ${childName} as the main character
 - hiddenMoral: The life lesson or value taught (not obvious to the child)
@@ -238,12 +238,13 @@ For the story seed, provide:
 - quest: What ${childName} needs to do to resolve the story
 
 Requirements:
-- Make ${childName} the main protagonist 
-- Create a completely original story concept
+- Make ${childName} the main protagonist in all 3 seeds
+- Create 3 completely original story concepts that are different from each other
 - Ensure age-appropriate, inclusive, and positive content
 - Be creative and avoid common tropes
+- Each seed should offer a different type of adventure/challenge
 
-Respond with a valid JSON array containing exactly 1 story seed object.`
+Respond with a valid JSON array containing exactly 3 story seed objects.`
         
         const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -255,7 +256,7 @@ Respond with a valid JSON array containing exactly 1 story seed object.`
             model: 'gpt-4o',
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.9, // Increase randomness
-            max_tokens: 800,
+            max_tokens: 1600, // Increased for 3 seeds instead of 1
             presence_penalty: 0.6, // Encourage new topics
             frequency_penalty: 0.3 // Reduce repetition
           })
@@ -268,11 +269,11 @@ Respond with a valid JSON array containing exactly 1 story seed object.`
           if (content) {
             try {
               const parsedSeeds = JSON.parse(content)
-              if (Array.isArray(parsedSeeds) && parsedSeeds.length === 1) {
+              if (Array.isArray(parsedSeeds) && parsedSeeds.length === 3) {
                 seeds = parsedSeeds
-                console.log('✅ AI generation successful - unique seed created')
+                console.log('✅ AI generation successful - 3 unique seeds created')
               } else {
-                throw new Error('Invalid AI response format - expected 1 seed')
+                throw new Error(`Invalid AI response format - expected 3 seeds, got ${Array.isArray(parsedSeeds) ? parsedSeeds.length : 'not array'}`)
               }
             } catch (parseError) {
               console.log('❌ Failed to parse AI response:', parseError)

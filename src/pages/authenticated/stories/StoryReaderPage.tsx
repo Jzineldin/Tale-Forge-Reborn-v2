@@ -499,7 +499,7 @@ const StoryReaderPage: React.FC = () => {
   })) || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen">
       {/* Clean Header with Navigation */}
       <div className="sticky top-0 z-40 bg-black/20 backdrop-blur-md border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 py-3">
@@ -567,16 +567,37 @@ const StoryReaderPage: React.FC = () => {
             {story.title}
           </h1>
           
-          {/* Progress Bar */}
+          {/* Chapter Navigation */}
           {story.segments && story.segments.length > 0 && (
-            <div className="max-w-2xl mx-auto">
-              <StoryProgress
-                totalSegments={story.segments.length}
-                currentSegmentIndex={currentSegmentIndex}
-                onSegmentClick={handleSegmentClick}
-                isStoryComplete={cleanedSegment?.is_end === true}
-                className="bg-black/30 p-3 rounded-xl border border-white/10"
-              />
+            <div className="flex items-center justify-center gap-4 mb-6">
+              {/* Previous Chapter Button */}
+              <button
+                onClick={() => setCurrentSegmentIndex(Math.max(0, currentSegmentIndex - 1))}
+                disabled={currentSegmentIndex === 0}
+                className="flex items-center gap-2 px-4 py-2 bg-black/30 hover:bg-black/50 rounded-lg text-white/60 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm font-medium">Previous</span>
+              </button>
+              
+              {/* Chapter Counter */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-lg border border-amber-500/30">
+                <BookOpen className="w-4 h-4 text-amber-400" />
+                <span className="text-amber-400 font-medium">Chapter {currentSegmentIndex + 1}</span>
+                {story.segments.length > 1 && (
+                  <span className="text-amber-400/70">of {story.segments.length}</span>
+                )}
+              </div>
+              
+              {/* Next Chapter Button */}
+              <button
+                onClick={() => setCurrentSegmentIndex(Math.min(story.segments.length - 1, currentSegmentIndex + 1))}
+                disabled={currentSegmentIndex === story.segments.length - 1}
+                className="flex items-center gap-2 px-4 py-2 bg-black/30 hover:bg-black/50 rounded-lg text-white/60 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              >
+                <span className="text-sm font-medium">Next</span>
+                <ArrowLeft className="w-4 h-4 rotate-180" />
+              </button>
             </div>
           )}
         </div>
@@ -611,7 +632,7 @@ const StoryReaderPage: React.FC = () => {
         <div className="bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
           {/* Hero Image Section */}
           {cleanedSegment?.image_url ? (
-            <div className="relative h-64 sm:h-80 md:h-96 bg-gradient-to-b from-purple-900/50 to-black/50">
+            <div className="relative h-64 sm:h-80 md:h-96">
               <StoryImage
                 src={cleanedSegment.image_url}
                 alt={`Illustration for chapter ${currentSegmentIndex + 1}`}
@@ -619,7 +640,7 @@ const StoryReaderPage: React.FC = () => {
                 onImageLoad={() => console.log('🖼️ Image loaded')}
                 onImageError={() => console.log('Image failed to load')}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4 right-4">
                 <span className="inline-block px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white/90 text-sm">
                   Chapter {currentSegmentIndex + 1}

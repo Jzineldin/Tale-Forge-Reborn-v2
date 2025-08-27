@@ -78,12 +78,19 @@ const GenreSelector: React.FC<GenreSelectorProps> = ({ selected, onSelect }) => 
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">
-          What kind of story?
+        <h2 className="text-3xl font-bold text-white mb-3 animate-fade-in">
+          🎭 What Adventure Awaits? 🎭
         </h2>
-        <p className="text-gray-400">
-          Choose a genre that matches your child's interests
+        <p className="text-gray-300 text-lg">
+          Pick the perfect genre for your magical story adventure
         </p>
+        {selected && (
+          <div className="mt-3 animate-fade-in">
+            <span className="px-4 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full text-amber-300 text-sm font-medium border border-amber-500/30">
+              ✨ {selected} Adventure Selected!
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -96,7 +103,7 @@ const GenreSelector: React.FC<GenreSelectorProps> = ({ selected, onSelect }) => 
               onClick={() => onSelect(genre.id)}
               className={`
                 relative group text-left transition-all duration-300 transform
-                ${isSelected ? 'scale-105 z-10' : 'hover:scale-102'}
+                ${isSelected ? 'scale-110 z-10 animate-pulse' : 'hover:scale-105 hover:z-20'}
               `}
             >
               <div className={`
@@ -157,10 +164,10 @@ const GenreSelector: React.FC<GenreSelectorProps> = ({ selected, onSelect }) => 
                     ${isSelected ? 'opacity-100' : 'opacity-0'}
                     transition-all duration-300
                   `}>
-                    <div className="w-4 h-4 rounded-full bg-white/30 flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-white" />
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 flex items-center justify-center animate-pulse shadow-lg shadow-amber-500/50">
+                      <span className="text-white text-xs font-bold animate-bounce">✨</span>
                     </div>
-                    <span className="text-sm font-medium text-white/90">Selected</span>
+                    <span className="text-sm font-bold text-white animate-pulse">Adventure Chosen!</span>
                   </div>
                 </div>
 
