@@ -6,71 +6,48 @@ export interface UseStoryPollingOptions {
 }
 
 export const useStoryPolling = ({ story, refetchStory }: UseStoryPollingOptions) => {
-  // Aggressive tab switching fix - multiple event listeners and interval backup
+  // Reasonable polling for story generation updates
   useEffect(() => {
-    let visibilityInterval: NodeJS.Timeout | null = null;
-    let focusInterval: NodeJS.Timeout | null = null;
+    let pollingInterval: NodeJS.Timeout | null = null;
+    let lastRefetch = 0;
 
-    const forceRefreshDuringGeneration = () => {
-      if (story && (!story.segments || story.segments.length === 0)) {
-        console.log('👁️ Forcing story refresh - story still generating');
+    const checkForUpdates = () => {
+      // Only refetch if story is being generated AND we haven't refetched recently
+      const shouldRefetch = story && 
+        (!story.segments || story.segments.length === 0) &&
+        Date.now() - lastRefetch > 3000; // Wait at least 3 seconds between refetches
+
+      if (shouldRefetch) {
+        console.log('📖 Checking for story updates...');
         refetchStory();
+        lastRefetch = Date.now();
       }
     };
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('👁️ Tab became visible');
-        forceRefreshDuringGeneration();
-
-        // Start aggressive polling for a few seconds after becoming visible
-        if (focusInterval) clearInterval(focusInterval);
-        focusInterval = setInterval(forceRefreshDuringGeneration, 1000);
-
-        setTimeout(() => {
-          if (focusInterval) {
-            clearInterval(focusInterval);
-            focusInterval = null;
-          }
-        }, 5000); // Stop aggressive polling after 5 seconds
+        console.log('👁️ Tab became visible - checking for updates');
+        checkForUpdates();
       }
     };
 
-    const handleFocus = () => {
-      console.log('👁️ Window focused');
-      forceRefreshDuringGeneration();
-    };
-
-    const handleMouseEnter = () => {
-      console.log('👁️ Mouse entered window');
-      forceRefreshDuringGeneration();
-    };
-
-    const handleKeyPress = () => {
-      console.log('👁️ Key pressed');
-      forceRefreshDuringGeneration();
-    };
-
-    // Add multiple event listeners
+    // Only add reasonable event listeners
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    document.addEventListener('keydown', handleKeyPress);
 
-    // Set up continuous polling every 2 seconds as backup
-    visibilityInterval = setInterval(forceRefreshDuringGeneration, 2000);
+    // Poll every 10 seconds only when story is being generated
+    const startPolling = () => {
+      if (story && (!story.segments || story.segments.length === 0)) {
+        pollingInterval = setInterval(checkForUpdates, 10000); // Much more reasonable
+      }
+    };
+
+    startPolling();
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      document.removeEventListener('keydown', handleKeyPress);
       
-      if (visibilityInterval) {
-        clearInterval(visibilityInterval);
-      }
-      if (focusInterval) {
-        clearInterval(focusInterval);
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
       }
     };
   }, [story, refetchStory]);

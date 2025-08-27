@@ -38,7 +38,7 @@ const StorySegmentDisplay: React.FC<StorySegmentDisplayProps> = ({
 
       {/* Story Content */}
       <div className="max-w-4xl mx-auto">
-        <div className={`${getFontSizeClass(fontSize)} leading-relaxed text-white/95 text-center space-y-4`}>
+        <div className={`${getFontSizeClass(fontSize)} leading-relaxed text-white text-center space-y-4`}>
           {segment.content?.split('\n\n').map((paragraph: string, index: number) => (
             <TypographyLayout key={index} variant="body" className="text-inherit">
               {paragraph}

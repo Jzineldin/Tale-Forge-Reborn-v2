@@ -230,29 +230,29 @@ export class ImagePromptBuilder implements ImagePromptBuilderService {
     // Art style mapping based on genre and age
     const styleMap: { [key: string]: { [key: string]: string } } = {
       'fantasy': {
-        '4-6': 'watercolor painting, soft pastel colors, whimsical style',
-        '7-9': 'digital illustration, vibrant colors, detailed fantasy art',
-        '10-12': 'digital fantasy art, rich colors, epic illustration style'
+        '4-6': 'modern fantasy illustration, rich colors, magical lighting, detailed digital art, cinematic composition',
+        '7-9': 'epic fantasy artwork, dramatic lighting, vibrant magical colors, professional illustration, detailed environments',
+        '10-12': 'cinematic fantasy art, photorealistic style, epic composition, dramatic lighting, award-winning digital illustration'
       },
       'adventure': {
-        '4-6': 'cartoon illustration, bright cheerful colors, simple shapes',
-        '7-9': 'adventure book illustration, dynamic composition, bold colors',
-        '10-12': 'adventure comic style, detailed artwork, dramatic lighting'
+        '4-6': 'dynamic adventure illustration, bright vibrant colors, modern animation style, engaging characters',
+        '7-9': 'epic adventure artwork, bold saturated colors, cinematic composition, detailed character design, professional illustration',
+        '10-12': 'photorealistic adventure scene, dramatic lighting, detailed environments, movie-quality illustration, award-winning digital art'
       },
       'science fiction': {
-        '4-6': 'cute sci-fi cartoon, pastel space colors, friendly robots',
-        '7-9': 'sci-fi illustration, glowing effects, futuristic style',
-        '10-12': 'detailed sci-fi art, cinematic lighting, space opera style'
+        '4-6': 'modern sci-fi illustration, bright futuristic colors, sleek design, professional digital art',
+        '7-9': 'epic sci-fi artwork, glowing effects, futuristic environments, detailed technology, professional illustration',
+        '10-12': 'cinematic sci-fi scene, photorealistic style, advanced technology, dramatic lighting, movie-quality digital art'
       },
       'mystery': {
-        '4-6': 'gentle mystery illustration, soft shadows, cozy atmosphere',
-        '7-9': 'mystery book illustration, dramatic shadows, intriguing composition',
-        '10-12': 'detective story art, noir influences, atmospheric lighting'
+        '4-6': 'intriguing mystery illustration, atmospheric lighting, modern digital art, engaging composition',
+        '7-9': 'sophisticated mystery artwork, dramatic shadows, professional illustration, detailed environments',
+        '10-12': 'cinematic mystery scene, noir-inspired lighting, photorealistic style, award-winning digital illustration'
       }
     };
     
     return styleMap[genre.toLowerCase()]?.[ageGroup] || 
-           'children\'s book illustration, watercolor style, warm inviting colors';
+           'professional children\'s illustration, modern digital art, vibrant colors, detailed composition';
   }
 
   /**
@@ -305,9 +305,9 @@ export class ImagePromptBuilder implements ImagePromptBuilderService {
     
     // Age-appropriate modifications
     const ageModifiers = {
-      '4-6': 'simple shapes, thick bold lines, very bright happy colors, cute characters',
-      '7-9': 'detailed illustration, vibrant colors, engaging characters, clear composition',
-      '10-12': 'sophisticated artwork, rich detailed colors, complex composition, realistic proportions'
+      '4-6': 'modern illustration style, bright vibrant colors, engaging characters, professional artwork',
+      '7-9': 'detailed digital art, rich saturated colors, dynamic composition, high-quality illustration',
+      '10-12': 'sophisticated artwork, photorealistic details, cinematic composition, award-winning digital illustration'
     };
     
     const ageModifier = ageModifiers[ageGroup as keyof typeof ageModifiers] || ageModifiers['7-9'];
@@ -317,13 +317,13 @@ export class ImagePromptBuilder implements ImagePromptBuilderService {
       basePrompt,
       artStyle,
       ageModifier,
-      'children\'s book illustration, storybook art, picture book style',
-      'high quality, detailed, professional illustration',
-      'warm lighting, inviting atmosphere, child-friendly'
+      'professional illustration, storybook art, modern children\'s book style',
+      '8k resolution, ultra high quality, masterpiece, award-winning artwork',
+      'dramatic lighting, rich colors, cinematic composition, child-friendly'
     ].join(', ');
     
     // Add negative prompt elements inline
-    const negativeElements = 'scary, violent, inappropriate, adult content, ugly, blurry, low quality, distorted, nsfw, dark, frightening';
+    const negativeElements = 'scary, violent, inappropriate, adult content, ugly, blurry, low quality, distorted, nsfw, dark, frightening, amateur, childish cartoon, simplistic, old-fashioned';
     
     return `${finalPrompt}. NEGATIVE: ${negativeElements}`;
   }

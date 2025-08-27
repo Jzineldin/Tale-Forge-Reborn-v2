@@ -168,7 +168,7 @@ const StoryReaderPage: React.FC = () => {
           />
 
           {/* Main Story Content */}
-          <CardLayout className="bg-slate-900/50 backdrop-blur-lg border-white/10">
+          <CardLayout className="bg-slate-900/80 backdrop-blur-lg border-white/20">
             <div className="p-8">
               {currentSegment ? (
                 <StorySegmentDisplay
@@ -194,10 +194,11 @@ const StoryReaderPage: React.FC = () => {
                 <div className="mt-8">
                   <StoryChoices
                     choices={currentSegment.choices}
-                    onChoice={(choiceIndex) => {
+                    onSelect={(choiceId) => {
                       // Handle choice selection logic here
-                      console.log('Choice selected:', choiceIndex);
+                      console.log('Choice selected:', choiceId);
                     }}
+                    segmentCount={story.segments?.length || 0}
                   />
                 </div>
               )}
@@ -225,6 +226,10 @@ const StoryReaderPage: React.FC = () => {
               >
                 Next
               </button>
+            ) : story.status === 'completed' || story.is_completed ? (
+              <div className="px-6 py-3 text-white/60 text-center rounded-lg">
+                Story is complete
+              </div>
             ) : (
               <div className="space-x-4">
                 {!isLastSegment && (
@@ -251,7 +256,7 @@ const StoryReaderPage: React.FC = () => {
           </div>
 
           {/* Story Completion Stats */}
-          {isLastSegment && (
+          {(story.status === 'completed' || story.is_completed) && (
             <CardLayout className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-lg border-purple-500/30">
               <div className="p-6 text-center">
                 <TypographyLayout variant="section" className="text-white text-2xl font-bold mb-4">

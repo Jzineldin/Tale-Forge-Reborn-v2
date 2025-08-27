@@ -110,8 +110,10 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
         </div>
       </div>
 
-      {/* Progress Indicator */}
-      <div className="glass-card mb-8">
+      {/* Main Container - Single glass-card for everything */}
+      <div className="glass-card" style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(10px)' }}>
+        {/* Progress Indicator */}
+        <div className="pb-6 mb-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             {[1, 2, 3].map((stepNum) => (
               <div key={stepNum} className="flex-1 flex items-center">
@@ -168,15 +170,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Step Content - Enhanced container */}
-        <div 
-          className="rounded-3xl p-12 mb-10 shadow-2xl border backdrop-blur-lg relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
-            borderColor: 'rgba(255,255,255,0.25)',
-            boxShadow: '0 32px 64px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)'
-          }}
-        >
+          {/* Step Content */}
+        <div className="px-4">
           {/* Loading Overlay */}
           {isLoading && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -198,7 +193,7 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           )}
 
           {/* Step Components - with relative positioning */}
-          <div className="relative z-10 min-h-[500px]">
+          <div className="relative z-10">
             <div className={`transition-all duration-700 transform ${step === 1 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full absolute inset-0 pointer-events-none'}`}>
               {step === 1 && (
                 <DifficultySelector
@@ -233,8 +228,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
             </div>
           </div>
 
-          {/* Navigation Buttons - Enhanced */}
-          <div className="relative z-10 flex justify-between items-center mt-12 pt-8 border-t border-white/10">
+          {/* Navigation Buttons */}
+          <div className="flex justify-between items-center mt-8 pt-8 border-t border-white/10">
             <button
               onClick={handleBack}
               className="group relative px-8 py-4 rounded-2xl border-2 border-white/20 bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 text-white font-semibold transition-all duration-300 hover:scale-105 hover:border-white/30 disabled:opacity-50"
@@ -293,53 +288,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
             )}
           </div>
         </div>
-
-        {/* Help Text */}
-        <div className="text-center">
-          <div className={`
-            glass-panel inline-flex items-center gap-3 px-6 py-4 transition-all duration-300
-            ${isStepValid() 
-              ? 'border-amber-600/30 bg-gradient-to-r from-amber-600/10 to-orange-600/10' 
-              : 'border-white/10'
-            }
-          `}>
-            <span className="text-2xl">
-              {step === 1 && (isStepValid() ? "✅" : "📚")}
-              {step === 2 && (isStepValid() ? "✅" : "🎭")}
-              {step === 3 && (isStepValid() ? "✅" : "⭐")}
-            </span>
-            <div className="text-left">
-              <div className="text-body font-semibold text-white">
-                {step === 1 && (
-                  isStepValid() 
-                    ? "Perfect! Length selected 🎯" 
-                    : "Choose your story length"
-                )}
-                {step === 2 && (
-                  isStepValid() 
-                    ? "Great genre choice! 🌟" 
-                    : "Pick an exciting genre"
-                )}
-                {step === 3 && (
-                  isStepValid() 
-                    ? "Character ready for adventure! ⚡" 
-                    : "Create your main character"
-                )}
-              </div>
-              <div className="text-sm text-gray-400 mt-1">
-                {step === 1 && "Sets the perfect reading time for your child"}
-                {step === 2 && "Matches your child's interests and imagination"}
-                {step === 3 && "Makes the story uniquely theirs to enjoy"}
-              </div>
-            </div>
-            {isStepValid() && (
-              <div className="ml-2">
-                <span className="text-amber-500 text-lg">⚡</span>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
+    </div>
   );
 };
 

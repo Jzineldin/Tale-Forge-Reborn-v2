@@ -1,5 +1,5 @@
 // Story Seeds Service - Connects to generate-story-seeds edge function
-import { supabase } from '@/lib/supabase';
+import { edgeFunctionsClient } from '@/lib/supabase';
 
 export interface StorySeed {
   title: string;
@@ -43,7 +43,7 @@ export const generateStorySeeds = async ({
     console.log('🌱 Requesting story seeds:', { context, difficulty, genre, childName });
 
     // Add cache-busting parameters to ensure fresh generation
-    const { data, error } = await supabase.functions.invoke('generate-story-seeds', {
+    const { data, error } = await edgeFunctionsClient.functions.invoke('generate-story-seeds', {
       body: {
         context,
         difficulty, 
@@ -58,14 +58,20 @@ export const generateStorySeeds = async ({
       console.error('❌ Error generating story seeds:', error);
       // Don't throw, use fallback instead
       const fallback = getFallbackSeeds(genre);
+      console.log(`📚 Using fallback seeds for ${genre}: ${fallback.length} seeds available`);
       // Shuffle fallback for variety
-      return fallback.sort(() => Math.random() - 0.5).slice(0, 3);
+      const shuffled = [...fallback].sort(() => Math.random() - 0.5).slice(0, 3);
+      console.log(`🔀 Returning ${shuffled.length} shuffled fallback seeds`);
+      return shuffled;
     }
 
     if (!data || !data.success) {
       console.error('❌ Invalid response from story seeds API:', data);
       const fallback = getFallbackSeeds(genre);
-      return fallback.sort(() => Math.random() - 0.5).slice(0, 3);
+      console.log(`📚 Using fallback seeds for ${genre}: ${fallback.length} seeds available`);
+      const shuffled = [...fallback].sort(() => Math.random() - 0.5).slice(0, 3);
+      console.log(`🔀 Returning ${shuffled.length} shuffled fallback seeds`);
+      return shuffled;
     }
 
     console.log('✅ Story seeds generated:', data.seeds.length, 'seeds', 'Using AI:', !data.metadata?.usingFallback);
@@ -142,6 +148,29 @@ const getFallbackSeeds = (genre: string): StorySeed[] => {
         quest: "Help the books find their place and organize the library"
       }
     ],
+    MYSTERY: [
+      {
+        title: "The Case of the Missing Cookies",
+        teaser: "When cookies disappear every night from the kitchen, a young detective must solve the sweetest mystery.",
+        hiddenMoral: "Sometimes the answer is simpler than we think",
+        conflict: "Everyone is a suspect and feelings are getting hurt",
+        quest: "Follow the crumb trail to find the real cookie culprit"
+      },
+      {
+        title: "The Secret of the Singing Garden",
+        teaser: "A mysterious melody echoes through the garden at midnight, leading to an enchanting discovery.",
+        hiddenMoral: "Nature has its own magic if we listen carefully",
+        conflict: "The garden's music is fading and no one knows why",
+        quest: "Uncover the source of the music before it disappears forever"
+      },
+      {
+        title: "The Library's Hidden Door",
+        teaser: "Behind the oldest bookshelf lies a door that only opens for those who truly love stories.",
+        hiddenMoral: "Reading opens doors to endless possibilities",
+        conflict: "The door is closing and the magical library beyond may be lost",
+        quest: "Solve three literary puzzles to keep the door open"
+      }
+    ],
     DEFAULT: [
       {
         title: "The Playground Olympics",
@@ -168,7 +197,16 @@ const getFallbackSeeds = (genre: string): StorySeed[] => {
   };
 
   const genreKey = genre.toUpperCase();
-  return fallbackSeeds[genreKey] || fallbackSeeds.DEFAULT;
+  const seeds = fallbackSeeds[genreKey] || fallbackSeeds.DEFAULT;
+  
+  // Always return an array of 3 seeds, shuffle if needed
+  if (seeds.length < 3) {
+    console.warn(`Only ${seeds.length} fallback seeds for genre ${genreKey}, using defaults to fill`);
+    const combined = [...seeds, ...fallbackSeeds.DEFAULT];
+    return combined.slice(0, 3);
+  }
+  
+  return seeds;
 };
 
 /**

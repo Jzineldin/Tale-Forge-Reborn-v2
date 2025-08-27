@@ -14,10 +14,10 @@
 				"-y",
 				"@supabase/mcp-server-supabase@latest",
 				"--project-ref=fyihypkigbcmsxyvseca",
-				"--access-token=sbp_30bd78e5f26c5130346ed99385aadf574206baf0"
+				"--access-token=${env.SUPABASE_ACCESS_TOKEN}"
 			],
 			"env": {
-				"SUPABASE_ACCESS_TOKEN": "sbp_30bd78e5f26c5130346ed99385aadf574206baf0"
+				"SUPABASE_ACCESS_TOKEN": "${env.SUPABASE_ACCESS_TOKEN}"
 			}
 		},
 		"elevenlabs": {

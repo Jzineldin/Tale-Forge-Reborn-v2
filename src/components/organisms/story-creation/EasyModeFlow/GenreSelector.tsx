@@ -100,7 +100,7 @@ const GenreSelector: React.FC<GenreSelectorProps> = ({ selected, onSelect }) => 
                 p-4 rounded-xl border transition-all duration-200
                 ${isSelected 
                   ? `bg-gradient-to-br ${genre.gradient} border-transparent` 
-                  : 'bg-gray-900/40 border-gray-700 hover:border-gray-600'
+                  : 'bg-gray-900/80 border-gray-600 hover:border-gray-500 hover:bg-gray-800/80'
                 }
               `}>
 

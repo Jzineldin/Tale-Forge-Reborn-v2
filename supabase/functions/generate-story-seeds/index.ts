@@ -1,5 +1,12 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { 
+  GPT4O_OPTIMIZED, 
+  optimizedOpenAICall,
+  createTimer,
+  promptCache,
+  SDXL_OPTIMIZED
+} from '../_shared/ai-optimization-edge.ts'
 
 interface RequestBody {
   context: 'bedtime' | 'learning' | 'playtime'
@@ -202,7 +209,8 @@ serve(async (req) => {
     // Try AI generation first if OpenAI key is available
     if (openaiApiKey) {
       try {
-        console.log('🤖 Attempting AI generation with OpenAI...')
+        const aiTimer = createTimer('story_seed');
+        console.log('🤖 Attempting OPTIMIZED AI generation with OpenAI...')
         
         const contextPrompts = {
           bedtime: 'Create gentle, calming stories perfect for bedtime with soothing adventures',
@@ -216,48 +224,31 @@ serve(async (req) => {
           long: 'rich stories for ages 9-12 with deeper themes'
         }
         
-        // Add randomness to ensure unique generations
-        const randomSeed = Math.random().toString(36).substring(7)
-        const timestamp = new Date().getTime()
-        
-        const prompt = `Create 3 story seeds for ${genre} genre with ${childName} as the hero.
-
-Each seed needs:
-- title: Short title with ${childName}'s name
-- teaser: One sentence story hook
-- hiddenMoral: Life lesson (short)
-- conflict: Main problem (short)
-- quest: Solution action (short)
-
-Return JSON array with 3 objects. Keep all text brief.`
-        
-        const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openaiApiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o',
-            messages: [
-              { 
-                role: 'system', 
-                content: 'You are a creative story seed generator. Always respond with ONLY a valid JSON array, no markdown, no extra text. Each request must produce NEW and UNIQUE story concepts.' 
-              },
-              { role: 'user', content: prompt + '\n\nIMPORTANT: Respond with ONLY the JSON array, no markdown code blocks, no extra text.' }
-            ],
-            temperature: 0.95, // Higher randomness for more variety
-            max_tokens: 1600,
-            presence_penalty: 0.8, // Strong encouragement for new topics
-            frequency_penalty: 0.5, // Reduce repetition even more
-            seed: Math.floor(Math.random() * 1000000) // Random seed for variation
-          })
-        })
-        
-        if (openaiResponse.ok) {
-          const openaiData = await openaiResponse.json()
-          const content = openaiData.choices[0]?.message?.content
+        // Check cache first for performance boost
+        const cacheKey = `seeds:${genre}:${childName}:${context}:${difficulty}`;
+        const cached = promptCache.get(cacheKey);
+        if (cached) {
+          console.log('✨ Cache hit! Returning cached story seeds');
+          seeds = cached;
+          aiTimer.end();
+        } else {
+          // Use optimized prompt structure
+          const optimizedPrompt = GPT4O_OPTIMIZED.prompts.storySeeds({
+            genre,
+            childName
+          });
           
+          console.log('🎯 Using optimized prompt structure...');
+        
+          // Use optimized OpenAI call with better configuration
+          const content = await optimizedOpenAICall(optimizedPrompt, {
+            ...GPT4O_OPTIMIZED.storyConfig,
+            temperature: 0.95, // Higher for variety
+            presence_penalty: 0.8,
+            frequency_penalty: 0.5,
+            seed: Math.floor(Math.random() * 1000000)
+          });
+        
           if (content) {
             try {
               // More robust JSON extraction
@@ -283,28 +274,31 @@ Return JSON array with 3 objects. Keep all text brief.`
               
               if (Array.isArray(parsedSeeds) && parsedSeeds.length >= 3) {
                 seeds = parsedSeeds.slice(0, 3) // Take only first 3 if more
-                console.log('✅ AI generation successful - 3 unique seeds created')
+                
+                // Cache successful results for 5 minutes
+                promptCache.set(cacheKey, seeds, 300);
+                console.log('✅ OPTIMIZED AI generation successful - 3 unique seeds created & cached')
               } else if (Array.isArray(parsedSeeds) && parsedSeeds.length > 0) {
                 // If we got fewer than 3, use what we got
                 seeds = parsedSeeds
-                console.log(`⚠️ AI generated only ${parsedSeeds.length} seeds, using them`)
+                promptCache.set(cacheKey, seeds, 300);
+                console.log(`⚠️ AI generated only ${parsedSeeds.length} seeds, cached anyway`)
               } else {
                 throw new Error(`Invalid AI response format - expected array of seeds`)
               }
             } catch (parseError) {
-              console.log('❌ Failed to parse AI response:', parseError)
+              console.log('❌ Failed to parse OPTIMIZED AI response:', parseError)
               console.log('🔍 Raw AI response (first 500 chars):', content.substring(0, 500))
               console.log('🔍 Raw AI response (last 500 chars):', content.substring(content.length - 500))
               throw parseError
             }
           } else {
-            throw new Error('Empty AI response')
+            throw new Error('Empty optimized AI response')
           }
-        } else {
-          const errorText = await openaiResponse.text()
-          console.log('❌ OpenAI API error:', openaiResponse.status, errorText)
-          throw new Error(`OpenAI API error: ${openaiResponse.status}`)
-        }
+          
+          // End timer for successful generation
+          aiTimer.end();
+        } // End of cache else block
         
       } catch (aiError) {
         console.log('❌ AI generation failed, using fallback:', aiError.message)

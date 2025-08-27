@@ -6,6 +6,7 @@ export class MonitoringService {
   private static instance: MonitoringService;
   private performanceObserver: PerformanceObserver | null = null;
   private vitalsData: Record<string, number> = {};
+  private isInitialized = false;
 
   static getInstance(): MonitoringService {
     if (!MonitoringService.instance) {
@@ -18,6 +19,11 @@ export class MonitoringService {
    * Initialize Sentry for error monitoring
    */
   initSentry() {
+    if (this.isInitialized) {
+      console.log('⚡ Monitoring already initialized - skipping duplicate initialization');
+      return;
+    }
+    
     try {
       Sentry.init({
         dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -63,6 +69,7 @@ export class MonitoringService {
       });
 
       console.log('Sentry initialized successfully');
+      this.isInitialized = true;
     } catch (error) {
       console.error('Failed to initialize Sentry:', error);
     }
@@ -72,6 +79,10 @@ export class MonitoringService {
    * Initialize Core Web Vitals monitoring
    */
   initWebVitals() {
+    if (this.isInitialized) {
+      return;
+    }
+    
     try {
       // Collect Core Web Vitals
       onCLS((metric) => {
@@ -109,6 +120,10 @@ export class MonitoringService {
    * Initialize performance monitoring
    */
   initPerformanceMonitoring() {
+    if (this.isInitialized) {
+      return;
+    }
+    
     try {
       if ('PerformanceObserver' in window) {
         // Monitor long tasks (>50ms)
@@ -129,12 +144,13 @@ export class MonitoringService {
         });
       }
 
+      // DISABLED: Memory monitoring can cause performance issues
       // Monitor memory usage (if available)
-      if ('memory' in performance) {
-        setInterval(() => {
-          this.reportMemoryUsage();
-        }, 30000); // Every 30 seconds
-      }
+      // if ('memory' in performance) {
+      //   setInterval(() => {
+      //     this.reportMemoryUsage();
+      //   }, 30000); // Every 30 seconds
+      // }
 
       console.log('Performance monitoring initialized');
     } catch (error) {
@@ -425,6 +441,8 @@ export class MonitoringService {
         this.performanceObserver.disconnect();
         this.performanceObserver = null;
       }
+      // Reset initialization flag to allow re-initialization if needed
+      this.isInitialized = false;
     } catch (error) {
       console.error('Error during monitoring cleanup:', error);
     }

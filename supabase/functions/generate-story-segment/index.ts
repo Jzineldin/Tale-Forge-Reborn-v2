@@ -94,33 +94,48 @@ serve(async (req) => {
     const aiConfig = { story, prompt, targetAge: story.target_age };
     const aiResponse = await aiProviders.generateStorySegment(prompt, aiConfig);
 
+    // DEBUG: Log AI response details
+    console.log('🔍 AI Response Details:', {
+      provider: aiResponse.provider,
+      segmentTextLength: aiResponse.segmentText?.length || 0,
+      segmentTextPreview: aiResponse.segmentText?.substring(0, 100) || 'NO CONTENT',
+      choicesTextLength: aiResponse.choicesText?.length || 0,
+      choicesPreview: aiResponse.choicesText?.substring(0, 100) || 'NO CHOICES'
+    });
+
     // 6. CHOICE PARSING PHASE - Using ChoiceParserService  
     console.log('🎯 Parsing choices from AI response...');
     
     const choices = await choiceParser.parseChoices(aiResponse.choicesText, aiResponse.segmentText);
 
-    // 7. ENHANCED IMAGE PROMPT GENERATION - With character consistency
+    // 7. ENHANCED IMAGE PROMPT GENERATION - With character consistency  
     console.log('🎨 Generating enhanced intelligent image prompt...');
     
-    // Check if we need character consistency
-    const needsConsistency = characterReferenceManager.needsCharacterConsistency(
-      aiResponse.segmentText, 
-      ''
-    );
-    
-    const imagePrompt = imagePromptBuilder.buildImagePrompt(
-      story, 
-      aiResponse.segmentText, 
-      [previousSegment].filter(Boolean), // Previous segments for context
-      userCharacters // Character consistency
-    );
-    
-    console.log('🎨 Enhanced image prompt generated:', imagePrompt.substring(0, 120) + '...');
-    
-    if (needsConsistency) {
-      console.log('🎯 Character consistency will be applied during image generation');
-      const mainCharacter = characterReferenceManager.extractMainCharacter(aiResponse.segmentText);
-      console.log('👤 Main character detected:', mainCharacter);
+    let imagePrompt = '';
+    try {
+      // Check if we need character consistency
+      const needsConsistency = characterReferenceManager.needsCharacterConsistency(
+        aiResponse.segmentText, 
+        ''
+      );
+      
+      imagePrompt = imagePromptBuilder.buildImagePrompt(
+        story, 
+        aiResponse.segmentText, 
+        [previousSegment].filter(Boolean), // Previous segments for context
+        userCharacters // Character consistency
+      );
+      
+      console.log('🎨 Enhanced image prompt generated:', imagePrompt.substring(0, 120) + '...');
+      
+      if (needsConsistency) {
+        console.log('🎯 Character consistency will be applied during image generation');
+        const mainCharacter = characterReferenceManager.extractMainCharacter(aiResponse.segmentText);
+        console.log('👤 Main character detected:', mainCharacter);
+      }
+    } catch (error) {
+      console.error('❌ Image prompt generation failed:', error);
+      imagePrompt = 'A beautiful children\'s book illustration'; // Fallback
     }
     
     // 8. DATABASE PERSISTENCE PHASE - Using DatabaseService

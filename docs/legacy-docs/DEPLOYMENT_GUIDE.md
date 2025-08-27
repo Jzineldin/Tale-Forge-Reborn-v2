@@ -63,7 +63,7 @@ If you can resolve the Supabase CLI authentication issue:
 
 ```bash
 # Set environment variable
-set SUPABASE_ACCESS_TOKEN=sbp_8ee139e2d600147f4ecf6908a6ce8cce489b3030
+set SUPABASE_ACCESS_TOKEN=YOUR_ACTUAL_ACCESS_TOKEN_HERE
 
 # Link project
 npx supabase link --project-ref fyihypkigbcmsxyvseca

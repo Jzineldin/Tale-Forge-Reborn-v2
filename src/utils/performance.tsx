@@ -148,58 +148,8 @@ export const useStory = (storyId: string | null) => {
       enabled: !!storyId,
       staleTime: 30000, // Cache for 30 seconds to prevent excessive requests
       cacheTime: CACHE_TTL.LONG,
-      refetchInterval: (data, query) => {
-        // Security: Maximum polling duration - stop after 5 minutes
-        const pollingStartTime = (data as any)?._pollingStartTime || Date.now();
-        const MAX_POLLING_DURATION = 5 * 60 * 1000; // 5 minutes
-        const pollingDuration = Date.now() - pollingStartTime;
-        
-        if (pollingDuration > MAX_POLLING_DURATION) {
-          console.log(`⏰ Polling timeout for story ${data?.id}: exceeded 5 minute limit`);
-          return false;
-        }
-        
-        // Circuit breaker: Stop polling after too many failures
-        const failureCount = (query as any)?.failureCount || 0;
-        if (failureCount >= 3) {
-          console.log(`⚡ Circuit breaker triggered for story ${data?.id}: ${failureCount} failures`);
-          return false;
-        }
-        
-        // Only poll if story is actively being generated
-        if (!data) {
-          return 3000; // Start with 3 second interval
-        }
-        
-        // Store polling start time
-        if (!(data as any)._pollingStartTime) {
-          (data as any)._pollingStartTime = Date.now();
-        }
-        
-        const isStoryGenerating = data.status === 'generating' || (data.segments && data.segments.length === 0);
-        const hasGeneratingImages = data.segments?.some((segment: any) => 
-          segment.image_prompt && !segment.image_url
-        ) || false;
-        
-        // Exponential backoff based on failure count: 3s -> 6s -> 12s -> 24s (max)
-        const baseInterval = isStoryGenerating ? 3000 : 6000;
-        const exponentialInterval = Math.min(
-          baseInterval * Math.pow(2, failureCount), 
-          30000 // Max 30 seconds
-        );
-        
-        if (isStoryGenerating) {
-          console.log(`🔄 Polling story ${data.id}: story generating (${exponentialInterval}ms interval)`);
-          return exponentialInterval;
-        } else if (hasGeneratingImages) {
-          const imageCount = data.segments?.filter((s: any) => s.image_prompt && !s.image_url).length || 0;
-          console.log(`🔄 Polling story ${data.id}: ${imageCount} images generating (${exponentialInterval}ms interval)`);
-          return exponentialInterval;
-        }
-        
-        console.log(`⏹️ Polling complete for story ${data.id}: all content ready`);
-        return false;
-      },
+      // DISABLED: Aggressive polling causing constant refreshes
+      refetchInterval: false, // Completely disable automatic polling
       refetchIntervalInBackground: false, // Disable background polling to reduce load
       refetchOnWindowFocus: false, // Disable aggressive refetch for security
       refetchOnMount: true,
