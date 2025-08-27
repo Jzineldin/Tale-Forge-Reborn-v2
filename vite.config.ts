@@ -12,11 +12,8 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
-    hmr: {
-      port: 3000,
-      host: 'localhost',
-    },
+    port: 3002,
+    hmr: false, // Disable HMR to prevent refresh loops
     proxy: {
       '/api/health': {
         target: 'http://localhost:54321/functions/v1/api-health',
@@ -43,7 +40,7 @@ export default defineConfig({
     },
   },
   preview: {
-    port: 3000,
+    port: 3002,
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' },

@@ -7,6 +7,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.5.0';
 
 // Import refactored services
 import { aiProviders } from './services/ai-providers.ts';
+import { aiProvidersV2 } from './services/ai-providers-v2.ts';
 import { choiceParser } from './services/choice-parser.ts';
 import { database } from './services/database-service.ts';
 import { promptBuilder } from './services/prompt-builder.ts';
@@ -14,6 +15,13 @@ import { validation } from './services/validation-service.ts';
 import { imagePromptBuilder } from './services/image-prompt-builder.ts';
 import { characterReferenceManager } from './services/character-reference-service.ts';
 import { CORS_HEADERS } from './types/interfaces.ts';
+
+// Import V2 migration system
+import { 
+  migrationController, 
+  applyMigrationPreset,
+  MIGRATION_PRESETS
+} from '../_shared/ai-migration-controller.ts';
 
 console.log("Generate Story Segment function started (REFACTORED + 2025 STREAMING)");
 
@@ -24,7 +32,11 @@ serve(async (req) => {
   }
 
   try {
-    console.log('🚀 REFACTORED: Starting story segment generation...');
+    console.log('🚀 REFACTORED V2: Starting story segment generation with migration support...');
+    
+    // Initialize migration controller for development
+    applyMigrationPreset('DEVELOPMENT'); // Force V2 in development, gradual rollout in production
+    console.log('🔄 Migration config:', migrationController.getConfig());
     
     // 1. VALIDATION PHASE - Comprehensive validation using ValidationService
     const validationResult = await validation.validateAllRequirements(req);
@@ -88,15 +100,38 @@ serve(async (req) => {
       
     const prompt = promptBuilder.buildPrompt(story, previousSegment, userChoice, userCharacters, templateContext);
 
-    // 5. AI GENERATION PHASE - Using AIProviderService
-    console.log('🤖 Generating story content with AI providers...');
+    // 5. AI GENERATION PHASE - Using Migration Controller for V1/V2 selection
+    console.log('🤖 Generating story content with V1/V2 migration system...');
     
     const aiConfig = { story, prompt, targetAge: story.target_age };
-    const aiResponse = await aiProviders.generateStorySegment(prompt, aiConfig);
+    
+    // Get user ID for deterministic rollout
+    const userAuth = await validation.validateUserAuth(supabase, authHeader!);
+    const userId = userAuth.userId || 'anonymous';
+    
+    const migrationResult = await migrationController.executeWithMigration(
+      // V1 operation (legacy)
+      async () => {
+        console.log('🔄 V1: Using legacy ai-providers.ts...');
+        return await aiProviders.generateStorySegment(prompt, aiConfig);
+      },
+      // V2 operation (modern Responses API)
+      async () => {
+        console.log('🚀 V2: Using ai-providers-v2.ts with Responses API...');
+        return await aiProvidersV2.generateStorySegment(prompt, aiConfig);
+      },
+      'story_segment',
+      userId
+    );
+    
+    const aiResponse = migrationResult.result;
 
-    // DEBUG: Log AI response details
-    console.log('🔍 AI Response Details:', {
+    // DEBUG: Log AI response details with migration info
+    console.log('🔍 AI Response Details V2:', {
+      version: migrationResult.version,
       provider: aiResponse.provider,
+      duration: migrationResult.duration,
+      hadError: migrationResult.wasError,
       segmentTextLength: aiResponse.segmentText?.length || 0,
       segmentTextPreview: aiResponse.segmentText?.substring(0, 100) || 'NO CONTENT',
       choicesTextLength: aiResponse.choicesText?.length || 0,
@@ -192,16 +227,20 @@ serve(async (req) => {
     }
 
     // 10. ANALYTICS & RESPONSE PHASE
-    console.log(`📈 AI PROVIDER PERFORMANCE METRICS:`);
+    console.log(`📈 AI PROVIDER PERFORMANCE METRICS V2:`);
+    console.log(`   • Version used: ${migrationResult.version.toUpperCase()}`);
     console.log(`   • Provider used: ${aiResponse.provider}`);
-    console.log(`   • Method: SINGLE STRUCTURED JSON CALL`);
-    console.log(`   • API calls made: 1`);
-    console.log(`   • Fallback triggered: ${aiResponse.provider !== 'OpenAI' ? 'YES' : 'NO'}`);
+    console.log(`   • Method: ${migrationResult.version === 'v2' ? 'RESPONSES API + STRUCTURED OUTPUTS' : 'LEGACY CHAT COMPLETIONS'}`);
+    console.log(`   • Duration: ${migrationResult.duration}ms`);
+    console.log(`   • Had error: ${migrationResult.wasError ? 'YES' : 'NO'}`);
+    console.log(`   • Fallback triggered: ${migrationResult.wasError || aiResponse.provider !== 'OpenAI Responses API' ? 'YES' : 'NO'}`);
     console.log(`   • Story text length: ${aiResponse.segmentText.length} characters`);
     console.log(`   • Choices generated: ${choices.length}`);
     
-    if (aiResponse.provider !== 'OpenAI') {
-      console.log(`⚠️ NOTICE: Primary OpenAI provider not used - using ${aiResponse.provider} fallback`);
+    if (migrationResult.version === 'v2') {
+      console.log(`✅ SUCCESS: Using modern GPT-4o Responses API with Structured Outputs`);
+    } else {
+      console.log(`⚠️ FALLBACK: Using legacy Chat Completions API - ${migrationResult.wasError ? 'V2 failed' : 'V1 selected'}`);
     }
 
     // 11. SUCCESS RESPONSE
@@ -210,15 +249,18 @@ serve(async (req) => {
         success: true, 
         segment: newSegment,
         imagePrompt: imagePrompt,
-        message: `Story segment generated successfully using ${aiResponse.provider}`,
-        // AI Provider metrics for monitoring
+        message: `Story segment generated successfully using ${aiResponse.provider} (${migrationResult.version.toUpperCase()})`,
+        // Enhanced AI Provider metrics for migration monitoring
         aiMetrics: {
+          version: migrationResult.version,
           provider: aiResponse.provider,
-          method: 'single_structured_json',
+          method: migrationResult.version === 'v2' ? 'responses_api_structured_outputs' : 'legacy_chat_completions',
           api_calls_made: 1,
-          fallback_triggered: aiResponse.provider !== 'OpenAI',
+          duration_ms: migrationResult.duration,
+          fallback_triggered: migrationResult.wasError,
           story_length: aiResponse.segmentText.length,
-          choices_count: choices.length
+          choices_count: choices.length,
+          migration_success: migrationResult.version === 'v2' && !migrationResult.wasError
         }
       }),
       { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }

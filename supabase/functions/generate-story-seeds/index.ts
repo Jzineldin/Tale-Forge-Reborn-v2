@@ -1,11 +1,27 @@
+// Story Seeds Generation V2 - GPT-4o Responses API with Structured Outputs
+// Modern implementation that guarantees valid JSON and eliminates parsing errors
+
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { 
+  GPT4O_V2_OPTIMIZED, 
+  STORY_SEEDS_SCHEMA,
+  optimizedResponsesAPICall,
+  legacyOpenAICall,
+  createTimerV2,
+  promptCacheV2
+} from '../_shared/ai-optimization-edge-v2.ts'
+import { 
+  migrationController, 
+  applyMigrationPreset
+} from '../_shared/ai-migration-controller.ts'
+
+// Legacy imports for fallback
 import { 
   GPT4O_OPTIMIZED, 
   optimizedOpenAICall,
   createTimer,
-  promptCache,
-  SDXL_OPTIMIZED
+  promptCache
 } from '../_shared/ai-optimization-edge.ts'
 
 interface RequestBody {
@@ -33,71 +49,152 @@ function createCorsResponse(data: any, status = 200) {
   })
 }
 
-// Fallback story seeds - simple one-sentence ideas
+// Enhanced fallback seeds with better variety
 const getFallbackSeeds = (context: string, difficulty: string, genre: string, childName: string = 'the child'): StorySeed[] => {
   const fallbackSeeds: Record<string, StorySeed[]> = {
     fantasy: [
-      {
-        title: "Magic Garden",
-        teaser: `${childName} finds a garden where flowers can talk.`
-      },
-      {
-        title: "Dragon Friend",
-        teaser: `${childName} meets a tiny dragon who loves cookies.`
-      },
-      {
-        title: "Wishing Star",
-        teaser: `${childName} catches a falling star that grants wishes.`
-      },
-      {
-        title: "Rainbow Bridge",
-        teaser: `${childName} discovers a rainbow that leads to a cloud castle.`
-      }
+      { title: "Magic Garden", teaser: `${childName} finds a garden where flowers can talk.` },
+      { title: "Dragon Friend", teaser: `${childName} meets a tiny dragon who loves cookies.` },
+      { title: "Wishing Star", teaser: `${childName} catches a falling star that grants wishes.` },
+      { title: "Rainbow Bridge", teaser: `${childName} discovers a rainbow that leads to a cloud castle.` },
+      { title: "Fairy Door", teaser: `${childName} finds a tiny door that fairies use.` },
+      { title: "Magic Paintbrush", teaser: `${childName} gets a paintbrush that makes drawings real.` }
     ],
     adventure: [
-      {
-        title: "Treasure Hunt",
-        teaser: `${childName} finds a treasure map in the backyard.`
-      },
-      {
-        title: "Rainbow Falls",
-        teaser: `${childName} searches for a magical waterfall.`
-      },
-      {
-        title: "Playground Games",
-        teaser: `${childName} organizes the best playground olympics ever.`
-      },
-      {
-        title: "Secret Cave",
-        teaser: `${childName} discovers a hidden cave full of crystals.`
-      }
+      { title: "Treasure Hunt", teaser: `${childName} finds a treasure map in the backyard.` },
+      { title: "Secret Cave", teaser: `${childName} discovers a hidden cave full of crystals.` },
+      { title: "Mountain Climb", teaser: `${childName} decides to climb the tallest hill.` },
+      { title: "Ocean Quest", teaser: `${childName} builds a raft to explore the pond.` },
+      { title: "Forest Explorer", teaser: `${childName} follows animal tracks into the woods.` },
+      { title: "Sky Adventure", teaser: `${childName} finds a way to touch the clouds.` }
     ],
     mystery: [
-      {
-        title: "Missing Cookies",
-        teaser: `${childName} solves the case of disappearing cookies.`
-      },
-      {
-        title: "Library Mystery",
-        teaser: `${childName} investigates missing library books.`
-      },
-      {
-        title: "Clock Tower Secret",
-        teaser: `${childName} discovers what makes the clock tower chime at midnight.`
-      },
-      {
-        title: "Hidden Room",
-        teaser: `${childName} finds a secret room in the old house.`
-      }
+      { title: "Missing Cookies", teaser: `${childName} solves the case of disappearing cookies.` },
+      { title: "Strange Sounds", teaser: `${childName} investigates mysterious noises at night.` },
+      { title: "Hidden Message", teaser: `${childName} finds a secret code in an old book.` },
+      { title: "Lost Pet Mystery", teaser: `${childName} helps find a neighbor's missing cat.` },
+      { title: "Attic Discovery", teaser: `${childName} explores a dusty attic and finds clues.` },
+      { title: "Library Secret", teaser: `${childName} notices books moving by themselves.` }
+    ],
+    educational: [
+      { title: "Number Detective", teaser: `${childName} uses math to solve puzzles.` },
+      { title: "Science Explorer", teaser: `${childName} discovers how plants grow.` },
+      { title: "Word Collector", teaser: `${childName} goes on a hunt for new words.` },
+      { title: "Animal Facts", teaser: `${childName} learns amazing things about animals.` },
+      { title: "History Hunt", teaser: `${childName} travels back in time to learn.` },
+      { title: "Space Journey", teaser: `${childName} explores planets and stars.` }
+    ],
+    nature: [
+      { title: "Garden Helper", teaser: `${childName} helps tiny creatures in the garden.` },
+      { title: "Tree Climber", teaser: `${childName} makes friends with forest animals.` },
+      { title: "River Adventure", teaser: `${childName} follows a stream to its source.` },
+      { title: "Bug Safari", teaser: `${childName} discovers the amazing world of insects.` },
+      { title: "Weather Watcher", teaser: `${childName} learns to predict the weather.` },
+      { title: "Seed Planter", teaser: `${childName} grows the most beautiful flowers.` }
     ]
   }
   
   const genreLower = genre.toLowerCase()
   const availableSeeds = fallbackSeeds[genreLower] || fallbackSeeds.fantasy
   
-  // Add randomization - shuffle the seeds and return 3 random seeds
-  const shuffled = [...availableSeeds].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, 3) // Return 3 seeds
+  // Enhanced randomization based on context and difficulty
+  let filteredSeeds = [...availableSeeds]
+  
+  if (context === 'bedtime') {
+    // Prefer calming stories for bedtime
+    filteredSeeds = filteredSeeds.filter(seed => 
+      !seed.title.includes('Adventure') && !seed.title.includes('Hunt')
+    )
+  }
+  
+  // Shuffle and return 3 random seeds
+  const shuffled = filteredSeeds.sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, 3)
+}
+
+// V2 AI Generation using Responses API
+async function generateSeedsV2(params: RequestBody): Promise<StorySeed[]> {
+  console.log('🚀 V2: Generating seeds with Responses API + Structured Outputs...')
+  
+  const prompt = GPT4O_V2_OPTIMIZED.prompts.storySeeds({
+    ...params,
+    context: params.context,
+    difficulty: params.difficulty
+  })
+  
+  // Skip cache for seeds to ensure variety (each request gets fresh seeds)
+  const response = await optimizedResponsesAPICall(
+    prompt,
+    STORY_SEEDS_SCHEMA,
+    GPT4O_V2_OPTIMIZED.seedConfig,
+    true // skipCache = true for variety
+  )
+  
+  if (!response.seeds || !Array.isArray(response.seeds)) {
+    throw new Error('Invalid response structure from V2 API')
+  }
+  
+  // Validate each seed
+  const validSeeds = response.seeds.filter(seed => 
+    seed && seed.title && seed.teaser && 
+    seed.title.trim().length > 0 && 
+    seed.teaser.trim().length > 0
+  )
+  
+  if (validSeeds.length < 3) {
+    console.warn(`⚠️ V2 generated only ${validSeeds.length} valid seeds, padding with fallbacks`)
+    const fallbacks = getFallbackSeeds(params.context, params.difficulty, params.genre, params.childName)
+    return [...validSeeds, ...fallbacks.slice(0, 3 - validSeeds.length)]
+  }
+  
+  return validSeeds.slice(0, 3) // Ensure exactly 3 seeds
+}
+
+// V1 AI Generation (legacy fallback)
+async function generateSeedsV1(params: RequestBody): Promise<StorySeed[]> {
+  console.log('🔄 V1: Using legacy Chat Completions API...')
+  
+  const prompt = GPT4O_OPTIMIZED.prompts.storySeeds({
+    genre: params.genre,
+    childName: params.childName
+  })
+  
+  const content = await optimizedOpenAICall(prompt, {
+    ...GPT4O_OPTIMIZED.storyConfig,
+    temperature: 0.95,
+    presence_penalty: 0.8,
+    frequency_penalty: 0.5,
+    max_tokens: 300,
+    seed: Math.floor(Math.random() * 1000000)
+  })
+  
+  if (!content) {
+    throw new Error('Empty response from V1 API')
+  }
+  
+  // Legacy JSON parsing
+  let cleanContent = content.trim()
+  cleanContent = cleanContent.replace(/^```[\w]*\s*/gi, '')
+  cleanContent = cleanContent.replace(/\s*```$/gi, '')
+  cleanContent = cleanContent.replace(/`{3,}/g, '')
+  
+  const startIdx = cleanContent.indexOf('[')
+  const endIdx = cleanContent.lastIndexOf(']')
+  
+  if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+    cleanContent = cleanContent.substring(startIdx, endIdx + 1)
+  }
+  
+  cleanContent = cleanContent.replace(/,\s*([}\]])/g, '$1')
+  cleanContent = cleanContent.replace(/\n\s*/g, ' ')
+  
+  const parsedSeeds = JSON.parse(cleanContent)
+  
+  if (!Array.isArray(parsedSeeds) || parsedSeeds.length === 0) {
+    throw new Error('Invalid V1 response format')
+  }
+  
+  return parsedSeeds.slice(0, 3)
 }
 
 serve(async (req) => {
@@ -107,15 +204,19 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize migration controller with development settings
+    applyMigrationPreset('DEVELOPMENT') // Force V2 in development
+    
     // Environment validation
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
     
-    console.log('🔍 Environment check:', {
+    console.log('🔍 Environment check V2:', {
       hasSupabaseUrl: !!supabaseUrl,
       hasSupabaseKey: !!supabaseServiceKey,
-      hasOpenaiKey: !!openaiApiKey
+      hasOpenaiKey: !!openaiApiKey,
+      migrationConfig: migrationController.getConfig()
     })
     
     if (!supabaseUrl || !supabaseServiceKey) {
@@ -127,9 +228,10 @@ serve(async (req) => {
     }
 
     // Parse and validate request
-    const { context, difficulty, genre, childName }: RequestBody = await req.json()
+    const requestData: RequestBody = await req.json()
+    const { context, difficulty, genre, childName } = requestData
     
-    console.log('📥 Request params:', { context, difficulty, genre, childName })
+    console.log('📥 Request params V2:', { context, difficulty, genre, childName })
     
     if (!context || !difficulty || !genre || !childName) {
       return createCorsResponse({
@@ -166,114 +268,45 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
-    
     const token = authHeader.replace('Bearer ', '')
     const { data: user, error: userError } = await supabase.auth.getUser(token)
     
     if (userError || !user.user) {
-      console.log('🔒 Auth failed:', userError?.message)
+      console.log('🔒 Auth failed V2:', userError?.message)
       // Don't block development - continue with service role
     }
     
     const userId = user.user?.id || 'anonymous'
-    console.log('👤 User ID:', userId)
+    console.log('👤 User ID V2:', userId)
 
     let seeds: StorySeed[] = []
     let usingFallback = false
+    let migrationInfo: any = null
     
-    // Try AI generation first if OpenAI key is available
+    // Try AI generation with migration controller
     if (openaiApiKey) {
       try {
-        const aiTimer = createTimer('story_seed');
-        console.log('🤖 Attempting OPTIMIZED AI generation with OpenAI...')
+        const migrationResult = await migrationController.executeWithMigration(
+          // V1 operation
+          async () => await generateSeedsV1(requestData),
+          // V2 operation  
+          async () => await generateSeedsV2(requestData),
+          'story_seeds',
+          userId
+        )
         
-        const contextPrompts = {
-          bedtime: 'Create gentle, calming stories perfect for bedtime with soothing adventures',
-          learning: 'Create educational stories that teach valuable lessons while being engaging', 
-          playtime: 'Create fun, energetic stories perfect for active imagination and play'
+        seeds = migrationResult.result
+        migrationInfo = {
+          version: migrationResult.version,
+          duration: migrationResult.duration,
+          provider: migrationResult.provider,
+          hadError: migrationResult.wasError
         }
         
-        const difficultyPrompts = {
-          short: 'simple stories for ages 3-5 with basic concepts',
-          medium: 'engaging stories for ages 6-8 with moderate complexity',
-          long: 'rich stories for ages 9-12 with deeper themes'
-        }
-        
-        // Skip caching for seed generation to ensure variety
-        // Each request should generate fresh seeds for better user experience
-        console.log('🎲 Generating fresh seeds (caching disabled for variety)');
-        
-        {
-          // Use optimized prompt structure
-          const optimizedPrompt = GPT4O_OPTIMIZED.prompts.storySeeds({
-            genre,
-            childName
-          });
-          
-          console.log('🎯 Using optimized prompt structure...');
-        
-          // Use optimized OpenAI call with speed-focused configuration
-          const content = await optimizedOpenAICall(optimizedPrompt, {
-            ...GPT4O_OPTIMIZED.storyConfig,
-            temperature: 0.95, // Higher for variety
-            presence_penalty: 0.8,
-            frequency_penalty: 0.5,
-            max_tokens: 300,    // Reduce tokens for faster response
-            seed: Math.floor(Math.random() * 1000000)
-          });
-        
-          if (content) {
-            try {
-              // Enhanced JSON extraction with better markdown handling
-              let cleanContent = content.trim()
-              
-              // Remove all possible markdown code block variations
-              cleanContent = cleanContent.replace(/^```[\w]*\s*/gi, '')  // Opening ```json or ```
-              cleanContent = cleanContent.replace(/\s*```$/gi, '')       // Closing ```
-              cleanContent = cleanContent.replace(/`{3,}/g, '')          // Any triple backticks
-              cleanContent = cleanContent.replace(/^\s*json\s*/gi, '')   // Standalone 'json' lines
-              
-              // Find JSON array boundaries more precisely
-              const startIdx = cleanContent.indexOf('[')
-              const endIdx = cleanContent.lastIndexOf(']')
-              
-              if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
-                cleanContent = cleanContent.substring(startIdx, endIdx + 1)
-              }
-              
-              // Clean up formatting issues
-              cleanContent = cleanContent.replace(/,\s*([}\]])/g, '$1')  // Trailing commas
-              cleanContent = cleanContent.replace(/\n\s*/g, ' ')          // Normalize whitespace
-              
-              // Parse the cleaned JSON
-              const parsedSeeds = JSON.parse(cleanContent)
-              
-              if (Array.isArray(parsedSeeds) && parsedSeeds.length >= 3) {
-                seeds = parsedSeeds.slice(0, 3) // Take only first 3 if more
-                console.log('✅ OPTIMIZED AI generation successful - 3 unique fresh seeds created')
-              } else if (Array.isArray(parsedSeeds) && parsedSeeds.length > 0) {
-                // If we got fewer than 3, use what we got
-                seeds = parsedSeeds
-                console.log(`⚠️ AI generated only ${parsedSeeds.length} fresh seeds`)
-              } else {
-                throw new Error(`Invalid AI response format - expected array of seeds`)
-              }
-            } catch (parseError) {
-              console.log('❌ Failed to parse OPTIMIZED AI response:', parseError)
-              console.log('🔍 Raw AI response (first 500 chars):', content.substring(0, 500))
-              console.log('🔍 Raw AI response (last 500 chars):', content.substring(content.length - 500))
-              throw parseError
-            }
-          } else {
-            throw new Error('Empty optimized AI response')
-          }
-          
-          // End timer for successful generation
-          aiTimer.end();
-        }
+        console.log(`✅ SUCCESS V2: Generated ${seeds.length} seeds using ${migrationResult.version}`)
         
       } catch (aiError) {
-        console.log('❌ AI generation failed, using fallback:', aiError.message)
+        console.log('❌ AI generation failed completely, using fallback:', aiError.message)
         seeds = getFallbackSeeds(context, difficulty, genre, childName)
         usingFallback = true
       }
@@ -285,12 +318,18 @@ serve(async (req) => {
 
     // Ensure we always have seeds
     if (!seeds || seeds.length === 0) {
-      console.log('🔄 No seeds generated, using fallback')
+      console.log('🔄 No seeds generated, using enhanced fallback')
       seeds = getFallbackSeeds(context, difficulty, genre, childName)
       usingFallback = true
     }
     
-    console.log('📋 Final seeds count:', seeds.length, 'Using fallback:', usingFallback)
+    // Validate seed quality
+    seeds = seeds.map(seed => ({
+      title: seed.title?.trim() || 'Untitled Story',
+      teaser: seed.teaser?.trim() || `${childName} goes on an adventure.`
+    }))
+    
+    console.log('📋 Final seeds count V2:', seeds.length, 'Using fallback:', usingFallback)
 
     return createCorsResponse({
       success: true,
@@ -302,20 +341,23 @@ serve(async (req) => {
         childName,
         generatedAt: new Date().toISOString(),
         userId,
-        usingFallback
+        usingFallback,
+        migration: migrationInfo,
+        version: 'v2'
       },
       message: usingFallback 
-        ? 'Story seeds generated using fallback (AI unavailable)'
-        : 'Story seeds generated successfully'
+        ? 'Story seeds generated using enhanced fallback (AI unavailable)'
+        : `Story seeds generated successfully using ${migrationInfo?.version || 'AI'}`
     })
     
   } catch (error) {
-    console.error('❌ Function error:', error)
+    console.error('❌ Function error V2:', error)
     
     return createCorsResponse({
       error: 'Internal server error',
       success: false,
-      message: error.message
+      message: error.message,
+      version: 'v2'
     }, 500)
   }
 })

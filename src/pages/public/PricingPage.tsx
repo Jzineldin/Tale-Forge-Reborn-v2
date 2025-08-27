@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Zap, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { stripeService } from '@/services/stripeService';
 import { supabase } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -34,14 +35,14 @@ const PricingPage: React.FC = () => {
     const originalBackgroundSize = body.style.backgroundSize;
     const originalBackgroundPosition = body.style.backgroundPosition;
     const originalBackgroundRepeat = body.style.backgroundRepeat;
-    
+
     body.style.background = 'none';
     body.style.backgroundImage = 'url(/images/backgrounds/background-image.png)';
     body.style.backgroundAttachment = 'fixed';
     body.style.backgroundSize = 'cover';
     body.style.backgroundPosition = 'center';
     body.style.backgroundRepeat = 'no-repeat';
-    
+
     // Cleanup function to restore original background
     return () => {
       body.style.background = originalBackground;
@@ -139,7 +140,7 @@ const PricingPage: React.FC = () => {
         `${window.location.origin}/payment/success`,
         `${window.location.origin}/pricing`
       );
-      
+
       // Redirect to Stripe checkout
       window.location.href = sessionUrl;
     } catch (error: any) {
@@ -187,7 +188,7 @@ const PricingPage: React.FC = () => {
       {/* Header */}
       <section className="p-section text-center">
         <div className="container-lg">
-          <div className="glass-card">
+          <Card className="glass-card">
             <h1 className="title-hero mb-6">
               Choose Your Plan
             </h1>
@@ -215,7 +216,7 @@ const PricingPage: React.FC = () => {
                 Extra Credits
               </Button>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -231,10 +232,11 @@ const PricingPage: React.FC = () => {
         <>
           <section className="p-section">
             <div className="container-lg">
-              <div className="glass-card">
-                <h3 className="title-section text-center mb-12">How Credits Work</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="title-section text-center mb-12">How Credits Work</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
                       <Zap className="w-8 h-8 text-amber-400" />
@@ -242,7 +244,7 @@ const PricingPage: React.FC = () => {
                     <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
                     <p className="text-body text-slate-300">Includes AI story text + beautiful AI illustration</p>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
                       <CheckCircle className="w-8 h-8 text-green-400" />
@@ -250,7 +252,7 @@ const PricingPage: React.FC = () => {
                     <h4 className="title-card mb-2">Voice Narration</h4>
                     <p className="text-body text-slate-300">1 credit per 100 words of narration</p>
                   </div>
-                  
+
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
                       <CreditCard className="w-8 h-8 text-blue-400" />
@@ -258,96 +260,100 @@ const PricingPage: React.FC = () => {
                     <h4 className="title-card mb-2">Credits Never Expire</h4>
                     <p className="text-body text-slate-300">Use them at your own pace, build your library!</p>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </section>
 
           <section className="p-section">
             <div className="container-lg">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {monthlyPlans.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className={`glass-card relative transition-all duration-300 hover:scale-105 ${pkg.popular ? 'border-amber-400/40 shadow-xl shadow-amber-500/10' : ''
-                    }`}
-                >
-                  {pkg.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-                        MOST POPULAR
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="text-center mb-8">
-                    <h3 className="title-card mb-4">{pkg.name}</h3>
-                    <div className="mb-3">
-                      <span className="text-4xl font-bold text-white">{pkg.displayPrice}</span>
-                    </div>
-                    <div className="mb-3">
-                      <span className="text-3xl font-semibold text-amber-400">{pkg.credits}</span>
-                      <span className="text-body text-slate-300 text-lg"> credits</span>
-                    </div>
-                    {pkg.savings && (
-                      <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
-                        {pkg.savings}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="space-y-4 mb-8">
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">
-                        {pkg.id === 'free' ? '10 chapters (or ~5 with narration)' :
-                          pkg.id === 'starter' ? '100 chapters (or ~50 with narration)' :
-                            '300 chapters (or ~150 with narration)'}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">
-                        {pkg.id === 'free' ? 'Perfect for trying Tale Forge' :
-                          pkg.id === 'starter' ? 'Great for families (10-20 stories)' :
-                            'Ideal for educators (30-60 stories)'}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">
-                        {pkg.id === 'free' ? 'No credit card required' :
-                          'Professional TTS narration available'}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">
-                        {pkg.id === 'free' ? '1 complete story per month' :
-                          pkg.id === 'starter' ? 'Mix chapters & narration freely' :
-                            '10% discount on extra credits'}
-                      </span>
-                    </div>
-                    {pkg.id !== 'free' && (
-                      <div className="flex items-center text-slate-200">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                        <span className="text-body">
-                          {pkg.id === 'starter' ? 'Cancel anytime' : 'Priority support included'}
+                {monthlyPlans.map((pkg) => (
+                  <Card
+                    key={pkg.id}
+                    className={`glass-card relative transition-all duration-300 hover:scale-105 flex flex-col ${pkg.popular ? 'border-amber-400/40 shadow-xl shadow-amber-500/10' : ''
+                      }`}
+                  >
+                    {pkg.popular && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+                          MOST POPULAR
                         </span>
                       </div>
                     )}
-                  </div>
 
-                  <Button
-                    onClick={() => pkg.id === 'free' ? navigate('/signup') : handleSubscriptionClick(pkg.id)}
-                    size="lg"
-                    disabled={loading}
-                    className={`w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    {loading ? 'Processing...' : pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
-                  </Button>
-                </div>
-              ))}
+                    <CardHeader className="text-center">
+                      <CardTitle className="title-card mb-4">{pkg.name}</CardTitle>
+                      <CardDescription>
+                        <div className="mb-3">
+                          <span className="text-4xl font-bold text-white">{pkg.displayPrice}</span>
+                        </div>
+                        <div className="mb-3">
+                          <span className="text-3xl font-semibold text-amber-400">{pkg.credits}</span>
+                          <span className="text-body text-slate-300 text-lg"> credits</span>
+                        </div>
+                        {pkg.savings && (
+                          <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
+                            {pkg.savings}
+                          </span>
+                        )}
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4 mb-auto">
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body">
+                          {pkg.id === 'free' ? '10 chapters (or ~5 with narration)' :
+                            pkg.id === 'starter' ? '100 chapters (or ~50 with narration)' :
+                              '300 chapters (or ~150 with narration)'}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body">
+                          {pkg.id === 'free' ? 'Perfect for trying Tale Forge' :
+                            pkg.id === 'starter' ? 'Great for families (10-20 stories)' :
+                              'Ideal for educators (30-60 stories)'}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body">
+                          {pkg.id === 'free' ? 'No credit card required' :
+                            'Professional TTS narration available'}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body">
+                          {pkg.id === 'free' ? '1 complete story per month' :
+                            pkg.id === 'starter' ? 'Mix chapters & narration freely' :
+                              '10% discount on extra credits'}
+                        </span>
+                      </div>
+                      {pkg.id !== 'free' && (
+                        <div className="flex items-center text-slate-200">
+                          <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                          <span className="text-body">
+                            {pkg.id === 'starter' ? 'Cancel anytime' : 'Priority support included'}
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+
+                    <CardFooter>
+                      <Button
+                        onClick={() => pkg.id === 'free' ? navigate('/signup') : handleSubscriptionClick(pkg.id)}
+                        size="lg"
+                        disabled={loading}
+                        className={`w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {loading ? 'Processing...' : pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
               </div>
             </div>
           </section>
@@ -359,10 +365,11 @@ const PricingPage: React.FC = () => {
         <>
           <section className="p-section">
             <div className="container-lg">
-              <div className="glass-card">
-                <h3 className="title-section text-center mb-12">Need More Credits? Top Up Anytime!</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="title-section text-center mb-12">Need More Credits? Top Up Anytime!</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
                       <Zap className="w-8 h-8 text-amber-400" />
@@ -384,72 +391,76 @@ const PricingPage: React.FC = () => {
                     <h4 className="title-card mb-2">Bulk Savings</h4>
                     <p className="text-body text-slate-300">Save more with larger bundles</p>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </section>
 
           <section className="p-section">
             <div className="container-lg">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {extraCredits.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className={`glass-card relative transition-all duration-300 hover:scale-105 ${pkg.popular ? 'border-amber-400/40 shadow-xl shadow-amber-500/10' : ''
-                    }`}
-                >
-                  {pkg.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                        MOST POPULAR
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="text-center mb-6">
-                    <h3 className="title-card mb-3">{pkg.name}</h3>
-                    <div className="mb-2">
-                      <span className="text-3xl font-bold text-white">{pkg.displayPrice}</span>
-                    </div>
-                    <div className="mb-2">
-                      <span className="text-2xl font-semibold text-amber-400">{pkg.credits}</span>
-                      <span className="text-body text-slate-300 text-lg"> credits</span>
-                    </div>
-                    {pkg.savings && (
-                      <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
-                        {pkg.savings}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body text-sm">
-                        {pkg.credits} chapters (or ~{Math.floor(pkg.credits / 2)} with TTS)
-                      </span>
-                    </div>
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body text-sm">Works with any plan</span>
-                    </div>
-                    <div className="flex items-center text-slate-200">
-                      <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body text-sm">Never expires</span>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => handleCreditPurchase(pkg.id)}
-                    variant="primary"
-                    size="lg"
-                    disabled={loading}
-                    className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
+                {extraCredits.map((pkg) => (
+                  <Card
+                    key={pkg.id}
+                    className={`glass-card relative transition-all duration-300 hover:scale-105 flex flex-col ${pkg.popular ? 'border-amber-400/40 shadow-xl shadow-amber-500/10' : ''
+                      }`}
                   >
-                    {loading ? 'Processing...' : 'Buy Now'}
-                  </Button>
-                </div>
-              ))}
+                    {pkg.popular && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                          MOST POPULAR
+                        </span>
+                      </div>
+                    )}
+
+                    <CardHeader className="text-center">
+                      <CardTitle className="title-card mb-3">{pkg.name}</CardTitle>
+                      <CardDescription>
+                        <div className="mb-2">
+                          <span className="text-3xl font-bold text-white">{pkg.displayPrice}</span>
+                        </div>
+                        <div className="mb-2">
+                          <span className="text-2xl font-semibold text-amber-400">{pkg.credits}</span>
+                          <span className="text-body text-slate-300 text-lg"> credits</span>
+                        </div>
+                        {pkg.savings && (
+                          <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
+                            {pkg.savings}
+                          </span>
+                        )}
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-3 mb-auto">
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body text-sm">
+                          {pkg.credits} chapters (or ~{Math.floor(pkg.credits / 2)} with TTS)
+                        </span>
+                      </div>
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body text-sm">Works with any plan</span>
+                      </div>
+                      <div className="flex items-center text-slate-200">
+                        <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
+                        <span className="text-body text-sm">Never expires</span>
+                      </div>
+                    </CardContent>
+
+                    <CardFooter>
+                      <Button
+                        onClick={() => handleCreditPurchase(pkg.id)}
+                        variant="default"
+                        size="lg"
+                        disabled={loading}
+                        className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {loading ? 'Processing...' : 'Buy Now'}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
               </div>
             </div>
           </section>
@@ -459,17 +470,19 @@ const PricingPage: React.FC = () => {
       {/* Security Notice */}
       <section className="p-section">
         <div className="container-lg">
-          <div className="glass-card text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <CreditCard className="w-6 h-6 text-green-400" />
-              <p className="text-body text-lg text-slate-200">
-                Secure payments powered by <span className="text-white font-semibold">Stripe</span>
+          <Card className="glass-card text-center">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center space-x-3 mb-4">
+                <CreditCard className="w-6 h-6 text-green-400" />
+                <p className="text-body text-lg text-slate-200">
+                  Secure payments powered by <span className="text-white font-semibold">Stripe</span>
+                </p>
+              </div>
+              <p className="text-body text-slate-300">
+                All transactions are encrypted and secure. We never store your payment information.
               </p>
-            </div>
-            <p className="text-body text-slate-300">
-              All transactions are encrypted and secure. We never store your payment information.
-            </p>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </div>
