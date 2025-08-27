@@ -7,12 +7,12 @@ import { AchievementBadge, AchievementCard, AchievementList } from '../../compon
 import { AuthProvider } from '../../providers/AuthContext';
 import { achievementService } from '../../services/achievementService';
 import { goalService } from '../../services/goalService';
-import { creditService } from '../../services/creditService';
+import { creditsService } from '../../services/creditsService';
 
 // Mock services
 vi.mock('../../services/achievementService');
 vi.mock('../../services/goalService');
-vi.mock('../../services/creditService');
+vi.mock('../../services/creditsService');
 vi.mock('react-hot-toast', () => ({
   toast: {
     error: vi.fn(),
@@ -127,13 +127,13 @@ describe('Gamification Integration Tests', () => {
       completion_rate_this_month: 65,
     });
 
-    vi.mocked(creditService.getCreditStats).mockResolvedValue({
+    vi.mocked(creditsService.getCreditStats).mockResolvedValue({
       current_balance: 150,
       total_earned: 300,
       total_spent: 150,
       avg_monthly_earned: 50,
     });
-    vi.mocked(creditService.getCreditHistory).mockResolvedValue([
+    vi.mocked(creditsService.getCreditHistory).mockResolvedValue([
       {
         id: 'transaction-1',
         amount: 10,
@@ -200,11 +200,11 @@ describe('Gamification Integration Tests', () => {
     it('should call credit service methods', async () => {
       const userId = 'test-user-id';
       
-      await creditService.getCreditStats(userId);
-      await creditService.getCreditHistory(userId, 10);
+      await creditsService.getCreditStats(userId);
+      await creditsService.getCreditHistory(userId, 10);
       
-      expect(creditService.getCreditStats).toHaveBeenCalledWith(userId);
-      expect(creditService.getCreditHistory).toHaveBeenCalledWith(userId, 10);
+      expect(creditsService.getCreditStats).toHaveBeenCalledWith(userId);
+      expect(creditsService.getCreditHistory).toHaveBeenCalledWith(userId, 10);
     });
   });
 

@@ -444,6 +444,116 @@ class CreditsService {
       throw error;
     }
   }
+
+  /**
+   * Get credit history for a specific user (for gamification/admin use)
+   */
+  async getCreditHistory(userId: string, limit = 50): Promise<CreditTransaction[]> {
+    try {
+      const { data, error } = await supabase
+        .from('credit_transactions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('CreditsService.getCreditHistory error:', error);
+        throw error;
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('CreditsService.getCreditHistory error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get comprehensive credit statistics for gamification dashboard
+   */
+  async getCreditStats(userId: string): Promise<{
+    total_earned: number;
+    total_spent: number;
+    current_balance: number;
+    transactions_count: number;
+    avg_monthly_earned: number;
+    top_earning_activity: string;
+  }> {
+    try {
+      const [userCredits, transactions] = await Promise.all([
+        this.getUserCreditsById(userId),
+        this.getCreditHistory(userId, 100)
+      ]);
+
+      const earnedTransactions = transactions.filter(t => t.amount > 0);
+      const spentTransactions = transactions.filter(t => t.amount < 0);
+
+      const totalEarned = earnedTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+      const totalSpent = spentTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+      // Calculate top earning activity
+      const activityCounts: Record<string, number> = {};
+      earnedTransactions.forEach(t => {
+        activityCounts[t.transaction_type] = (activityCounts[t.transaction_type] || 0) + t.amount;
+      });
+
+      const topEarningActivity = Object.entries(activityCounts)
+        .sort(([,a], [,b]) => b - a)[0]?.[0] || 'none';
+
+      // Calculate average monthly earned (based on last 30 days)
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const recentEarned = earnedTransactions
+        .filter(t => new Date(t.created_at) >= thirtyDaysAgo)
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        total_earned: totalEarned,
+        total_spent: totalSpent,
+        current_balance: userCredits?.currentBalance || 0,
+        transactions_count: transactions.length,
+        avg_monthly_earned: recentEarned,
+        top_earning_activity: topEarningActivity
+      };
+    } catch (error) {
+      console.error('CreditsService.getCreditStats error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get user credits by ID (for admin/gamification use)
+   */
+  private async getUserCreditsById(userId: string): Promise<UserCredits | null> {
+    try {
+      const { data, error } = await supabase
+        .from('user_credits')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return null; // User doesn't exist
+        }
+        console.error('CreditsService.getUserCreditsById error:', error);
+        throw error;
+      }
+
+      if (!data) return null;
+
+      return {
+        currentBalance: data.credits_balance || 0,
+        totalEarned: data.credits_earned_total || 0,
+        totalSpent: data.credits_used_total || 0,
+        lastTransactionAt: data.last_transaction_at,
+        updatedAt: data.updated_at
+      };
+    } catch (error) {
+      console.error('CreditsService.getUserCreditsById error:', error);
+      throw error;
+    }
+  }
 }
 
 export const creditsService = new CreditsService();

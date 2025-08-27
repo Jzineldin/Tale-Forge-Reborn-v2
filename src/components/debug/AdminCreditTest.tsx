@@ -6,13 +6,15 @@ import Button from '@/components/atoms/Button';
 const AdminCreditTest: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const { 
-    credits, 
-    loading, 
-    error, 
+    balance,
+    balanceLoading: loading, 
+    balanceError: error, 
     spendCredits, 
     canAffordStory,
     processStoryPayment,
-    refreshCredits 
+    refreshBalance: refreshCredits,
+    totalEarned,
+    totalSpent
   } = useCredits();
   
   const [testResults, setTestResults] = useState<string[]>([]);
@@ -33,11 +35,9 @@ const AdminCreditTest: React.FC = () => {
       
       // Test 1: Check initial credits
       await refreshCredits();
-      if (credits) {
-        addTestResult(`Current balance: ${credits.currentBalance} credits`);
-        addTestResult(`Total earned: ${credits.totalEarned} credits`);
-        addTestResult(`Total spent: ${credits.totalSpent} credits`);
-      }
+      addTestResult(`Current balance: ${balance} credits`);
+      addTestResult(`Total earned: ${totalEarned} credits`);
+      addTestResult(`Total spent: ${totalSpent} credits`);
 
       // Test 2: Test unlimited spending (admin should be able to spend even with low balance)
       addTestResult('Testing unlimited credit spending...');
@@ -65,9 +65,7 @@ const AdminCreditTest: React.FC = () => {
 
       // Test 5: Final credit balance check
       await refreshCredits();
-      if (credits) {
-        addTestResult(`Final balance: ${credits.currentBalance} credits`);
-      }
+      addTestResult(`Final balance: ${balance} credits`);
 
       addTestResult('🎉 Admin credit tests completed!');
       
@@ -100,12 +98,12 @@ const AdminCreditTest: React.FC = () => {
           <p className="text-white/80">Is Admin: {isAdmin ? 'Yes' : 'No'}</p>
         </div>
 
-        {credits && !loading && (
+        {!loading && (
           <div className="bg-black/20 border border-white/10 rounded-lg p-4 mb-4">
             <h3 className="text-white font-bold mb-2">Credit Status:</h3>
-            <p className="text-green-400 font-bold">Balance: {credits.currentBalance} credits</p>
-            <p className="text-white/60">Total Earned: {credits.totalEarned}</p>
-            <p className="text-white/60">Total Spent: {credits.totalSpent}</p>
+            <p className="text-green-400 font-bold">Balance: {balance} credits</p>
+            <p className="text-white/60">Total Earned: {totalEarned}</p>
+            <p className="text-white/60">Total Spent: {totalSpent}</p>
           </div>
         )}
 

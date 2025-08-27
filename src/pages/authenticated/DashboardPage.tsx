@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthContext';
 import Icon from '@/components/atoms/Icon';
-import { supabase } from '@/lib/supabase';
+import { useStories } from '@/utils/performance';
 import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const [recentStories, setRecentStories] = useState<any[]>([]);
   const [userStats, setUserStats] = useState({
     storiesCreated: 0,
     storiesRead: 0,
     readingStreak: 0,
     readingTime: 0
   });
-  const [loading, setLoading] = useState(true);
+  
+  // Use React Query hook instead of manual API calls
+  const { data: storiesData, isLoading: loading } = useStories(user?.id || null);
 
   // Handle body background for this page
   useEffect(() => {
@@ -44,68 +45,37 @@ const DashboardPage: React.FC = () => {
     };
   }, []);
 
+  // Process stories data from React Query hook
+  const recentStories = React.useMemo(() => {
+    if (!storiesData || !Array.isArray(storiesData)) return [];
+    
+    // Transform stories to match the expected format
+    return storiesData.slice(0, 4).map(story => ({
+      id: story.id,
+      title: story.title,
+      description: story.description || 'No description available',
+      genre: story.genre || 'fantasy',
+      genreLabel: (story.genre || 'fantasy').charAt(0).toUpperCase() + (story.genre || 'fantasy').slice(1),
+      ageGroup: story.age_group || '7-9',
+      imageUrl: story.imageUrl || '/images/placeholder-story.png',
+      progress: 85, // Could calculate this from reading progress later
+      lastRead: formatTimeAgo(story.updated_at || story.created_at),
+      isCompleted: story.status === 'published'
+    }));
+  }, [storiesData]);
+
+  // Update user stats when stories data changes
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!user) return;
-
-      try {
-        console.log('🏠 Dashboard: Fetching user data');
-
-        // Fetch recent stories
-        const { data: stories, error: storiesError } = await supabase
-          .from('stories')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false })
-          .limit(4);
-
-        if (storiesError) {
-          console.error('Error fetching stories:', storiesError);
-          setRecentStories([]);
-        } else {
-          console.log('📚 Dashboard: Stories loaded -', stories?.length || 0, 'items');
-
-          // Transform stories to match the expected format
-          const transformedStories = stories?.map(story => ({
-            id: story.id,
-            title: story.title,
-            description: story.description || 'No description available',
-            genre: story.genre || 'fantasy',
-            genreLabel: (story.genre || 'fantasy').charAt(0).toUpperCase() + (story.genre || 'fantasy').slice(1),
-            ageGroup: story.target_age || '7-9',
-            imageUrl: story.cover_image_url || story.thumbnail_url || '/images/placeholder-story.png',
-            progress: 85, // Could calculate this from reading progress later
-            lastRead: formatTimeAgo(story.updated_at || story.created_at),
-            isCompleted: story.is_completed || false
-          })) || [];
-
-          setRecentStories(transformedStories);
-        }
-
-        // Fetch user statistics
-        const { count: totalStoriesCreated } = await supabase
-          .from('stories')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id);
-
-        // For now, use basic stats - could be enhanced with reading_progress table later
-        setUserStats({
-          storiesCreated: totalStoriesCreated || 0,
-          storiesRead: Math.floor((totalStoriesCreated || 0) * 1.5), // Estimate
-          readingStreak: 7, // Could track this with login data
-          readingTime: Math.floor((totalStoriesCreated || 0) * 2) // Estimate based on stories
-        });
-
-      } catch (error) {
-        console.error('Unexpected error fetching dashboard data:', error);
-        setRecentStories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, [user]);
+    if (storiesData && Array.isArray(storiesData)) {
+      const totalStoriesCreated = storiesData.length;
+      setUserStats({
+        storiesCreated: totalStoriesCreated,
+        storiesRead: Math.floor(totalStoriesCreated * 1.5), // Estimate
+        readingStreak: 7, // Could track this with login data
+        readingTime: Math.floor(totalStoriesCreated * 2) // Estimate based on stories
+      });
+    }
+  }, [storiesData]);
 
   // Helper function to format time ago
   const formatTimeAgo = (dateString: string) => {

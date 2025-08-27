@@ -21,12 +21,12 @@ const StoryCompletionModal: React.FC<StoryCompletionModalProps> = ({
   chapterCount,
   onAudioPurchased
 }) => {
-  const { credits, refreshCredits } = useCredits();
+  const { balance, refreshBalance } = useCredits();
   const [purchasing, setPurchasing] = useState(false);
   const [showAudioOffer, setShowAudioOffer] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const currentBalance = credits?.currentBalance || 0;
+  const currentBalance = balance || 0;
   const audioInfo = templateCreditsService.calculateStoryAudioCost(originalStoryCost);
 
   const handleAudioPurchase = async () => {
@@ -42,7 +42,7 @@ const StoryCompletionModal: React.FC<StoryCompletionModalProps> = ({
       const result = await templateCreditsService.purchaseStoryAudio(storyId, originalStoryCost);
 
       if (result.success) {
-        await refreshCredits();
+        refreshBalance();
         if (result.audioUrl && onAudioPurchased) {
           onAudioPurchased(result.audioUrl);
         }

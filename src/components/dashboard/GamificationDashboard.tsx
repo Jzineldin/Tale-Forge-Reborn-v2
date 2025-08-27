@@ -19,7 +19,7 @@ import {
 import { useAuth } from '../../providers/AuthContext';
 import { achievementService, AchievementProgress, UserAchievement } from '../../services/achievementService';
 import { goalService, GoalProgress } from '../../services/goalService';
-import { creditService } from '../../services/creditService';
+import { creditsService } from '../../services/creditsService';
 import { AchievementBadge, AchievementCard } from '../gamification';
 import { toast } from 'react-hot-toast';
 import { cn } from '../../lib/utils';
@@ -191,8 +191,8 @@ export const GamificationDashboard: React.FC = () => {
         achievementService.getAvailableAchievements(user.id),
         goalService.getUserGoalsWithProgress(user.id),
         goalService.getGoalStats(user.id),
-        creditService.getCreditStats(user.id),
-        creditService.getCreditHistory(user.id, 10)
+        creditsService.getCreditStats(user.id),
+        creditsService.getCreditHistory(user.id, 10)
       ]);
 
       setRecentAchievements(recentAchievementsData);

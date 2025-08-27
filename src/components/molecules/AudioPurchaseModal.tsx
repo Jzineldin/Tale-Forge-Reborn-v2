@@ -19,12 +19,12 @@ const AudioPurchaseModal: React.FC<AudioPurchaseModalProps> = ({
   chapterCount,
   onPurchaseComplete
 }) => {
-  const { credits, refreshCredits } = useCredits();
+  const { balance, refreshBalance } = useCredits();
   const [purchasing, setPurchasing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const audioData = templateCreditsService.calculateStoryAudioCost(originalStoryCost);
-  const currentBalance = credits?.currentBalance || 0;
+  const currentBalance = balance || 0;
 
   const handlePurchase = async () => {
     try {
@@ -42,7 +42,7 @@ const AudioPurchaseModal: React.FC<AudioPurchaseModalProps> = ({
       );
 
       if (result.success && result.audioUrl) {
-        await refreshCredits();
+        refreshBalance();
         onPurchaseComplete(result.audioUrl);
         onClose();
       } else {
@@ -85,7 +85,7 @@ const AudioPurchaseModal: React.FC<AudioPurchaseModalProps> = ({
                 <p className="text-xs text-white/50">credits</p>
               </div>
               <div className="text-white/40">
-                <span className="text-sm">50% of story cost ({audioData.originalCost} credits)</span>
+                <span className="text-sm">50% of story cost ({originalStoryCost} credits)</span>
               </div>
             </div>
           </div>

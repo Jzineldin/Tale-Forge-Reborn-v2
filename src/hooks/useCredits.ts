@@ -1,12 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
-import { creditsService, UserCredits, CreditTransaction, StoryCost } from '@/services/creditsService';
+// Simplified useCredits - composing focused hooks
+import { useCreditBalance } from './useCreditBalance';
+import { useCreditOperations } from './useCreditOperations';
+import { useStoryCosts } from './useStoryCosts';
+import { useState, useEffect } from 'react';
+import { creditsService, CreditTransaction } from '@/services/creditsService';
 
 export interface UseCreditsReturn {
-  credits: UserCredits | null;
-  transactions: CreditTransaction[];
-  loading: boolean;
-  error: string | null;
-  refreshCredits: () => Promise<void>;
+  // Balance
+  balance: number;
+  balanceLoading: boolean;
+  balanceError: string | null;
+  refreshBalance: () => void;
+  
+  // Operations
   spendCredits: (
     amount: number,
     description: string,
@@ -21,201 +27,91 @@ export interface UseCreditsReturn {
     referenceType?: string,
     metadata?: Record<string, any>
   ) => Promise<boolean>;
-  canAffordStory: (
-    storyType: 'short' | 'medium' | 'long',
-    includeImages?: boolean,
-    includeAudio?: boolean
-  ) => Promise<{ canAfford: boolean; userCredits: number; storyCost: number }>;
   processStoryPayment: (
     storyId: string,
     storyType: 'short' | 'medium' | 'long',
     includeImages?: boolean,
     includeAudio?: boolean
   ) => Promise<boolean>;
+  operationsLoading: boolean;
+  operationsError: string | null;
+  
+  // Costs
   calculateStoryCost: (
     storyType: 'short' | 'medium' | 'long',
     includeImages?: boolean,
     includeAudio?: boolean
-  ) => Promise<StoryCost>;
+  ) => Promise<any>;
+  canAffordStory: (
+    storyType: 'short' | 'medium' | 'long',
+    includeImages?: boolean,
+    includeAudio?: boolean
+  ) => Promise<any>;
+  costsLoading: boolean;
+  costsError: string | null;
+  
+  // Transactions
+  transactions: CreditTransaction[];
+  transactionsLoading: boolean;
+  refreshTransactions: () => void;
+  
+  // Derived values
+  totalEarned: number;
+  totalSpent: number;
 }
 
 export const useCredits = (): UseCreditsReturn => {
-  const [credits, setCredits] = useState<UserCredits | null>(null);
+  const { balance, loading: balanceLoading, error: balanceError, refresh: refreshBalance } = useCreditBalance();
+  const { spendCredits, addCredits, processStoryPayment, isLoading: operationsLoading, error: operationsError } = useCreditOperations();
+  const { calculateCost: calculateStoryCost, checkAffordability: canAffordStory, loading: costsLoading, error: costsError } = useStoryCosts();
+  
+  // Simple transactions state
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
 
-  const fetchCreditsData = async () => {
+  const refreshTransactions = async () => {
+    setTransactionsLoading(true);
     try {
-      setError(null);
-      const [creditsData, transactionsData] = await Promise.all([
-        creditsService.getUserCredits(),
-        creditsService.getCreditTransactions(50, 0)
-      ]);
-      
-      setCredits(creditsData);
-      setTransactions(transactionsData);
-    } catch (err) {
-      console.error('Error fetching credits data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load credits data');
+      const txns = await creditsService.getCreditTransactions(50, 0);
+      setTransactions(txns);
+    } catch (error) {
+      console.error('Failed to load transactions:', error);
+    } finally {
+      setTransactionsLoading(false);
     }
   };
 
-  const refreshCredits = async () => {
-    setLoading(true);
-    await fetchCreditsData();
-    setLoading(false);
-  };
-
-  const spendCredits = useCallback(async (
-    amount: number,
-    description: string,
-    referenceId?: string,
-    referenceType?: string,
-    metadata?: Record<string, any>
-  ): Promise<boolean> => {
-    try {
-      setError(null);
-      const success = await creditsService.spendCredits(
-        amount,
-        description,
-        referenceId,
-        referenceType,
-        metadata
-      );
-      
-      if (success) {
-        // Refresh data after successful spend
-        await fetchCreditsData();
-      }
-      
-      return success;
-    } catch (err) {
-      console.error('Error spending credits:', err);
-      setError(err instanceof Error ? err.message : 'Failed to spend credits');
-      return false;
-    }
-  }, []);
-
-  const addCredits = useCallback(async (
-    amount: number,
-    description: string,
-    referenceId?: string,
-    referenceType?: string,
-    metadata?: Record<string, any>
-  ): Promise<boolean> => {
-    try {
-      setError(null);
-      const success = await creditsService.addCredits(
-        amount,
-        description,
-        referenceId,
-        referenceType,
-        metadata
-      );
-      
-      if (success) {
-        // Refresh data after successful add
-        await fetchCreditsData();
-      }
-      
-      return success;
-    } catch (err) {
-      console.error('Error adding credits:', err);
-      setError(err instanceof Error ? err.message : 'Failed to add credits');
-      return false;
-    }
-  }, []);
-
-  const canAffordStory = useCallback(async (
-    storyType: 'short' | 'medium' | 'long',
-    includeImages = true,
-    includeAudio = true
-  ) => {
-    try {
-      setError(null);
-      return await creditsService.canAffordStory(storyType, includeImages, includeAudio);
-    } catch (err) {
-      console.error('Error checking story affordability:', err);
-      setError(err instanceof Error ? err.message : 'Failed to check story affordability');
-      return { canAfford: false, userCredits: 0, storyCost: 0 };
-    }
-  }, []);
-
-  const processStoryPayment = useCallback(async (
-    storyId: string,
-    storyType: 'short' | 'medium' | 'long',
-    includeImages = true,
-    includeAudio = true
-  ): Promise<boolean> => {
-    try {
-      setError(null);
-      const success = await creditsService.processStoryPayment(
-        storyId,
-        storyType,
-        includeImages,
-        includeAudio
-      );
-      
-      if (success) {
-        // Refresh data after successful payment
-        await fetchCreditsData();
-      }
-      
-      return success;
-    } catch (err) {
-      console.error('Error processing story payment:', err);
-      setError(err instanceof Error ? err.message : 'Failed to process story payment');
-      return false;
-    }
-  }, []);
-
-  const calculateStoryCost = useCallback(async (
-    storyType: 'short' | 'medium' | 'long',
-    includeImages = true,
-    includeAudio = true
-  ): Promise<StoryCost> => {
-    try {
-      setError(null);
-      return await creditsService.calculateStoryCost(storyType, includeImages, includeAudio);
-    } catch (err) {
-      console.error('Error calculating story cost:', err);
-      setError(err instanceof Error ? err.message : 'Failed to calculate story cost');
-      // Return default cost structure
-      return {
-        chapters: 3,
-        storyCost: 3,
-        audioCost: 5,
-        totalCost: 8
-      };
-    }
-  }, []);
-
-  // Initialize credits data
   useEffect(() => {
-    const initializeCredits = async () => {
-      setLoading(true);
-      await fetchCreditsData();
-      setLoading(false);
-    };
-
-    initializeCredits();
+    refreshTransactions();
   }, []);
+
+  // Compute derived values from transactions
+  const totalEarned = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+  const totalSpent = Math.abs(transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0));
 
   return {
-    credits,
-    transactions,
-    loading,
-    error,
-    refreshCredits,
+    balance,
+    balanceLoading,
+    balanceError,
+    refreshBalance,
     spendCredits,
     addCredits,
-    canAffordStory,
     processStoryPayment,
-    calculateStoryCost
+    operationsLoading,
+    operationsError,
+    calculateStoryCost,
+    canAffordStory,
+    costsLoading,
+    costsError,
+    transactions,
+    transactionsLoading,
+    refreshTransactions,
+    totalEarned,
+    totalSpent
   };
 };
 
+// Lightweight hook for basic credit info
 export interface UseCreditSummaryReturn {
   balance: number;
   canCreateShort: boolean;
@@ -226,7 +122,6 @@ export interface UseCreditSummaryReturn {
   refreshSummary: () => Promise<void>;
 }
 
-// Lightweight hook for just getting credit balance and story affordability
 export const useCreditSummary = (): UseCreditSummaryReturn => {
   const [balance, setBalance] = useState(0);
   const [canCreateShort, setCanCreateShort] = useState(false);
@@ -256,13 +151,7 @@ export const useCreditSummary = (): UseCreditSummaryReturn => {
   };
 
   useEffect(() => {
-    const initializeSummary = async () => {
-      setLoading(true);
-      await fetchSummary();
-      setLoading(false);
-    };
-
-    initializeSummary();
+    refreshSummary();
   }, []);
 
   return {

@@ -16,8 +16,8 @@ const difficulties = [
     time: '2-3 minutes',
     description: 'Perfect for bedtime',
     iconComponent: Sparkle,
-    gradient: 'from-green-500 to-emerald-600',
-    shadowColor: 'shadow-green-500/25'
+    gradient: 'from-green-700/60 to-emerald-800/60',
+    shadowColor: 'shadow-green-900/20'
   },
   {
     id: 'medium' as const,
@@ -28,8 +28,8 @@ const difficulties = [
     time: '4-5 minutes',
     description: 'Great for reading practice',
     iconComponent: BookOpen,
-    gradient: 'from-blue-500 to-indigo-600',
-    shadowColor: 'shadow-blue-500/25',
+    gradient: 'from-blue-700/60 to-indigo-800/60',
+    shadowColor: 'shadow-blue-900/20',
     recommended: true
   },
   {
@@ -41,8 +41,8 @@ const difficulties = [
     time: '6-8 minutes',
     description: 'Chapter book style',
     iconComponent: Clock,
-    gradient: 'from-purple-500 to-pink-600',
-    shadowColor: 'shadow-purple-500/25'
+    gradient: 'from-purple-700/60 to-pink-800/60',
+    shadowColor: 'shadow-purple-900/20'
   }
 ];
 
@@ -58,7 +58,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({ selected, onSel
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid gap-6 md:grid-cols-3">
         {difficulties.map((difficulty) => {
           const IconComponent = difficulty.iconComponent;
           const isSelected = selected === difficulty.id;
@@ -68,74 +68,117 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({ selected, onSel
               key={difficulty.id}
               onClick={() => onSelect(difficulty.id)}
               className={`
-                w-full text-left transition-all duration-300 transform
-                ${isSelected ? 'scale-[1.02]' : 'hover:scale-[1.01]'}
+                group relative text-center transition-all duration-300
+                ${isSelected ? 'z-10' : ''}
               `}
             >
+              {/* Recommended Badge */}
+              {difficulty.recommended && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                  <div className={`
+                    px-4 py-1 text-xs font-black rounded-full border-2 shadow-lg
+                    ${isSelected 
+                      ? 'bg-white text-purple-700 border-white' 
+                      : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white border-amber-500'
+                    }
+                  `}>
+                    ⭐ MOST POPULAR
+                  </div>
+                </div>
+              )}
+
               <div className={`
-                relative p-6 rounded-xl border-2 transition-all duration-300
+                relative p-8 rounded-2xl border-3 transition-all duration-500 overflow-hidden
                 ${isSelected 
-                  ? `bg-gradient-to-r ${difficulty.gradient} border-transparent shadow-xl ${difficulty.shadowColor}` 
-                  : 'glass border-white/10 hover:border-white/20 hover:bg-white/5'
+                  ? `bg-gradient-to-br ${difficulty.gradient} border-transparent shadow-2xl ${difficulty.shadowColor} ring-4 ring-white/20` 
+                  : 'bg-gradient-to-br from-white/5 to-white/10 border-white/20 hover:border-white/40 hover:shadow-xl hover:from-white/10 hover:to-white/15'
                 }
               `}>
-                {difficulty.recommended && !isSelected && (
-                  <div className="absolute -top-3 right-4">
-                    <span className="px-3 py-1 text-xs font-bold bg-amber-500 text-white rounded-full">
-                      RECOMMENDED
-                    </span>
+                
+                {/* Animated background effect for selected */}
+                {isSelected && (
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-pulse"></div>
                   </div>
                 )}
 
-                <div className="flex items-start gap-4">
-                  {/* Icon */}
+                {/* Large Icon */}
+                <div className={`
+                  text-6xl mb-4 transition-all duration-300
+                  ${isSelected ? '' : 'group-hover:scale-110'}
+                `}>
+                  {difficulty.icon}
+                </div>
+
+                {/* Title with enhanced visibility */}
+                <h3 className={`
+                  text-2xl font-black mb-3 tracking-wide
+                  ${isSelected ? 'text-white drop-shadow-lg' : 'text-white/95 group-hover:text-white'}
+                `}>
+                  {difficulty.title}
+                </h3>
+                
+                {/* Enhanced stats display */}
+                <div className="space-y-2 mb-4">
                   <div className={`
-                    text-4xl p-3 rounded-lg
-                    ${isSelected ? 'bg-white/20' : 'bg-white/10'}
+                    text-lg font-bold px-4 py-2 rounded-xl
+                    ${isSelected 
+                      ? 'bg-white/20 text-white backdrop-blur-sm' 
+                      : 'bg-white/10 text-white/90 group-hover:bg-white/15'
+                    }
                   `}>
-                    {difficulty.icon}
+                    {difficulty.words}
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className={`
-                          text-xl font-bold mb-2
-                          ${isSelected ? 'text-white' : 'text-white/90'}
-                        `}>
-                          {difficulty.title}
-                        </h3>
-                        
-                        <div className={`
-                          space-y-1 text-sm
-                          ${isSelected ? 'text-white/90' : 'text-gray-400'}
-                        `}>
-                          <p className="font-medium">{difficulty.words} • {difficulty.age}</p>
-                          <p>{difficulty.description} • {difficulty.time}</p>
-                        </div>
-                      </div>
-
-                      {/* Right side icon */}
-                      <IconComponent className={`
-                        w-6 h-6 mt-1
-                        ${isSelected ? 'text-white/80' : 'text-gray-500'}
-                      `} />
-                    </div>
-
-                    {/* Selection indicator */}
-                    <div className={`
-                      mt-3 flex items-center gap-2
-                      ${isSelected ? 'opacity-100' : 'opacity-0'}
-                      transition-opacity duration-300
-                    `}>
-                      <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center">
-                        <div className="w-3 h-3 rounded-full bg-white" />
-                      </div>
-                      <span className="text-sm font-medium text-white/90">Selected</span>
-                    </div>
+                  
+                  <div className={`
+                    text-base font-semibold
+                    ${isSelected ? 'text-white/95' : 'text-amber-400 group-hover:text-amber-300'}
+                  `}>
+                    {difficulty.age}
                   </div>
                 </div>
+
+                {/* Reading time with icon */}
+                <div className={`
+                  flex items-center justify-center gap-2 text-base font-medium mb-4
+                  ${isSelected ? 'text-white/90' : 'text-gray-300 group-hover:text-white/80'}
+                `}>
+                  <IconComponent className="w-5 h-5" />
+                  <span>{difficulty.time}</span>
+                </div>
+
+                {/* Description */}
+                <p className={`
+                  text-sm font-medium italic
+                  ${isSelected ? 'text-white/80' : 'text-gray-400 group-hover:text-gray-300'}
+                `}>
+                  "{difficulty.description}"
+                </p>
+
+                {/* Selection indicator - enhanced */}
+                <div className={`
+                  absolute bottom-4 right-4 transition-all duration-300
+                  ${isSelected ? 'opacity-100 scale-100' : 'opacity-0 scale-50 group-hover:opacity-60 group-hover:scale-75'}
+                `}>
+                  <div className={`
+                    w-8 h-8 rounded-full flex items-center justify-center
+                    ${isSelected 
+                      ? 'bg-white/30 ring-2 ring-white/50' 
+                      : 'bg-white/20 ring-1 ring-white/30'
+                    }
+                  `}>
+                    {isSelected ? (
+                      <span className="text-white font-bold text-lg">✓</span>
+                    ) : (
+                      <div className="w-3 h-3 rounded-full bg-white/60" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Hover glow effect */}
+                {!isSelected && (
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 bg-gradient-to-br from-amber-600/30 to-orange-600/30 transition-opacity duration-300 pointer-events-none"></div>
+                )}
               </div>
             </button>
           );
@@ -143,9 +186,9 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({ selected, onSel
       </div>
 
       {/* Info Box */}
-      <div className="mt-8 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+      <div className="mt-8 p-4 rounded-lg bg-amber-600/10 border border-amber-600/20">
         <div className="flex gap-3">
-          <span className="text-amber-500 text-xl">💡</span>
+          <span className="text-amber-600 text-xl">💡</span>
           <div className="text-sm text-gray-300">
             <p className="font-medium mb-1">Not sure which to choose?</p>
             <p className="text-gray-400">

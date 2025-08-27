@@ -90,8 +90,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
     <div className="page-content">
       {/* Header */}
       <div className="text-center mb-8 relative">
-        <div className="absolute inset-0 flex items-center justify-center opacity-10">
-          <div className="animate-pulse text-9xl">✨</div>
+        <div className="absolute inset-0 flex items-center justify-center opacity-5">
+          <div className="text-9xl">✨</div>
         </div>
         <div className="relative z-10">
           <h1 className="title-hero mb-4 animate-fade-in">
@@ -121,34 +121,28 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
                       w-14 h-14 rounded-full flex items-center justify-center relative
                       font-bold text-lg transition-all duration-500 transform
                       ${step >= stepNum 
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xl shadow-amber-500/30 scale-110' 
+                        ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-xl shadow-amber-600/20 scale-105' 
                         : step === stepNum
-                        ? 'glass-enhanced text-white/80 ring-2 ring-amber-400 ring-opacity-50 animate-pulse'
+                        ? 'glass-enhanced text-white/80 ring-2 ring-amber-500 ring-opacity-50'
                         : 'glass-enhanced text-white/40'
                       }
                     `}
                   >
                     {step > stepNum ? (
-                      <span className="animate-bounce text-xl">✨</span>
+                      <span className="text-xl">✨</span>
                     ) : (
                       <span className="text-lg">{stepNum}</span>
                     )}
                     
-                    {/* Celebration sparkles for completed steps */}
-                    {step > stepNum && (
-                      <div className="absolute inset-0 animate-ping">
-                        <div className="w-full h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500 opacity-20"></div>
-                      </div>
-                    )}
                   </div>
                   
                   <TypographyLayout 
                     variant="body" 
                     className={`mt-3 text-body-sm font-semibold transition-all duration-300 ${
                       step > stepNum 
-                        ? 'text-amber-400' 
+                        ? 'text-amber-500' 
                         : step === stepNum
-                        ? 'text-amber-300 animate-pulse'
+                        ? 'text-amber-400'
                         : 'text-gray-500'
                     }`}
                   >
@@ -157,7 +151,7 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
                       {stepNum === 2 && '🎭 Genre'} 
                       {stepNum === 3 && '⭐ Character'}
                       {step > stepNum && (
-                        <span className="text-xs animate-bounce">✓</span>
+                        <span className="text-xs">✓</span>
                       )}
                     </div>
                   </TypographyLayout>
@@ -165,11 +159,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
                 {stepNum < 3 && (
                   <div className={`
                     flex-1 h-2 mx-4 rounded-full transition-all duration-700 relative overflow-hidden
-                    ${step > stepNum ? 'bg-gradient-to-r from-amber-500 to-orange-500' : 'bg-gray-700'}
+                    ${step > stepNum ? 'bg-gradient-to-r from-amber-600 to-orange-600' : 'bg-gray-700'}
                   `}>
-                    {step > stepNum && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-pulse"></div>
-                    )}
                   </div>
                 )}
               </div>
@@ -177,20 +168,20 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Step Content */}
+        {/* Step Content - Enhanced container */}
         <div 
-          className="rounded-3xl p-8 mb-8 shadow-2xl border backdrop-blur-lg"
+          className="rounded-3xl p-12 mb-10 shadow-2xl border backdrop-blur-lg relative overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
-            borderColor: 'rgba(255,255,255,0.3)',
-            boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
+            borderColor: 'rgba(255,255,255,0.25)',
+            boxShadow: '0 32px 64px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25)'
           }}
         >
           {/* Loading Overlay */}
           {isLoading && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
               <div className="glass-enhanced p-8 flex flex-col items-center gap-4 max-w-md">
-                <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+                <Loader2 className="w-12 h-12 text-amber-600 animate-spin" />
                 <TypographyLayout variant="section" as="h3" align="center">
                   Creating Your Story...
                 </TypographyLayout>
@@ -206,81 +197,98 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
             </div>
           )}
 
-          {/* Step Components */}
-          <div className="min-h-[400px]">
-            {step === 1 && (
-              <DifficultySelector
-                selected={data.difficulty}
-                onSelect={(difficulty) => setData({ ...data, difficulty })}
-              />
-            )}
+          {/* Step Components - with relative positioning */}
+          <div className="relative z-10 min-h-[500px]">
+            <div className={`transition-all duration-700 transform ${step === 1 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full absolute inset-0 pointer-events-none'}`}>
+              {step === 1 && (
+                <DifficultySelector
+                  selected={data.difficulty}
+                  onSelect={(difficulty) => setData({ ...data, difficulty })}
+                />
+              )}
+            </div>
             
-            {step === 2 && (
-              <GenreSelector
-                selected={data.genre}
-                onSelect={(genre) => setData({ ...data, genre })}
-              />
-            )}
+            <div className={`transition-all duration-700 transform ${step === 2 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full absolute inset-0 pointer-events-none'}`}>
+              {step === 2 && (
+                <GenreSelector
+                  selected={data.genre}
+                  onSelect={(genre) => setData({ ...data, genre })}
+                />
+              )}
+            </div>
             
-            {step === 3 && (
-              <CharacterSetup
-                characterName={data.characterName}
-                characterTraits={data.characterTraits}
-                storySeed={data.storySeed}
-                genre={data.genre || ''}
-                difficulty={data.difficulty}
-                onNameChange={(characterName) => setData({ ...data, characterName })}
-                onTraitsChange={(characterTraits) => setData({ ...data, characterTraits })}
-                onSeedChange={(storySeed) => setData({ ...data, storySeed })}
-              />
-            )}
+            <div className={`transition-all duration-700 transform ${step === 3 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full absolute inset-0 pointer-events-none'}`}>
+              {step === 3 && (
+                <CharacterSetup
+                  characterName={data.characterName}
+                  characterTraits={data.characterTraits}
+                  storySeed={data.storySeed}
+                  genre={data.genre || ''}
+                  difficulty={data.difficulty}
+                  onNameChange={(characterName) => setData({ ...data, characterName })}
+                  onTraitsChange={(characterTraits) => setData({ ...data, characterTraits })}
+                  onSeedChange={(storySeed) => setData({ ...data, storySeed })}
+                />
+              )}
+            </div>
           </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8">
+          {/* Navigation Buttons - Enhanced */}
+          <div className="relative z-10 flex justify-between items-center mt-12 pt-8 border-t border-white/10">
             <button
               onClick={handleBack}
-              className="btn btn-secondary group hover:scale-105 transition-transform duration-200"
+              className="group relative px-8 py-4 rounded-2xl border-2 border-white/20 bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 text-white font-semibold transition-all duration-300 hover:scale-105 hover:border-white/30 disabled:opacity-50"
               disabled={isLoading}
             >
-              <span className="group-hover:-translate-x-1 transition-transform duration-200">←</span>
-              <span className="ml-1">
-                {step === 1 ? 'Exit Setup' : 'Previous Step'}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="group-hover:-translate-x-1 transition-transform duration-200 text-xl">←</span>
+                <span>
+                  {step === 1 ? '🚪 Exit Setup' : '↩️ Previous Step'}
+                </span>
+              </div>
             </button>
             
             {step < 3 ? (
               <button
                 onClick={handleNext}
-                className={`btn btn-primary group transition-all duration-300 ${
+                className={`group relative px-10 py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
                   isStepValid() 
-                    ? 'hover:scale-105 shadow-lg shadow-amber-500/25' 
-                    : 'opacity-50 cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-xl shadow-amber-600/20 hover:scale-105 hover:shadow-2xl' 
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
                 }`}
                 disabled={!isStepValid() || isLoading}
               >
-                <span className="mr-1">
-                  {step === 1 && 'Choose Genre'}
-                  {step === 2 && 'Add Character'}
-                </span>
-                <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+                <div className="flex items-center gap-3">
+                  <span>
+                    {step === 1 && '🎭 Choose Genre'}
+                    {step === 2 && '⭐ Add Character'}
+                  </span>
+                  <span className="group-hover:translate-x-1 transition-transform duration-200 text-xl">→</span>
+                </div>
+                
+                {/* Pulse effect for valid state */}
+                {isStepValid() && (
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 opacity-0 group-hover:opacity-15"></div>
+                )}
               </button>
             ) : (
               <button
                 onClick={handleCreateStory}
-                className={`btn btn-primary flex items-center gap-2 group relative overflow-hidden transition-all duration-300 ${
+                className={`group relative px-12 py-5 rounded-2xl font-black text-xl transition-all duration-500 overflow-hidden ${
                   isStepValid() 
-                    ? 'hover:scale-105 shadow-xl shadow-amber-500/30 hover:shadow-2xl' 
-                    : 'opacity-50 cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-purple-700 via-pink-700 to-red-700 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white shadow-2xl shadow-purple-700/20 hover:scale-110 hover:shadow-purple-600/30' 
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
                 }`}
                 disabled={!isStepValid() || isLoading}
               >
                 {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 
-                <Sparkles className="w-5 h-5 group-hover:animate-spin transition-transform duration-300" />
-                <span className="font-semibold">✨ Create My Story!</span>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+                <div className="relative flex items-center gap-3">
+                  <Sparkles className="w-7 h-7 transition-transform duration-300" />
+                  <span>🌟 CREATE MY STORY! 🌟</span>
+                </div>
+
               </button>
             )}
           </div>
@@ -291,13 +299,11 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           <div className={`
             glass-panel inline-flex items-center gap-3 px-6 py-4 transition-all duration-300
             ${isStepValid() 
-              ? 'border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10' 
+              ? 'border-amber-600/30 bg-gradient-to-r from-amber-600/10 to-orange-600/10' 
               : 'border-white/10'
             }
           `}>
-            <span className={`text-2xl transition-transform duration-300 ${
-              isStepValid() ? 'animate-bounce' : ''
-            }`}>
+            <span className="text-2xl">
               {step === 1 && (isStepValid() ? "✅" : "📚")}
               {step === 2 && (isStepValid() ? "✅" : "🎭")}
               {step === 3 && (isStepValid() ? "✅" : "⭐")}
@@ -327,8 +333,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
               </div>
             </div>
             {isStepValid() && (
-              <div className="ml-2 animate-pulse">
-                <span className="text-amber-400 text-lg">⚡</span>
+              <div className="ml-2">
+                <span className="text-amber-500 text-lg">⚡</span>
               </div>
             )}
           </div>
