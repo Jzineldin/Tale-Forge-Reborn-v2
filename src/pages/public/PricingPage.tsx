@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Zap, CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface CreditPackage {
   id: string;
@@ -119,71 +120,79 @@ const PricingPage: React.FC = () => {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-container">
       {/* Header */}
-      <h1 className="title-hero mb-4 text-center">
-        💰 Get Story Credits
-      </h1>
-      <p className="text-body text-lg sm:text-xl max-w-3xl mx-auto text-center mb-12">
-        Purchase credits to create amazing AI-powered stories for your children
-      </p>
+      <section className="p-section text-center">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h1 className="title-hero mb-6">
+              💰 Get Story Credits
+            </h1>
+            <p className="text-body text-xl max-w-3xl mx-auto mb-8 text-slate-200">
+              Purchase credits to create amazing AI-powered stories for your children
+            </p>
 
-      {/* Tab Navigation */}
-      <div className="glass-card p-2 w-fit mx-auto mb-12">
-        <button
-          onClick={() => setActiveTab('packages')}
-          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'packages'
-            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
-            : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
-        >
-          Monthly Plans
-        </button>
-        <button
-          onClick={() => setActiveTab('subscription')}
-          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'subscription'
-            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
-            : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
-        >
-          Extra Credits
-        </button>
-      </div>
+            {/* Tab Navigation */}
+            <div className="glass-card p-2 w-fit mx-auto">
+              <Button
+                onClick={() => setActiveTab('packages')}
+                variant={activeTab === 'packages' ? 'default' : 'ghost'}
+                size="lg"
+              >
+                Monthly Plans
+              </Button>
+              <Button
+                onClick={() => setActiveTab('subscription')}
+                variant={activeTab === 'subscription' ? 'default' : 'ghost'}
+                size="lg"
+              >
+                Extra Credits
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {/* Monthly Plans */}
-        {activeTab === 'packages' && (
-          <>
-            {/* How It Works */}
-            <div className="glass-card mb-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <h3 className="title-section text-center mb-8 md:col-span-3">Simple Credit System</h3>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <Zap className="w-8 h-8 text-amber-400" />
+      {/* Monthly Plans */}
+      {activeTab === 'packages' && (
+        <>
+          <section className="p-section">
+            <div className="container-lg">
+              <div className="glass-card">
+                <h3 className="title-section text-center mb-12">Simple Credit System</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                      <Zap className="w-8 h-8 text-amber-400" />
+                    </div>
+                    <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
+                    <p className="text-body text-slate-300">Includes AI text + beautiful illustration</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-8 h-8 text-green-400" />
+                    </div>
+                    <h4 className="title-card mb-2">Audio Narration</h4>
+                    <p className="text-body text-slate-300">1 credit per 100 words (premium only)</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <CreditCard className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <h4 className="title-card mb-2">Credits Don't Expire</h4>
+                    <p className="text-body text-slate-300">Use at your own pace, whenever you want</p>
+                  </div>
                 </div>
-                <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
-                <p className="text-body">Includes AI text + beautiful illustration</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-green-400" />
-                </div>
-                <h4 className="title-card mb-2">Audio Narration</h4>
-                <p className="text-body">1 credit per 100 words (premium only)</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
-                  <CreditCard className="w-8 h-8 text-blue-400" />
-                </div>
-                <h4 className="title-card mb-2">Credits Don't Expire</h4>
-                <p className="text-body">Use at your own pace, whenever you want</p>
               </div>
             </div>
+          </section>
 
-            {/* Monthly Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <section className="p-section">
+            <div className="container-lg">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {monthlyPlans.map((pkg) => (
                 <div
                   key={pkg.id}
@@ -205,7 +214,7 @@ const PricingPage: React.FC = () => {
                     </div>
                     <div className="mb-3">
                       <span className="text-3xl font-semibold text-amber-400">{pkg.credits}</span>
-                      <span className="text-white/60 text-lg"> credits</span>
+                      <span className="text-body text-slate-300 text-lg"> credits</span>
                     </div>
                     {pkg.savings && (
                       <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
@@ -215,50 +224,47 @@ const PricingPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-4 mb-8">
-                    <div className="flex items-center text-white/90">
+                    <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span>
+                      <span className="text-body">
                         {pkg.id === 'free' ? '10 story chapters' :
                           pkg.id === 'basic' ? '100 story chapters' :
                             '250 story chapters'}
                       </span>
                     </div>
-                    <div className="flex items-center text-white/90">
+                    <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span>
+                      <span className="text-body">
                         {pkg.id === 'free' ? 'No credit card required' :
                           'Professional audio narration'}
                       </span>
                     </div>
-                    <div className="flex items-center text-white/90">
+                    <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span>
+                      <span className="text-body">
                         {pkg.id === 'free' ? 'Try before you buy' :
                           pkg.id === 'basic' ? 'Cancel anytime' :
                             'Save $0.02 per credit'}
                       </span>
                     </div>
                     {pkg.id !== 'free' && (
-                      <div className="flex items-center text-white/90">
+                      <div className="flex items-center text-slate-200">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                        <span>
+                        <span className="text-body">
                           {pkg.id === 'basic' ? 'Perfect for families' : 'Best for educators & heavy users'}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => pkg.id === 'free' ? window.location.href = '/signup' : handlePurchaseClick(pkg.stripeLink)}
-                    className={`btn w-full ${pkg.popular
-                      ? 'btn-primary'
-                      : pkg.id === 'free'
-                        ? 'btn-secondary bg-green-500 hover:bg-green-600 border-green-500'
-                        : 'btn-secondary'
-                      }`}
+                    variant={pkg.popular ? 'default' : 'secondary'}
+                    size="lg"
+                    className="w-full"
                   >
                     {pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>

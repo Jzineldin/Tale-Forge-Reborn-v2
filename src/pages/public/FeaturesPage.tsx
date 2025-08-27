@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 
 const FeaturesPage: React.FC = () => {
   const features = [
@@ -34,38 +35,46 @@ const FeaturesPage: React.FC = () => {
     }
   ];
 
-  return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Refined Floating Elements - Same as HomePage */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/20 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-amber-500/25 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-amber-300/15 rounded-full animate-pulse delay-2000"></div>
-        <div className="absolute top-1/3 right-2/3 w-1 h-1 bg-amber-600/20 rounded-full animate-pulse delay-3000"></div>
-      </div>
+  const benefits = [
+    {
+      title: "Safe & Educational",
+      description: "All content is carefully curated to ensure it's appropriate and beneficial for children."
+    },
+    {
+      title: "Time-Saving",
+      description: "Create high-quality stories in minutes, not hours."
+    },
+    {
+      title: "Customizable",
+      description: "Tailor every aspect of the story to your child's unique needs and interests."
+    },
+    {
+      title: "Engaging",
+      description: "Interactive elements keep children engaged and excited about reading."
+    }
+  ];
 
+  return (
+    <div className="page-container">
       {/* Hero Section */}
-      <section className="section-hero relative z-10 flex-1 flex items-center justify-center">
-        <div className="text-center container-default">
-          {/* Refined Hero Container - Same as HomePage */}
-          <div className="refined-card bg-slate-900/20 border border-amber-400/10 rounded-2xl p-8 md:p-12 lg:p-16">
-            {/* Main Title */}
-            <h1 className="fantasy-heading-cinzel h1-page gradient-text mb-6 sm:mb-8 text-center">
+      <section className="p-section text-center">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h1 className="title-hero mb-8">
               Powerful Features for Storytelling
             </h1>
 
-            {/* Description */}
-            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
+            <p className="text-body text-xl max-w-4xl mx-auto mb-12 text-slate-200">
               Discover how Tale Forge transforms the way you create and share stories with children.
             </p>
 
-            {/* Features Grid - Same structure as HomePage */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            {/* Main Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {features.map((feature, index) => (
-                <div key={index} className="glass-card backdrop-blur-md bg-white/5 border border-white/10 rounded-lg p-6">
+                <div key={index} className="glass-card">
                   <div className="text-4xl mb-4">{feature.icon}</div>
-                  <h3 className="h3-card text-white mb-2">{feature.title}</h3>
-                  <p className="text-white/80">{feature.description}</p>
+                  <h3 className="title-card mb-3">{feature.title}</h3>
+                  <p className="text-body text-slate-300">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -73,50 +82,49 @@ const FeaturesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Why Choose Section - Same structure as HomePage Featured Stories */}
-      <div className="relative z-10 section-spacing">
-        <div className="container-default">
-          <div className="glass-enhanced backdrop-blur-lg bg-black/20 border border-white/20 rounded-2xl p-8 md:p-12">
-            <h2 className="fantasy-heading-cinzel h2-section text-center mb-12">
+      {/* Benefits Section */}
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h2 className="title-section text-center mb-12">
               Why Choose Tale Forge?
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="h3-card text-white mb-2">
-                  Safe & Educational
-                </h3>
-                <p className="text-white/80">
-                  All content is carefully curated to ensure it's appropriate and beneficial for children.
-                </p>
-              </div>
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="h3-card text-white mb-2">
-                  Time-Saving
-                </h3>
-                <p className="text-white/80">
-                  Create high-quality stories in minutes, not hours.
-                </p>
-              </div>
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="h3-card text-white mb-2">
-                  Customizable
-                </h3>
-                <p className="text-white/80">
-                  Tailor every aspect of the story to your child's unique needs and interests.
-                </p>
-              </div>
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="h3-card text-white mb-2">
-                  Engaging
-                </h3>
-                <p className="text-white/80">
-                  Interactive elements keep children engaged and excited about reading.
-                </p>
-              </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="glass-card">
+                  <h3 className="title-card mb-3">{benefit.title}</h3>
+                  <p className="text-body text-slate-300">{benefit.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Call-to-Action Section */}
+      <section className="p-section text-center">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h2 className="title-section mb-6">
+              Ready to Start Creating Amazing Stories?
+            </h2>
+            
+            <p className="text-body text-xl mb-8 text-slate-200 max-w-2xl mx-auto">
+              Join thousands of families who are already using Tale Forge to create magical storytelling experiences.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="default" size="lg">
+                Start Creating Stories
+              </Button>
+              <Button variant="secondary" size="lg">
+                View Pricing Plans
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
