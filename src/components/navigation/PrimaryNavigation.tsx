@@ -69,6 +69,13 @@ const PrimaryNavigation: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <CreditBalanceIndicator size="sm" />
                 <Link
+                  to="/account/settings"
+                  className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
+                  title="Settings"
+                >
+                  <Icon name="settings" size={18} />
+                </Link>
+                <Link
                   to="/notifications"
                   className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
                   title="Notifications"

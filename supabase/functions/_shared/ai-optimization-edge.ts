@@ -21,15 +21,13 @@ export const GPT4O_OPTIMIZED = {
   prompts: {
     storySeeds: (params: { genre: string; childName: string }) => ({
       system: `You are a creative children's story writer. Generate ONLY valid JSON array with no markdown formatting, no code blocks, no extra text.`,
-      user: `Create 3 unique and varied ${params.genre} story concepts. The main character is named ${params.childName}.
-
-IMPORTANT: Each story should have a DIFFERENT opening and structure. Avoid starting with "The child's" or "${params.childName}'s" - use creative, varied beginnings.
+      user: `Create 3 simple ${params.genre} story ideas for ${params.childName}. Each should be SHORT and DIFFERENT.
 
 Return exactly this JSON format:
 [
-{"title":"Creative title here","teaser":"Engaging story hook that starts uniquely","hiddenMoral":"Life lesson learned","conflict":"Central challenge","quest":"Path to resolution"},
-{"title":"Different creative title","teaser":"Completely different opening and premise","hiddenMoral":"Different lesson","conflict":"Different type of challenge","quest":"Alternative resolution"},  
-{"title":"Third unique title","teaser":"Yet another unique story beginning","hiddenMoral":"Third distinct lesson","conflict":"Third type of problem","quest":"Third approach"}
+{"title":"Short Fun Title","teaser":"One simple sentence about what happens"},
+{"title":"Different Title","teaser":"Another simple story idea in one sentence"},  
+{"title":"Third Title","teaser":"Third simple story idea in one sentence"}
 ]`
     }),
     

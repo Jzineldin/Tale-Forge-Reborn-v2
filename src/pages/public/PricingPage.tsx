@@ -48,29 +48,29 @@ const PricingPage: React.FC = () => {
   const monthlyPlans: CreditPackage[] = [
     {
       id: 'free',
-      name: 'Free Plan',
+      name: 'Free Tier',
       credits: 10,
       price: 0,
       displayPrice: 'Free',
       stripeLink: '#'
     },
     {
-      id: 'basic',
-      name: 'Basic Creator',
+      id: 'starter',
+      name: 'Starter',
       credits: 100,
       price: 9.99,
       displayPrice: '$9.99/mo',
-      stripeLink: 'https://buy.stripe.com/monthly_basic_placeholder'
+      stripeLink: 'https://buy.stripe.com/monthly_starter_placeholder'
     },
     {
-      id: 'pro',
-      name: 'Pro Storyteller',
-      credits: 250,
+      id: 'premium',
+      name: 'Premium',
+      credits: 300,
       price: 19.99,
       displayPrice: '$19.99/mo',
       popular: true,
-      savings: 'Best Value - 25% More!',
-      stripeLink: 'https://buy.stripe.com/monthly_pro_placeholder'
+      savings: 'Best Value - 3X More Credits!',
+      stripeLink: 'https://buy.stripe.com/monthly_premium_placeholder'
     }
   ];
 
@@ -126,10 +126,13 @@ const PricingPage: React.FC = () => {
         <div className="container-lg">
           <div className="glass-card">
             <h1 className="title-hero mb-6">
-              💰 Get Story Credits
+              Choose Your Plan
             </h1>
-            <p className="text-body text-xl max-w-3xl mx-auto mb-8 text-slate-200">
-              Purchase credits to create amazing AI-powered stories for your children
+            <p className="text-body text-xl max-w-3xl mx-auto mb-4 text-slate-200">
+              Create unlimited AI-powered stories with our flexible credit system
+            </p>
+            <p className="text-body text-lg max-w-2xl mx-auto mb-8 text-amber-300">
+              📖 1 credit = 1 chapter • 🎙️ +3 credits for voice narration
             </p>
 
             {/* Tab Navigation */}
@@ -159,7 +162,7 @@ const PricingPage: React.FC = () => {
           <section className="p-section">
             <div className="container-lg">
               <div className="glass-card">
-                <h3 className="title-section text-center mb-12">Simple Credit System</h3>
+                <h3 className="title-section text-center mb-12">How Credits Work</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
@@ -167,23 +170,23 @@ const PricingPage: React.FC = () => {
                       <Zap className="w-8 h-8 text-amber-400" />
                     </div>
                     <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
-                    <p className="text-body text-slate-300">Includes AI text + beautiful illustration</p>
+                    <p className="text-body text-slate-300">Includes AI story text + beautiful AI illustration</p>
                   </div>
                   
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
                       <CheckCircle className="w-8 h-8 text-green-400" />
                     </div>
-                    <h4 className="title-card mb-2">Audio Narration</h4>
-                    <p className="text-body text-slate-300">1 credit per 100 words (premium only)</p>
+                    <h4 className="title-card mb-2">Voice Narration</h4>
+                    <p className="text-body text-slate-300">+3 credits to add professional TTS narration</p>
                   </div>
                   
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
                       <CreditCard className="w-8 h-8 text-blue-400" />
                     </div>
-                    <h4 className="title-card mb-2">Credits Don't Expire</h4>
-                    <p className="text-body text-slate-300">Use at your own pace, whenever you want</p>
+                    <h4 className="title-card mb-2">Credits Never Expire</h4>
+                    <p className="text-body text-slate-300">Use them at your own pace, build your library!</p>
                   </div>
                 </div>
               </div>
@@ -227,31 +230,39 @@ const PricingPage: React.FC = () => {
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                       <span className="text-body">
-                        {pkg.id === 'free' ? '10 story chapters' :
-                          pkg.id === 'basic' ? '100 story chapters' :
-                            '250 story chapters'}
+                        {pkg.id === 'free' ? '10 chapters or 2 narrated stories' :
+                          pkg.id === 'starter' ? '100 chapters or 25 with narration' :
+                            '300 chapters or 75 with narration'}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-slate-200">
+                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <span className="text-body">
+                        {pkg.id === 'free' ? 'Perfect for trying Tale Forge' :
+                          pkg.id === 'starter' ? 'Great for families (10-20 stories)' :
+                            'Ideal for educators (30-60 stories)'}
                       </span>
                     </div>
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                       <span className="text-body">
                         {pkg.id === 'free' ? 'No credit card required' :
-                          'Professional audio narration'}
+                          'Professional TTS narration available'}
                       </span>
                     </div>
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                       <span className="text-body">
-                        {pkg.id === 'free' ? 'Try before you buy' :
-                          pkg.id === 'basic' ? 'Cancel anytime' :
-                            'Save $0.02 per credit'}
+                        {pkg.id === 'free' ? '1 complete story per month' :
+                          pkg.id === 'starter' ? 'Mix chapters & narration freely' :
+                            '10% discount on extra credits'}
                       </span>
                     </div>
                     {pkg.id !== 'free' && (
                       <div className="flex items-center text-slate-200">
                         <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                         <span className="text-body">
-                          {pkg.id === 'basic' ? 'Perfect for families' : 'Best for educators & heavy users'}
+                          {pkg.id === 'starter' ? 'Cancel anytime' : 'Priority support included'}
                         </span>
                       </div>
                     )}
@@ -279,7 +290,7 @@ const PricingPage: React.FC = () => {
           <section className="p-section">
             <div className="container-lg">
               <div className="glass-card">
-                <h3 className="title-section text-center mb-12">Running Low? Top Up Anytime!</h3>
+                <h3 className="title-section text-center mb-12">Need More Credits? Top Up Anytime!</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="text-center">
@@ -293,15 +304,15 @@ const PricingPage: React.FC = () => {
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
                       <CheckCircle className="w-8 h-8 text-green-400" />
                     </div>
-                    <h4 className="title-card mb-2">Bulk Discounts</h4>
-                    <p className="text-body text-slate-300">Save up to 20% on larger bundles</p>
+                    <h4 className="title-card mb-2">Flexible Usage</h4>
+                    <p className="text-body text-slate-300">Use for chapters or TTS narration</p>
                   </div>
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
                       <CreditCard className="w-8 h-8 text-blue-400" />
                     </div>
-                    <h4 className="title-card mb-2">Works with All Plans</h4>
-                    <p className="text-body text-slate-300">Compatible with free and premium accounts</p>
+                    <h4 className="title-card mb-2">Bulk Savings</h4>
+                    <p className="text-body text-slate-300">Save more with larger bundles</p>
                   </div>
                 </div>
               </div>
@@ -344,15 +355,17 @@ const PricingPage: React.FC = () => {
                   <div className="space-y-3 mb-6">
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">{pkg.credits} story chapters</span>
+                      <span className="text-body text-sm">
+                        {pkg.credits} chapters or {Math.floor(pkg.credits / 4)} with TTS
+                      </span>
                     </div>
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">Add to any plan</span>
+                      <span className="text-body text-sm">Works with any plan</span>
                     </div>
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-body">{pkg.price <= 10 ? 'No discount' : pkg.savings}</span>
+                      <span className="text-body text-sm">Never expires</span>
                     </div>
                   </div>
 

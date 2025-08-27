@@ -37,8 +37,8 @@ serve(async (req: Request) => {
     // Price IDs for subscriptions and credit packages
     const priceIds: Record<string, string> = {
       // Subscriptions
-      'basic': Deno.env.get('STRIPE_PRICE_BASIC') ?? '',
-      'pro': Deno.env.get('STRIPE_PRICE_PRO') ?? '',
+      'starter': Deno.env.get('STRIPE_PRICE_STARTER') ?? '',
+      'premium': Deno.env.get('STRIPE_PRICE_PREMIUM') ?? '',
       // Credit packages
       'small': Deno.env.get('STRIPE_PRICE_SMALL') ?? '',
       'medium': Deno.env.get('STRIPE_PRICE_MEDIUM') ?? '',

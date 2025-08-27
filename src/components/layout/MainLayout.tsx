@@ -32,7 +32,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, showFooter = true }) 
                 {/* PayPal Support Button */}
                 <div className="mt-4">
                   <a 
-                    href="https://www.paypal.com/donate/?hosted_button_id=YOUR_BUTTON_ID" 
+                    href="https://www.paypal.me/zinfinityhs" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105"

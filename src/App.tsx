@@ -47,6 +47,7 @@ const TemplatesPage = lazy(() => import('@/pages/authenticated/TemplatesPage'));
 const AchievementsPage = lazy(() => import('@/pages/authenticated/AchievementsPage'));
 const AccountPage = lazy(() => import('@/pages/authenticated/account/AccountPage'));
 const ProfilePage = lazy(() => import('@/pages/authenticated/account/ProfilePage'));
+const SettingsPage = lazy(() => import('@/pages/authenticated/account/SettingsPage'));
 
 // ESSENTIAL ADMIN PAGES (7 routes)
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
@@ -183,6 +184,11 @@ const AppContent = () => {
           <Route path="/account/profile" element={
             <ProtectedRoute>
               <AuthenticatedLayout><ProfilePage /></AuthenticatedLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/account/settings" element={
+            <ProtectedRoute>
+              <AuthenticatedLayout><SettingsPage /></AuthenticatedLayout>
             </ProtectedRoute>
           } />
           

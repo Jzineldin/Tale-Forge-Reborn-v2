@@ -102,6 +102,14 @@ const MobileNavigation: React.FC = () => {
               </div>
               <div className="mt-3 space-y-1">
                 <Link
+                  to="/account/settings"
+                  className="block px-4 py-2 text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 flex items-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Icon name="settings" size={16} className="mr-3" />
+                  Settings
+                </Link>
+                <Link
                   to="/pricing"
                   className="block px-4 py-2 text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 flex items-center"
                   onClick={() => setIsOpen(false)}
