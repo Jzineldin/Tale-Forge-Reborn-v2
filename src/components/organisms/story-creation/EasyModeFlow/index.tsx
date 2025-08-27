@@ -146,14 +146,7 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           {/* Loading Overlay */}
           {isLoading && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div 
-                className="rounded-3xl p-8 shadow-2xl border backdrop-blur-lg flex flex-col items-center gap-4"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
-                }}
-              >
+              <div className="glass-enhanced p-8 flex flex-col items-center gap-4 max-w-md">
                 <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
                 <TypographyLayout variant="section" as="h3" align="center">
                   Creating Your Story...
@@ -200,10 +193,10 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
+          <div className="flex justify-between items-center mt-8">
             <button
               onClick={handleBack}
-              className="text-white/80 hover:text-white transition-all duration-300 px-6 py-3 rounded-2xl hover:bg-white/10 text-sm font-medium border border-white/20 hover:border-white/30 backdrop-blur-sm"
+              className="btn btn-secondary"
               disabled={isLoading}
             >
               ← Back
@@ -212,7 +205,7 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
             {step < 3 ? (
               <button
                 onClick={handleNext}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="btn btn-primary"
                 disabled={!isStepValid() || isLoading}
               >
                 Next →
@@ -220,12 +213,11 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
             ) : (
               <button
                 onClick={handleCreateStory}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-4 rounded-2xl text-base font-medium transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group flex items-center gap-2"
+                className="btn btn-primary flex items-center gap-2"
                 disabled={!isStepValid() || isLoading}
               >
-                <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
+                <Sparkles className="w-5 h-5" />
                 Create Story
-                <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
               </button>
             )}
           </div>
