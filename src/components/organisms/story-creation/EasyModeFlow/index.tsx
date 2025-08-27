@@ -225,23 +225,17 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
 
         {/* Help Text */}
         <div className="text-center">
-          <div 
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl backdrop-blur-sm"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}
-          >
+          <div className="glass-panel inline-flex items-center gap-3 px-6 py-3">
             <span className="text-amber-400 text-lg">
               {step === 1 && "📚"}
               {step === 2 && "🎭"}
               {step === 3 && "👤"}
             </span>
-            <TypographyLayout variant="body" className="text-white/90 font-medium">
+            <span className="text-body font-medium">
               {step === 1 && "Choose how long you want your story to be"}
               {step === 2 && "Pick a genre that your child will love"}
               {step === 3 && "Personalize the story with your child's name"}
-            </TypographyLayout>
+            </span>
           </div>
         </div>
       </div>
