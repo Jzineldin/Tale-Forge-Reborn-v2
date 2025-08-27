@@ -88,7 +88,12 @@ temp/
 backup-project.ps1
 quick-save.ps1
 restore-backup.ps1
-setup-git-safety.ps1 
+setup-git-safety.ps1
+
+# MCP setup files that might contain API keys
+STRIPE_MCP_SETUP.md
+*_setup_complete.md
+api-setup-*.md 
 
 # Task files
 # tasks.json

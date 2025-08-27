@@ -87,55 +87,17 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Floating magical elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({length: 12}).map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-pulse text-xl opacity-60"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          >
-            {['✨', '⭐', '🌟', '💫'][Math.floor(Math.random() * 4)]}
-          </div>
-        ))}
+    <div className="page-content">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="title-hero mb-4">Easy Story Creation</h1>
+        <p className="text-body text-lg max-w-2xl mx-auto">
+          Create magical stories in just 3 simple steps. Perfect for busy parents who want personalized tales for their children.
+        </p>
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight"
-            style={{
-              background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 25%, #f59e0b 50%, #d97706 75%, #f59e0b 100%)',
-              backgroundSize: '400% 400%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              animation: 'gradient-shift 8s ease infinite'
-            }}
-          >
-            Easy Story Creation
-          </h1>
-          <p className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Create magical stories in just 3 simple steps. Perfect for busy parents who want personalized tales for their children.
-          </p>
-        </div>
-
-        {/* Progress Indicator */}
-        <div 
-          className="rounded-3xl p-6 mb-8 shadow-2xl border backdrop-blur-lg"
-          style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
-            borderColor: 'rgba(255,255,255,0.3)',
-            boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
-          }}
-        >
+      {/* Progress Indicator */}
+      <div className="glass-card mb-8">
           <div className="flex items-center justify-between">
             {[1, 2, 3].map((stepNum) => (
               <div key={stepNum} className="flex-1 flex items-center">
@@ -145,8 +107,8 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
                       w-12 h-12 rounded-full flex items-center justify-center
                       font-bold text-lg transition-all duration-300
                       ${step >= stepNum 
-                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25' 
-                        : 'glass border border-white/20 text-gray-400'
+                        ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25' 
+                        : 'glass-enhanced text-white/60'
                       }
                     `}
                   >
