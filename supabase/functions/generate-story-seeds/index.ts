@@ -224,14 +224,11 @@ serve(async (req) => {
           long: 'rich stories for ages 9-12 with deeper themes'
         }
         
-        // Check cache first for performance boost
-        const cacheKey = `seeds:${genre}:${childName}:${context}:${difficulty}`;
-        const cached = promptCache.get(cacheKey);
-        if (cached) {
-          console.log('✨ Cache hit! Returning cached story seeds');
-          seeds = cached;
-          aiTimer.end();
-        } else {
+        // Skip caching for seed generation to ensure variety
+        // Each request should generate fresh seeds for better user experience
+        console.log('🎲 Generating fresh seeds (caching disabled for variety)');
+        
+        {
           // Use optimized prompt structure
           const optimizedPrompt = GPT4O_OPTIMIZED.prompts.storySeeds({
             genre,
@@ -240,25 +237,28 @@ serve(async (req) => {
           
           console.log('🎯 Using optimized prompt structure...');
         
-          // Use optimized OpenAI call with better configuration
+          // Use optimized OpenAI call with speed-focused configuration
           const content = await optimizedOpenAICall(optimizedPrompt, {
             ...GPT4O_OPTIMIZED.storyConfig,
             temperature: 0.95, // Higher for variety
             presence_penalty: 0.8,
             frequency_penalty: 0.5,
+            max_tokens: 300,    // Reduce tokens for faster response
             seed: Math.floor(Math.random() * 1000000)
           });
         
           if (content) {
             try {
-              // More robust JSON extraction
-              let cleanContent = content
+              // Enhanced JSON extraction with better markdown handling
+              let cleanContent = content.trim()
               
-              // Remove markdown code blocks
-              cleanContent = cleanContent.replace(/```json\s*/gi, '')
-              cleanContent = cleanContent.replace(/```\s*/g, '')
+              // Remove all possible markdown code block variations
+              cleanContent = cleanContent.replace(/^```[\w]*\s*/gi, '')  // Opening ```json or ```
+              cleanContent = cleanContent.replace(/\s*```$/gi, '')       // Closing ```
+              cleanContent = cleanContent.replace(/`{3,}/g, '')          // Any triple backticks
+              cleanContent = cleanContent.replace(/^\s*json\s*/gi, '')   // Standalone 'json' lines
               
-              // Find JSON array boundaries
+              // Find JSON array boundaries more precisely
               const startIdx = cleanContent.indexOf('[')
               const endIdx = cleanContent.lastIndexOf(']')
               
@@ -266,23 +266,20 @@ serve(async (req) => {
                 cleanContent = cleanContent.substring(startIdx, endIdx + 1)
               }
               
-              // Clean up any trailing commas
-              cleanContent = cleanContent.replace(/,\s*([}\]])/g, '$1')
+              // Clean up formatting issues
+              cleanContent = cleanContent.replace(/,\s*([}\]])/g, '$1')  // Trailing commas
+              cleanContent = cleanContent.replace(/\n\s*/g, ' ')          // Normalize whitespace
               
               // Parse the cleaned JSON
               const parsedSeeds = JSON.parse(cleanContent)
               
               if (Array.isArray(parsedSeeds) && parsedSeeds.length >= 3) {
                 seeds = parsedSeeds.slice(0, 3) // Take only first 3 if more
-                
-                // Cache successful results for 5 minutes
-                promptCache.set(cacheKey, seeds, 300);
-                console.log('✅ OPTIMIZED AI generation successful - 3 unique seeds created & cached')
+                console.log('✅ OPTIMIZED AI generation successful - 3 unique fresh seeds created')
               } else if (Array.isArray(parsedSeeds) && parsedSeeds.length > 0) {
                 // If we got fewer than 3, use what we got
                 seeds = parsedSeeds
-                promptCache.set(cacheKey, seeds, 300);
-                console.log(`⚠️ AI generated only ${parsedSeeds.length} seeds, cached anyway`)
+                console.log(`⚠️ AI generated only ${parsedSeeds.length} fresh seeds`)
               } else {
                 throw new Error(`Invalid AI response format - expected array of seeds`)
               }
@@ -298,7 +295,7 @@ serve(async (req) => {
           
           // End timer for successful generation
           aiTimer.end();
-        } // End of cache else block
+        }
         
       } catch (aiError) {
         console.log('❌ AI generation failed, using fallback:', aiError.message)

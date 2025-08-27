@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS performance_events (
 -- System health metrics
 CREATE TABLE IF NOT EXISTS system_health_metrics (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  metric_type TEXT NOT NULL, -- api_response_time, database_health, error_rate, etc.
   service_name TEXT NOT NULL, -- templates, achievements, goals, credits
   metric_value NUMERIC NOT NULL,
   metadata JSONB DEFAULT '{}',
@@ -62,7 +61,7 @@ CREATE TABLE IF NOT EXISTS business_metrics (
 CREATE INDEX IF NOT EXISTS idx_gamification_events_user_type ON gamification_events(user_id, event_type);
 CREATE INDEX IF NOT EXISTS idx_gamification_events_created_at ON gamification_events(created_at);
 CREATE INDEX IF NOT EXISTS idx_performance_events_metric ON performance_events(metric_name, created_at);
-CREATE INDEX IF NOT EXISTS idx_system_health_service ON system_health_metrics(service_name, metric_type, recorded_at);
+CREATE INDEX IF NOT EXISTS idx_system_health_service ON system_health_metrics(service_name, recorded_at);
 CREATE INDEX IF NOT EXISTS idx_user_session_user_start ON user_session_analytics(user_id, start_time);
 CREATE INDEX IF NOT EXISTS idx_business_metrics_type_date ON business_metrics(metric_type, recorded_at);
 
@@ -377,9 +376,9 @@ BEGIN
       AVG(metric_value) FILTER (WHERE service_name = 'achievements') as achievement_time,
       AVG(metric_value) FILTER (WHERE service_name = 'goals') as goal_time,
       AVG(metric_value) FILTER (WHERE service_name = 'credits') as credit_time,
-      AVG(metric_value) FILTER (WHERE metric_type = 'query_time') as query_time
+      AVG(metric_value) FILTER (WHERE (metadata->>'metric_type')::TEXT = 'query_time') as query_time
     FROM system_health_metrics
-    WHERE metric_type = 'api_response_time'
+    WHERE (metadata->>'metric_type')::TEXT = 'api_response_time'
     AND recorded_at >= NOW() - INTERVAL '1 hour'
   ),
   error_rates AS (
@@ -388,7 +387,7 @@ BEGIN
       AVG(metric_value) FILTER (WHERE service_name = 'credits') as credit_errors,
       AVG(metric_value) FILTER (WHERE service_name = 'achievements') as achievement_errors
     FROM system_health_metrics
-    WHERE metric_type = 'error_rate'
+    WHERE (metadata->>'metric_type')::TEXT = 'error_rate'
     AND recorded_at >= NOW() - INTERVAL '1 hour'
   )
   SELECT 

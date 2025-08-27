@@ -127,7 +127,18 @@ const CreateStoryPage: React.FC = () => {
 
   // Handle template selection
   const handleTemplateSelect = (template: StoryTemplate) => {
-    console.log('Selected template:', template.name);
+    console.log('📋 [TEMPLATE MODE] Template Selected:', {
+      templateName: template.name,
+      difficulty: ageToDifficulty(template.settings.targetAge),
+      targetAge: template.settings.targetAge,
+      wordCount: template.settings.wordsPerChapter,
+      genre: template.settings.genre,
+      theme: template.settings.theme,
+      characters: template.settings.characters?.length || 0,
+      location: template.settings.location,
+      timePeriod: template.settings.timePeriod,
+      atmosphere: template.settings.atmosphere
+    });
 
     // Apply template settings to story data
     const templateData: StoryData = {
@@ -147,6 +158,8 @@ const CreateStoryPage: React.FC = () => {
       settingDescription: template.settings.settingDescription
     };
 
+    console.log('🔄 [TEMPLATE MODE] Applied Template Data:', templateData);
+
     setStoryData(templateData);
     setUsingTemplate(true);
 
@@ -156,6 +169,7 @@ const CreateStoryPage: React.FC = () => {
 
   // Handle Easy Mode selection
   const handleEasyModeSelect = () => {
+    console.log('🎯 [MODE SELECTION] Easy Mode selected');
     setUsingEasyMode(true);
     setUsingTemplate(false);
     // Easy Mode handles its own navigation
@@ -163,6 +177,7 @@ const CreateStoryPage: React.FC = () => {
 
   // Handle template selection from mode selector
   const handleTemplateModeSelect = () => {
+    console.log('🎯 [MODE SELECTION] Template Mode selected');
     setUsingEasyMode(false);
     setUsingTemplate(false); // Will be set to true when template is selected
     setStep(1); // Go to template selector
@@ -170,6 +185,7 @@ const CreateStoryPage: React.FC = () => {
 
   // Handle custom creation
   const handleCustomCreate = () => {
+    console.log('🎯 [MODE SELECTION] Advanced Mode selected');
     setUsingEasyMode(false);
     setUsingTemplate(false);
     setStep(2); // Start with step 2 for custom creation (after mode selection)
@@ -239,10 +255,26 @@ const CreateStoryPage: React.FC = () => {
     setValidationErrors([]);
 
     const ageFormatForAI = difficultyToAgeFormat();
-    console.log(`🎯 Difficulty ${storyData.difficulty} → Age format: "${ageFormatForAI}" for AI understanding`);
-
-    // Debug: Check all story data before submission
-    console.log('📋 Full story data before submission:', storyData);
+    const storyMode = usingTemplate ? 'Template Mode' : 'Advanced Mode';
+    
+    console.log(`🎯 [${storyMode.toUpperCase()}] Final Story Creation - Complete User Selections:`, {
+      mode: storyMode,
+      difficulty: storyData.difficulty,
+      ageFormat: ageFormatForAI,
+      wordCount: storyData.wordsPerChapter,
+      genre: storyData.genre,
+      theme: storyData.theme,
+      childName: storyData.childName,
+      characters: storyData.characters.map(char => ({ name: char.name, role: char.role })),
+      location: storyData.location,
+      timePeriod: storyData.timePeriod,
+      atmosphere: storyData.atmosphere,
+      conflict: storyData.conflict,
+      quest: storyData.quest,
+      moralLesson: storyData.moralLesson,
+      additionalDetails: storyData.additionalDetails,
+      settingDescription: storyData.settingDescription
+    });
 
     // Prepare story data for submission - include ALL form data
     const storySubmissionData = {
@@ -262,11 +294,21 @@ const CreateStoryPage: React.FC = () => {
       time_period: storyData.timePeriod,
       atmosphere: storyData.atmosphere,
       words_per_chapter: storyData.wordsPerChapter,
-      child_name: storyData.childName
+      child_name: storyData.childName,
+      story_type: storyData.difficulty <= 2 ? 'short' : storyData.difficulty <= 6 ? 'medium' : 'long',
+      template_level: usingTemplate ? storyData.difficulty : undefined,
+      difficulty_level: !usingTemplate ? storyData.difficulty : undefined
     };
 
-    // Debug: Check what we're sending to the API
-    console.log('🚀 Story submission data:', storySubmissionData);
+    console.log('🚀 [AI PROMPT DATA] Final Backend Submission:', storySubmissionData);
+    console.log('🔮 [AI GENERATION] This data will be used to generate:', {
+      storySegments: 'AI will use this data to create story content',
+      wordConstraints: `${storyData.wordsPerChapter} words per segment`,
+      complexityLevel: `Difficulty level ${storyData.difficulty}/10`,
+      personalization: `Personalized for ${storyData.childName}`,
+      aiModel: 'GPT-4o will process this data',
+      expectedOutput: 'Story segments, choices, and image prompts'
+    });
 
     // Call the create story mutation
     createStory(

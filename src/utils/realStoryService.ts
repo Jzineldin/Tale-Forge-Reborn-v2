@@ -158,7 +158,7 @@ export const realStoryService = {
             .from('story_segments')
             .insert({
               story_id: savedStory.id,
-              content: mockResult.firstSegment.content,
+              segment_text: mockResult.firstSegment.content,
               position: 1,
               choices: mockResult.firstSegment.choices,
               image_prompt: mockResult.firstSegment.image_prompt,
@@ -418,7 +418,7 @@ export const realStoryService = {
         .from('story_segments')
         .insert({
           story_id: segmentData.story_id,
-          content: segmentData.content,
+          segment_text: segmentData.content,
           position: segmentData.position,
           choices: segmentData.choices || [],
           image_prompt: segmentData.image_prompt,
@@ -494,7 +494,7 @@ export const realStoryService = {
             .from('story_segments')
             .insert({
               story_id: storyId,
-              content: mockResult.segment.content,
+              segment_text: mockResult.segment.content,
               position: mockResult.segment.position,
               choices: mockResult.segment.choices,
               image_prompt: mockResult.segment.image_prompt,
@@ -570,7 +570,7 @@ export const realStoryService = {
       const { data: updatedSegment, error } = await supabase
         .from('story_segments')
         .update({
-          content: segmentData.content,
+          segment_text: segmentData.content,
           choices: segmentData.choices,
           image_url: segmentData.image_url,
           image_prompt: segmentData.image_prompt,

@@ -10,6 +10,10 @@ export interface Story {
   target_age: string;
   genre?: string;
   age_group?: string;
+  story_type?: 'short' | 'medium' | 'long';
+  words_per_chapter?: number;
+  template_level?: number; // For Template Mode: 1-10 scaling
+  difficulty_level?: number; // For Advanced Mode: 1-10 scaling  
   created_at: string;
   updated_at: string;
 }
@@ -17,7 +21,7 @@ export interface Story {
 export interface Segment {
   id: string;
   story_id: string;
-  content: string; // Changed from segment_text
+  segment_text: string; // This is the correct database field name
   choices: Choice[];
   position: number;
   segment_number: number;
@@ -45,7 +49,7 @@ export interface Character {
 
 export interface NewSegment {
   story_id: string;
-  content: string; // Changed from segment_text
+  segment_text: string; // This is the correct database field name
   choices: Choice[];
   position: number;
   segment_number: number;

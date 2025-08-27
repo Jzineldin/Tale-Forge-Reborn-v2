@@ -12,41 +12,41 @@ const lengths = [
     id: 'short' as const,
     icon: Zap,
     emoji: '⚡',
-    title: 'Quick Read',
-    duration: '2-3 min',
+    title: 'Short Story',
+    duration: '2-3 minutes',
     words: '40-80 words',
-    ageRange: '4-6 years',
+    ageRange: 'Ages 3-6',
     color: 'emerald',
     gradient: 'from-emerald-500 to-teal-600',
     bgGradient: 'from-emerald-500/10 via-emerald-600/5 to-transparent',
-    description: 'Perfect for bedtime or quick breaks'
+    description: 'Simple & Sweet'
   },
   {
     id: 'medium' as const,
     icon: BookOpen,
     emoji: '📚',
-    title: 'Classic Story',
-    duration: '5-7 min',
+    title: 'Medium Story',
+    duration: '4-5 minutes',
     words: '100-150 words',
-    ageRange: '6-9 years',
+    ageRange: 'Ages 6-9',
     color: 'blue',
     gradient: 'from-blue-500 to-indigo-600',
     bgGradient: 'from-blue-500/10 via-blue-600/5 to-transparent',
-    description: 'Ideal balance of adventure and reading',
+    description: 'POPULAR',
     recommended: true
   },
   {
     id: 'long' as const,
     icon: Clock,
     emoji: '🎭',
-    title: 'Epic Adventure',
-    duration: '8-10 min',
+    title: 'Long Story',
+    duration: '6-8 minutes',
     words: '160-200 words',
-    ageRange: '9-12 years',
+    ageRange: 'Ages 8-12',
     color: 'purple',
     gradient: 'from-purple-500 to-pink-600',
     bgGradient: 'from-purple-500/10 via-purple-600/5 to-transparent',
-    description: 'Chapter-style storytelling experience'
+    description: 'Rich Adventure'
   }
 ];
 

@@ -34,8 +34,8 @@ export class PromptBuilder implements PromptBuilderService {
       });
     }
     
-    // Get base template for genre and age
-    let prompt = this.getTemplateForGenreAndAge(story.story_mode || story.genre || 'fantasy', story.target_age || '7-9');
+    // Get base template for genre and age with story type
+    let prompt = this.getTemplateForGenreAndAge(story.story_mode || story.genre || 'fantasy', story.target_age || '7-9', story);
     
     // Replace placeholders with actual story data (prioritizing template context)
     prompt = this.replacePlaceholders(prompt, story, userCharacters, templateContext);
@@ -54,16 +54,105 @@ export class PromptBuilder implements PromptBuilderService {
   /**
    * Get appropriate prompt template based on story genre and target age
    */
-  getTemplateForGenreAndAge(genre: string, targetAge: string): string {
+  getTemplateForGenreAndAge(genre: string, targetAge: string, story?: Story): string {
     console.log(`🎯 Selecting template for genre: ${genre}, age: ${targetAge}`);
     
-    // Base template structure
-    const basePrompt = `Write the next segment of an engaging children's story for ages ${targetAge}. The story should be ${genre}-themed and focus on {theme} in {setting}. Include the main characters: {characters}. Make it age-appropriate, educational, and exciting. The segment should be 2-3 short paragraphs and end with an engaging moment that leads to choices. Keep the language simple but engaging.`;
+    // Get word count and complexity based on story mode (Easy/Template/Advanced)
+    const { wordLimit, complexityLevel, vocabularyLevel } = this.getWordLimitAndComplexity(story || {} as Story);
+    
+    const storyMode = story?.template_level || story?.difficulty_level ? 'Template/Advanced' : 'Easy';
+    console.log(`📏 ${storyMode} Mode - Word limit: ${wordLimit} words, Complexity: ${complexityLevel.substring(0, 30)}...`);
+    
+    // Base template structure with dynamic word count and complexity
+    const basePrompt = `Write the next segment of an engaging children's story for ages ${targetAge}. The story should be ${genre}-themed and focus on {theme} in {setting}. Include the main characters: {characters}.
+
+WRITING REQUIREMENTS:
+- Write exactly ${wordLimit} words (count carefully)
+- Complexity: ${complexityLevel}
+- Language: ${vocabularyLevel}
+- End with an engaging moment that leads to choices
+- Make it age-appropriate and educational`;
     
     // Genre-specific enhancements
     const genreEnhancements = this.getGenreSpecificEnhancements(genre, targetAge);
     
     return basePrompt + genreEnhancements;
+  }
+
+  /**
+   * Get word count limits and complexity based on story mode and parameters
+   */
+  private getWordLimitAndComplexity(story: Story): { wordLimit: number; complexityLevel: string; vocabularyLevel: string } {
+    // Check if this is Template Mode or Advanced Mode (both use levels)
+    const templateLevel = story.template_level || story.difficulty_level;
+    
+    if (templateLevel && typeof templateLevel === 'number') {
+      // Template/Advanced Mode: Level 1-10 scaling
+      const wordLimit = Math.round(30 + (templateLevel - 1) * (200 - 30) / 9); // Scale 30-200 words
+      
+      let complexityLevel, vocabularyLevel;
+      if (templateLevel <= 3) {
+        complexityLevel = 'very simple concepts, basic emotions, clear cause and effect';
+        vocabularyLevel = 'simple words, short sentences, repetitive structure';
+      } else if (templateLevel <= 6) {
+        complexityLevel = 'moderate concepts, problem-solving, character development';
+        vocabularyLevel = 'age-appropriate vocabulary, varied sentence length, descriptive language';
+      } else {
+        complexityLevel = 'advanced themes, complex problem-solving, deeper character arcs';
+        vocabularyLevel = 'rich vocabulary, complex sentences, literary devices';
+      }
+      
+      return { wordLimit, complexityLevel, vocabularyLevel };
+    }
+    
+    // Easy Mode: Traditional short/medium/long
+    const wordLimit = this.getEasyModeWordLimit(story.story_type);
+    const complexity = this.getEasyModeComplexity(story.story_type);
+    
+    return { 
+      wordLimit, 
+      complexityLevel: complexity.complexity, 
+      vocabularyLevel: complexity.vocabulary 
+    };
+  }
+
+  /**
+   * Get word count limits for Easy Mode
+   */
+  private getEasyModeWordLimit(storyType?: 'short' | 'medium' | 'long'): number {
+    switch (storyType) {
+      case 'short':
+        return 60; // 40-80 words range, aim for middle
+      case 'long':
+        return 180; // 160-200 words range, aim for middle  
+      case 'medium':
+      default:
+        return 125; // 100-150 words range, aim for middle
+    }
+  }
+
+  /**
+   * Get complexity settings for Easy Mode based on age groups
+   */
+  private getEasyModeComplexity(storyType?: 'short' | 'medium' | 'long'): { complexity: string; vocabulary: string } {
+    switch (storyType) {
+      case 'short': // Ages 3-6
+        return {
+          complexity: 'very simple concepts, basic emotions like happy/sad, simple problems with clear solutions',
+          vocabulary: 'simple everyday words, short sentences, repetitive phrases, familiar concepts'
+        };
+      case 'medium': // Ages 6-9
+        return {
+          complexity: 'moderate concepts, friendship themes, basic problem-solving, simple moral lessons',
+          vocabulary: 'age-appropriate vocabulary, varied sentence structure, descriptive but accessible language'
+        };
+      case 'long': // Ages 8-12
+      default:
+        return {
+          complexity: 'more advanced themes, character growth, complex problem-solving, deeper moral lessons',
+          vocabulary: 'richer vocabulary, complex sentence structures, metaphors and descriptive language'
+        };
+    }
   }
 
   /**
@@ -179,7 +268,7 @@ export class PromptBuilder implements PromptBuilderService {
    * Build context section for story continuation
    */
   private buildContextSection(previousSegment: Segment, userChoice?: string): string {
-    let contextSection = `\n\nPrevious story segment: ${previousSegment.content}`;
+    let contextSection = `\n\nPrevious story segment: ${previousSegment.segment_text}`;
     
     if (userChoice) {
       contextSection += `\n\nUser chose: ${userChoice}`;

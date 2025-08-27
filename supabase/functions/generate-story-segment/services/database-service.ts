@@ -132,7 +132,7 @@ export class Database implements DatabaseService {
    */
   async saveSegment(segmentData: NewSegment, supabase: any): Promise<Segment> {
     console.log(`💾 Saving new segment for story ${segmentData.story_id}`);
-    console.log(`   📝 Text length: ${segmentData.content.length} characters`);
+    console.log(`   📝 Text length: ${segmentData.segment_text.length} characters`);
     console.log(`   🎯 Choices: ${segmentData.choices.length}`);
     console.log(`   📊 Position: ${segmentData.position}`);
     
@@ -171,7 +171,7 @@ export class Database implements DatabaseService {
     
     return {
       story_id: storyId,
-      content: segmentText, // Changed from segment_text to content
+      segment_text: segmentText, // This is the correct database field name
       choices: choices,
       position: position,
       segment_number: position, // Same as position for now

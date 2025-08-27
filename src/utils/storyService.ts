@@ -39,7 +39,7 @@ const validateStorySegment = (segment: Partial<StorySegment>): string[] => {
     errors.push('Story ID is required');
   }
   
-  if (!segment.content || segment.content.trim().length === 0) {
+  if (!segment.segment_text || segment.segment_text.trim().length === 0) {
     errors.push('Content is required');
   }
   

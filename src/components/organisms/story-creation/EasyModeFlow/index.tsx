@@ -34,6 +34,13 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
   });
 
   const handleNext = () => {
+    // Log current step completion
+    console.log(`📝 [EASY MODE] Completed Step ${step}:`, {
+      step,
+      selection: step === 1 ? data.difficulty : step === 2 ? data.genre : data.characterName,
+      currentData: data
+    });
+    
     if (step < 3) {
       setStep(step + 1);
     }
@@ -54,11 +61,24 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
 
   const handleCreateStory = async () => {
     if (!data.difficulty || !data.genre) {
-      console.error('Missing required fields');
+      console.error('❌ [EASY MODE] Missing required fields');
       return;
     }
 
+    console.log('🎯 [EASY MODE] Final Story Creation - User Selections:', {
+      mode: 'Easy Mode',
+      difficulty: data.difficulty,
+      genre: data.genre,
+      characterName: data.characterName,
+      characterTraits: data.characterTraits,
+      storySeed: data.storySeed,
+      wordCount: data.difficulty === 'short' ? '40-80 words' : data.difficulty === 'medium' ? '100-150 words' : '160-200 words',
+      targetAge: data.difficulty === 'short' ? 'Ages 3-6' : data.difficulty === 'medium' ? 'Ages 6-9' : 'Ages 8-12'
+    });
+
     const storyData = convertToBackendFormat(data);
+    
+    console.log('🚀 [EASY MODE] Converted Backend Format:', storyData);
     
     createStory(storyData, {
       onSuccess: (story) => {
@@ -198,7 +218,14 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
               {step === 1 && (
                 <DifficultySelector
                   selected={data.difficulty}
-                  onSelect={(difficulty) => setData({ ...data, difficulty })}
+                  onSelect={(difficulty) => {
+                    console.log('📏 [EASY MODE] Story Length Selected:', {
+                      selection: difficulty,
+                      wordRange: difficulty === 'short' ? '40-80 words' : difficulty === 'medium' ? '100-150 words' : '160-200 words',
+                      targetAge: difficulty === 'short' ? 'Ages 3-6' : difficulty === 'medium' ? 'Ages 6-9' : 'Ages 8-12'
+                    });
+                    setData({ ...data, difficulty });
+                  }}
                 />
               )}
             </div>
@@ -207,7 +234,13 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
               {step === 2 && (
                 <GenreSelector
                   selected={data.genre}
-                  onSelect={(genre) => setData({ ...data, genre })}
+                  onSelect={(genre) => {
+                    console.log('🎭 [EASY MODE] Genre Selected:', {
+                      selection: genre,
+                      themes: `Themes suitable for ${data.difficulty || 'medium'} stories`
+                    });
+                    setData({ ...data, genre });
+                  }}
                 />
               )}
             </div>
@@ -220,9 +253,28 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
                   storySeed={data.storySeed}
                   genre={data.genre || ''}
                   difficulty={data.difficulty}
-                  onNameChange={(characterName) => setData({ ...data, characterName })}
-                  onTraitsChange={(characterTraits) => setData({ ...data, characterTraits })}
-                  onSeedChange={(storySeed) => setData({ ...data, storySeed })}
+                  onNameChange={(characterName) => {
+                    console.log('👤 [EASY MODE] Character Name Set:', {
+                      name: characterName,
+                      personalizedStory: `Story will be personalized for "${characterName}"`
+                    });
+                    setData({ ...data, characterName });
+                  }}
+                  onTraitsChange={(characterTraits) => {
+                    console.log('✨ [EASY MODE] Character Traits Updated:', {
+                      traits: characterTraits,
+                      count: characterTraits.length
+                    });
+                    setData({ ...data, characterTraits });
+                  }}
+                  onSeedChange={(storySeed) => {
+                    console.log('🌱 [EASY MODE] Story Seed Selected:', {
+                      seed: storySeed,
+                      genre: data.genre,
+                      difficulty: data.difficulty
+                    });
+                    setData({ ...data, storySeed });
+                  }}
                 />
               )}
             </div>

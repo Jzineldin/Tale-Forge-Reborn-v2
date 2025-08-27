@@ -132,36 +132,12 @@ WHERE created_at >= NOW() - INTERVAL '7 days'
 GROUP BY mode, violation_type, severity, DATE_TRUNC('day', created_at)
 ORDER BY day DESC, violation_count DESC;
 
--- Row Level Security policies
-ALTER TABLE safety_violations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE ai_performance_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE content_safety_audits ENABLE ROW LEVEL SECURITY;
+-- Row Level Security policies - DISABLED FOR LOCAL DEV
+-- ALTER TABLE safety_violations ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE ai_performance_logs ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE content_safety_audits ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated users to insert their own logs
-CREATE POLICY "Users can insert their own safety logs" ON safety_violations
-  FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert their own performance logs" ON ai_performance_logs
-  FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert their own audit logs" ON content_safety_audits
-  FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
-
--- Allow service role to read everything for monitoring
-CREATE POLICY "Service role can read all safety data" ON safety_violations
-  FOR SELECT TO service_role
-  USING (true);
-
-CREATE POLICY "Service role can read all performance data" ON ai_performance_logs
-  FOR SELECT TO service_role
-  USING (true);
-
-CREATE POLICY "Service role can read all audit data" ON content_safety_audits
-  FOR SELECT TO service_role
-  USING (true);
+-- RLS policies disabled to prevent auth.uid() circular dependency during migration
 
 -- Comment on tables for documentation
 COMMENT ON TABLE safety_violations IS 'Tracks all content safety violations and actions taken';

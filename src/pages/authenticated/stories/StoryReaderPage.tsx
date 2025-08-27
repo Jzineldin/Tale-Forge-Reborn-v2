@@ -167,10 +167,9 @@ const StoryReaderPage: React.FC = () => {
             className="mb-8"
           />
 
-          {/* Main Story Content */}
-          <CardLayout className="bg-slate-900/80 backdrop-blur-lg border-white/20">
-            <div className="p-8">
-              {currentSegment ? (
+          {/* Main Story Content - Simplified without glass box */}
+          <div className="rounded-2xl p-8">
+            {currentSegment ? (
                 <StorySegmentDisplay
                   segment={currentSegment}
                   segmentIndex={currentSegmentIndex}
@@ -202,8 +201,7 @@ const StoryReaderPage: React.FC = () => {
                   />
                 </div>
               )}
-            </div>
-          </CardLayout>
+          </div>
 
           {/* Navigation Controls */}
           <div className="flex justify-between items-center">
@@ -257,7 +255,7 @@ const StoryReaderPage: React.FC = () => {
 
           {/* Story Completion Stats */}
           {(story.status === 'completed' || story.is_completed) && (
-            <CardLayout className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-lg border-purple-500/30">
+            <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-2xl border border-purple-500/20">
               <div className="p-6 text-center">
                 <TypographyLayout variant="section" className="text-white text-2xl font-bold mb-4">
                   🎉 Story Complete! 🎉
@@ -294,7 +292,7 @@ const StoryReaderPage: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </CardLayout>
+            </div>
           )}
         </div>
       </PageLayout>

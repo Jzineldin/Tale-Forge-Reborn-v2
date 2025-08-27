@@ -15,7 +15,7 @@ const StoryReaderHeader: React.FC<StoryReaderHeaderProps> = ({
   onSettings
 }) => {
   return (
-    <div className="flex items-center justify-between mb-6 p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+    <div className="flex items-center justify-between mb-6 p-4">
       <div className="flex items-center gap-4">
         <button
           onClick={onBack}

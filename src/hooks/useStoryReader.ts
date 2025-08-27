@@ -35,7 +35,7 @@ export const useStoryReader = ({ storyId }: UseStoryReaderOptions): UseStoryRead
   const calculateTotalWords = () => {
     if (!story?.segments) return 0;
     return story.segments.reduce((total, segment) => {
-      const words = segment.content ? segment.content.split(' ').length : 0;
+      const words = segment.segment_text ? segment.segment_text.split(' ').length : 0;
       return total + words;
     }, 0);
   };

@@ -6,11 +6,11 @@
 // ============================================================================
 
 export const GPT4O_OPTIMIZED = {
-  // Optimized config for story generation
+  // Speed-optimized config for story generation  
   storyConfig: {
     model: 'gpt-4o',
-    temperature: 0.85,     // Slightly higher for creativity
-    max_tokens: 500,       // Controlled for cost
+    temperature: 0.85,     
+    max_tokens: 500,       
     top_p: 0.9,
     frequency_penalty: 0.3,
     presence_penalty: 0.3,
@@ -20,25 +20,30 @@ export const GPT4O_OPTIMIZED = {
   // Optimized prompt templates
   prompts: {
     storySeeds: (params: { genre: string; childName: string }) => ({
-      system: `You are a creative story seed generator. Always respond with ONLY a valid JSON array, no markdown, no extra text. Each request must produce NEW and UNIQUE story concepts.`,
-      user: `Create 3 story seeds for ${params.genre} genre with ${params.childName} as the hero.
+      system: `You are a children's story creator. Generate ONLY valid JSON array with no markdown formatting, no code blocks, no extra text.`,
+      user: `Create 3 unique ${params.genre} story seeds for a child named ${params.childName}. Each seed should be a complete story concept.
 
-Each seed needs:
-- title: Short title with ${params.childName}'s name
-- teaser: One sentence story hook
-- hiddenMoral: Life lesson (short)
-- conflict: Main problem (short)
-- quest: Solution action (short)
-
-Return JSON array with 3 objects. Keep all text brief.`
+Return exactly this JSON format:
+[
+{"title":"Story title featuring ${params.childName}","teaser":"One sentence story hook","hiddenMoral":"Life lesson","conflict":"Main problem to solve","quest":"How to resolve the conflict"},
+{"title":"Second story title with ${params.childName}","teaser":"Different story hook","hiddenMoral":"Another lesson","conflict":"Different challenge","quest":"Resolution approach"},
+{"title":"Third story title for ${params.childName}","teaser":"Third story concept","hiddenMoral":"Third lesson","conflict":"Third problem","quest":"Third solution"}
+]`
     }),
     
-    storySegment: (params: { context: string; choice: string; childName: string }) => ({
-      system: `Children's story writer. 150 words max. Age-appropriate, positive themes.`,
-      user: `Continue story for ${params.childName}.
-Previous: ${truncateText(params.context, 200)}
-Choice: ${params.choice}
-Write engaging continuation with vivid imagery.`
+    storySegment: (params: { context: string; choice: string; childName: string; wordLimit?: number; storyType?: string }) => ({
+      system: `You are a children's story writer. Write exactly ${params.wordLimit || 150} words. Age-appropriate content with positive themes and vivid imagery.`,
+      user: `Continue this ${params.storyType || 'medium'} story for ${params.childName}.
+
+Previous context: ${truncateText(params.context, 200)}
+Reader's choice: ${params.choice}
+
+Write the next story segment with:
+- Exactly ${params.wordLimit || 150} words (count carefully)
+- Engaging, age-appropriate content
+- Vivid descriptions children can imagine
+- Natural story progression
+- End with a cliffhanger or choice opportunity`
     })
   }
 };
@@ -153,8 +158,12 @@ export async function optimizedOpenAICall(
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Connection': 'keep-alive'  // Reuse connections for speed
       },
+      keepalive: true,  // Keep connection alive for faster subsequent requests
+      signal: AbortSignal.timeout(15000), // 15s timeout instead of default 30s
       body: JSON.stringify({
         ...requestConfig,
         messages: [

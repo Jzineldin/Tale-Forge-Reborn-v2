@@ -87,7 +87,7 @@ serve(async (req) => {
     const fullStoryText = segments.map(segment => segment.content).join('\n\n');
 
     // Prepare the audio generation request for ElevenLabs
-    const elevenLabsEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech/Brian';
+    const elevenLabsEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech/GBv7mTt0atIp3Br8iCZE';
     
     const audioRequest = {
       text: fullStoryText,
