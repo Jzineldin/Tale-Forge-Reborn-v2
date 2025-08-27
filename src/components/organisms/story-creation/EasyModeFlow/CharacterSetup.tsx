@@ -7,6 +7,7 @@ interface CharacterSetupProps {
   characterTraits: string[];
   storySeed: string;
   genre: string;
+  difficulty: 'short' | 'medium' | 'long' | null;
   onNameChange: (name: string) => void;
   onTraitsChange: (traits: string[]) => void;
   onSeedChange: (seed: string) => void;
@@ -70,6 +71,7 @@ const CharacterSetup: React.FC<CharacterSetupProps> = ({
   characterTraits,
   storySeed,
   genre,
+  difficulty,
   onNameChange,
   onTraitsChange,
   onSeedChange
@@ -84,7 +86,7 @@ const CharacterSetup: React.FC<CharacterSetupProps> = ({
   }, [genre]);
 
   const generateNewSeed = async () => {
-    if (!genre) return;
+    if (!genre || !difficulty) return;
     
     setIsGenerating(true);
     
@@ -92,15 +94,15 @@ const CharacterSetup: React.FC<CharacterSetupProps> = ({
       // Determine context from genre (bedtime/learning/playtime)
       const context = getContextFromGenre(genre);
       
-      // Generate AI-powered story seeds
+      // Generate AI-powered story seeds using the selected difficulty
       const seeds = await generateStorySeeds({
         context,
-        difficulty: 'medium', // Default difficulty for seed generation
+        difficulty: difficulty, // Use the actual selected difficulty
         genre,
         childName: characterName || 'the child'
       });
       
-      // Pick a random seed from the 3 generated
+      // Pick a random seed from the generated seeds
       const randomSeed = seeds[Math.floor(Math.random() * seeds.length)];
       const seedText = convertSeedToString(randomSeed);
       

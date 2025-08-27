@@ -9,6 +9,7 @@ import StoryProgress from '@/components/molecules/StoryProgress';
 import { TTSPlayer } from '@/components/molecules/TTSPlayer';
 import { useStory, useGenerateStorySegment, useGenerateStoryEnding, useGenerateAudio } from '@/utils/performance.tsx';
 import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
+import { BookOpen, Settings, Volume2, VolumeX, ArrowLeft, Sparkles, Play } from 'lucide-react';
 
 // Helper function to convert age format back to difficulty display
 const getDifficultyDisplay = (ageGroup: string): string => {
@@ -86,29 +87,30 @@ const StoryReaderPage: React.FC = () => {
   }, []);
 
   // Track progress for achievements and goals when segments change
-  useEffect(() => {
-    if (user?.id && story && currentSegmentIndex > 0) {
-      const trackReadingProgress = async () => {
-        try {
-          // Update reading progress for achievements
-          await achievementService.updateUserProgress(user.id, {
-            total_reading_time: 1, // Increment by 1 minute per segment read
-            stories_read: currentSegmentIndex === 1 ? 1 : 0, // Count as story started on first segment
-            current_streak: 1
-          });
+  // DISABLED: Achievement system temporarily disabled
+  // useEffect(() => {
+  //   if (user?.id && story && currentSegmentIndex > 0) {
+  //     const trackReadingProgress = async () => {
+  //       try {
+  //         // Update reading progress for achievements
+  //         await achievementService.updateUserProgress(user.id, {
+  //           total_reading_time: 1, // Increment by 1 minute per segment read
+  //           stories_read: currentSegmentIndex === 1 ? 1 : 0, // Count as story started on first segment
+  //           current_streak: 1
+  //         });
 
-          // Update daily reading goal
-          await goalService.updateGoalProgress(user.id, 'daily_engagement', 1);
-        } catch (error) {
-          console.error('Error tracking reading progress:', error);
-        }
-      };
+  //         // Update daily reading goal
+  //         await goalService.updateGoalProgress(user.id, 'daily_engagement', 1);
+  //       } catch (error) {
+  //         console.error('Error tracking reading progress:', error);
+  //       }
+  //     };
 
-      // Debounce progress tracking
-      const timer = setTimeout(trackReadingProgress, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [user?.id, story, currentSegmentIndex]);
+  //     // Debounce progress tracking
+  //     const timer = setTimeout(trackReadingProgress, 5000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [user?.id, story, currentSegmentIndex]);
 
   // Aggressive tab switching fix - multiple event listeners and interval backup
   useEffect(() => {
@@ -497,230 +499,253 @@ const StoryReaderPage: React.FC = () => {
   })) || [];
 
   return (
-    <PageLayout variant="story" maxWidth="md" noPadding>
-      <div className="story-reader-container">
-        {/* Compact Story Header with better visibility */}
-        <CardLayout variant="default" padding="md" className="mb-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <TypographyLayout variant="section" as="h1" className="mb-1">
-                  {story.title}
-                </TypographyLayout>
-                <div className="flex items-center gap-2 text-muted text-xs">
-                  <span>{story.genre}</span>
-                  <span>•</span>
-                  <span>{getDifficultyDisplay(story.age_group)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Compact Controls */}
-            <div className="flex items-center gap-2">
-              {/* Font Size Control - Smaller */}
-              <div className="flex items-center glass rounded-lg p-0.5">
-                <button
-                  onClick={() => handleFontSizeChange('small')}
-                  className={`px-2 py-1 rounded-md transition-all ${fontSize === 'small' ? 'bg-amber-500 text-white' : 'text-muted hover:text-primary'}`}
-                  aria-label="Small font"
-                >
-                  <span className="text-xs font-medium">A</span>
-                </button>
-                <button
-                  onClick={() => handleFontSizeChange('medium')}
-                  className={`px-2 py-1 rounded-md transition-all ${fontSize === 'medium' ? 'bg-amber-500 text-white' : 'text-muted hover:text-primary'}`}
-                  aria-label="Medium font"
-                >
-                  <span className="text-sm font-medium">A</span>
-                </button>
-                <button
-                  onClick={() => handleFontSizeChange('large')}
-                  className={`px-2 py-1 rounded-md transition-all ${fontSize === 'large' ? 'bg-amber-500 text-white' : 'text-muted hover:text-primary'}`}
-                  aria-label="Large font"
-                >
-                  <span className="text-base font-medium">A</span>
-                </button>
-              </div>
-
-              {/* End Story Button - Compact */}
-              {story.segments && story.segments.length >= 2 && !cleanedSegment?.is_end && (
-                <button
-                  onClick={handleStoryEnding}
-                  disabled={isGenerating}
-                  className="btn btn-sm btn-primary"
-                  aria-label="End story"
-                >
-                  End Story
-                </button>
-              )}
-
-              {/* Audio Button - Compact */}
-              {user?.subscription_tier !== 'free' && cleanedSegment && (
-                segmentAudioUrls[currentSegmentIndex] ? (
-                  <button
-                    onClick={() => setShowAudioPlayer(!showAudioPlayer)}
-                    className="btn btn-sm btn-ghost"
-                    aria-label={showAudioPlayer ? "Hide audio" : "Show audio"}
-                  >
-                    {showAudioPlayer ? '🔇' : '🔊'}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleGenerateSegmentAudio(currentSegmentIndex)}
-                    disabled={generatingAudioForSegment === currentSegmentIndex}
-                    className="btn btn-sm btn-ghost disabled:opacity-50"
-                    aria-label="Generate audio"
-                  >
-                    {generatingAudioForSegment === currentSegmentIndex ? '⏳' : '🎵'}
-                  </button>
-                )
-              )}
-            </div>
-          </div>
-        </CardLayout>
-
-      {/* Chapter Navigation - Compact with better visibility */}
-      {story.segments && story.segments.length > 0 && (
-        <div className="mb-3">
-          <StoryProgress
-            totalSegments={story.segments.length}
-            currentSegmentIndex={currentSegmentIndex}
-            onSegmentClick={handleSegmentClick}
-            isStoryComplete={cleanedSegment?.is_end === true}
-            className="bg-slate-900/80 p-1.5 rounded-lg border border-white/10"
-          />
-        </div>
-      )}
-
-      {/* Audio Player - Compact */}
-      {showAudioPlayer && segmentAudioUrls[currentSegmentIndex] && (
-        <div className="mb-3 bg-black/10 rounded-lg p-2">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-white/60 text-xs">Chapter {currentSegmentIndex + 1}</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Clean Header with Navigation */}
+      <div className="sticky top-0 z-40 bg-black/20 backdrop-blur-md border-b border-white/10">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
             <button
-              onClick={() => setShowAudioPlayer(false)}
-              className="text-white/40 hover:text-white/60 text-xs"
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
             >
-              ✕
+              <ArrowLeft className="w-5 h-5" />
+              <span className="hidden sm:inline">Back to Library</span>
             </button>
-          </div>
-          <audio
-            controls
-            className="w-full h-8"
-            src={segmentAudioUrls[currentSegmentIndex]}
-          >
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      )}
-
-      {/* Main Story Content - Compact with better visibility */}
-      <CardLayout variant="default" padding="md" className="overflow-hidden mb-4">
-        {/* Story Image - Balanced size */}
-        {cleanedSegment?.image_url ? (
-          <div className="story-image-container" style={{ height: '200px' }}>
-            <StoryImage
-              src={cleanedSegment.image_url}
-              alt={`Illustration for segment ${currentSegmentIndex + 1}`}
-              className="w-full h-full object-contain"
-              onImageLoad={() => {
-                console.log('🖼️ Parent: Image loaded');
-              }}
-              onImageError={() => console.log('Image failed to load')}
-            />
-          </div>
-        ) : cleanedSegment?.image_prompt ? (
-          <div className="relative bg-black/10 flex items-center justify-center" style={{ height: '200px' }}>
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-400 mx-auto mb-3"></div>
-              <p className="text-white/60 text-sm">Creating illustration...</p>
-              <p className="text-white/40 text-xs mt-1">This usually takes 10-30 seconds</p>
-            </div>
-          </div>
-        ) : (
-          <div className="relative bg-black/10 flex items-center justify-center" style={{ height: '200px' }}>
-            <div className="text-center">
-              <div className="text-4xl mb-3">📚</div>
-              <p className="text-white/60 text-sm">No illustration available</p>
-              <p className="text-white/40 text-xs mt-1">This segment was created without image generation</p>
-            </div>
-          </div>
-        )}
-
-        {/* Story Text - Better background for readability */}
-        <div className="p-content">
-          {isGenerating ? (
-            <div className="text-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
-              <p className="text-body">
-                Creating your next chapter...
-              </p>
-            </div>
-          ) : cleanedSegment ? (
-            <>
-              <div
-                className={`story-text ${fontSizeClasses[fontSize as keyof typeof fontSizeClasses]} mb-4`}
-              >
-                {cleanedSegment.content}
+            
+            <div className="flex items-center gap-3">
+              {/* Font Size Selector */}
+              <div className="flex items-center bg-black/30 rounded-lg p-1">
+                {['small', 'medium', 'large'].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => handleFontSizeChange(size)}
+                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                      fontSize === size 
+                        ? 'bg-amber-500 text-white' 
+                        : 'text-white/60 hover:text-white'
+                    }`}
+                  >
+                    A{size === 'large' ? '+' : size === 'small' ? '-' : ''}
+                  </button>
+                ))}
               </div>
 
-              {/* Check if this is the ending segment */}
-              {cleanedSegment.is_end ? (
-                <div className="mt-4 text-center">
-                  <div className="achievement-card">
-                    <div className="text-3xl mb-2">🎉</div>
-                    <h2 className="achievement-title">Story Complete!</h2>
-                    <p className="achievement-description mb-2">
-                      What an amazing adventure!
-                    </p>
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400"></div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // Story Choices - Compact spacing
-                <div className="mt-4">
-                  <StoryChoices
-                    choices={formattedChoices}
-                    onSelect={handleChoiceSelect}
-                    disabled={isGeneratingSegment}
-                    loading={isGeneratingSegment}
-                    onEndStory={handleStoryEnding}
-                    segmentCount={story.segments?.length || 0}
-                    isGeneratingEnding={isGenerating}
-                  />
-                </div>
+              {/* Audio Control */}
+              {user?.subscription_tier !== 'free' && cleanedSegment && (
+                <button
+                  onClick={() => 
+                    segmentAudioUrls[currentSegmentIndex] 
+                      ? setShowAudioPlayer(!showAudioPlayer)
+                      : handleGenerateSegmentAudio(currentSegmentIndex)
+                  }
+                  disabled={generatingAudioForSegment === currentSegmentIndex}
+                  className="p-2 bg-black/30 hover:bg-black/50 rounded-lg text-white/80 hover:text-white transition-colors"
+                >
+                  {generatingAudioForSegment === currentSegmentIndex ? (
+                    <div className="w-5 h-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : segmentAudioUrls[currentSegmentIndex] ? (
+                    showAudioPlayer ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />
+                  ) : (
+                    <Play className="w-5 h-5" />
+                  )}
+                </button>
               )}
-            </>
-          ) : (
-            <div className="text-center py-6">
-              <p className="text-body mb-3">
-                Ready to begin your story?
-              </p>
-              <button
-                onClick={() => handleChoiceSelect('begin')}
-                disabled={isGeneratingSegment}
-                className="btn btn-primary btn-lg disabled:opacity-50"
-              >
-                {isGeneratingSegment ? 'Starting...' : 'Begin Story'}
-              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Story Header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-full text-amber-400 text-sm font-medium mb-3">
+            <BookOpen className="w-4 h-4" />
+            {story.genre} • {getDifficultyDisplay(story.age_group)}
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            {story.title}
+          </h1>
+          
+          {/* Progress Bar */}
+          {story.segments && story.segments.length > 0 && (
+            <div className="max-w-2xl mx-auto">
+              <StoryProgress
+                totalSegments={story.segments.length}
+                currentSegmentIndex={currentSegmentIndex}
+                onSegmentClick={handleSegmentClick}
+                isStoryComplete={cleanedSegment?.is_end === true}
+                className="bg-black/30 p-3 rounded-xl border border-white/10"
+              />
             </div>
           )}
         </div>
-      </CardLayout>
 
-      {/* Footer Info - Even smaller */}
-      <div className="text-center">
-        <TypographyLayout variant="caption" color="muted" align="center" className="text-[10px]">
-          Created {new Date(story.created_at).toLocaleDateString()}
-        </TypographyLayout>
+        {/* Audio Player */}
+        {showAudioPlayer && segmentAudioUrls[currentSegmentIndex] && (
+          <div className="bg-black/30 rounded-xl p-4 mb-6 border border-white/10">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-white/80 font-medium">Chapter {currentSegmentIndex + 1} Audio</span>
+              <button
+                onClick={() => setShowAudioPlayer(false)}
+                className="text-white/60 hover:text-white/80 transition-colors"
+              >
+                <VolumeX className="w-4 h-4" />
+              </button>
+            </div>
+            <audio
+              controls
+              className="w-full"
+              src={segmentAudioUrls[currentSegmentIndex]}
+              style={{
+                background: 'transparent',
+                borderRadius: '8px'
+              }}
+            >
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        )}
+
+        {/* Main Story Card */}
+        <div className="bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+          {/* Hero Image Section */}
+          {cleanedSegment?.image_url ? (
+            <div className="relative h-64 sm:h-80 md:h-96 bg-gradient-to-b from-purple-900/50 to-black/50">
+              <StoryImage
+                src={cleanedSegment.image_url}
+                alt={`Illustration for chapter ${currentSegmentIndex + 1}`}
+                className="w-full h-full object-cover"
+                onImageLoad={() => console.log('🖼️ Image loaded')}
+                onImageError={() => console.log('Image failed to load')}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <span className="inline-block px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white/90 text-sm">
+                  Chapter {currentSegmentIndex + 1}
+                </span>
+              </div>
+            </div>
+          ) : cleanedSegment?.image_prompt ? (
+            <div className="relative h-64 sm:h-80 md:h-96 bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 relative">
+                  <div className="absolute inset-0 bg-amber-500 rounded-full animate-ping opacity-75"></div>
+                  <div className="relative bg-amber-500 rounded-full w-16 h-16 flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <p className="text-white/80 text-lg font-medium mb-2">Creating your illustration...</p>
+                <p className="text-white/60 text-sm">This usually takes 10-30 seconds</p>
+              </div>
+            </div>
+          ) : (
+            <div className="relative h-48 bg-gradient-to-br from-slate-700/50 to-slate-800/50 flex items-center justify-center">
+              <div className="text-center">
+                <BookOpen className="w-16 h-16 text-white/60 mx-auto mb-3" />
+                <p className="text-white/60 text-lg">Chapter {currentSegmentIndex + 1}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Story Content */}
+          <div className="p-6 md:p-8">
+            {isGenerating ? (
+              <div className="text-center py-12">
+                <div className="w-12 h-12 mx-auto mb-4 relative">
+                  <div className="absolute inset-0 bg-amber-500 rounded-full animate-ping opacity-75"></div>
+                  <div className="relative bg-amber-500 rounded-full w-12 h-12 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-white animate-pulse" />
+                  </div>
+                </div>
+                <p className="text-white/80 text-lg font-medium">
+                  Creating your next chapter...
+                </p>
+              </div>
+            ) : cleanedSegment ? (
+              <>
+                {/* Story Text */}
+                <div className="prose prose-invert max-w-none mb-8">
+                  <div
+                    className={`leading-relaxed text-white/90 ${
+                      fontSize === 'small' ? 'text-sm' : 
+                      fontSize === 'large' ? 'text-lg md:text-xl' : 'text-base md:text-lg'
+                    }`}
+                    style={{
+                      lineHeight: fontSize === 'large' ? '1.8' : '1.7'
+                    }}
+                  >
+                    {cleanedSegment.content}
+                  </div>
+                </div>
+
+                {/* Story Actions */}
+                {cleanedSegment.is_end ? (
+                  <div className="text-center py-8">
+                    <div className="inline-block bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-8 text-center shadow-2xl">
+                      <div className="text-6xl mb-4">🎉</div>
+                      <h2 className="text-2xl font-bold text-white mb-2">Story Complete!</h2>
+                      <p className="text-white/90 mb-4">What an amazing adventure!</p>
+                      <div className="flex justify-center">
+                        <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Story Choices */}
+                    <StoryChoices
+                      choices={formattedChoices}
+                      onSelect={handleChoiceSelect}
+                      disabled={isGeneratingSegment}
+                      loading={isGeneratingSegment}
+                      onEndStory={handleStoryEnding}
+                      segmentCount={story.segments?.length || 0}
+                      isGeneratingEnding={isGenerating}
+                    />
+                    
+                    {/* End Story Option */}
+                    {story.segments && story.segments.length >= 2 && (
+                      <div className="pt-4 border-t border-white/10">
+                        <button
+                          onClick={handleStoryEnding}
+                          disabled={isGenerating}
+                          className="w-full px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/30 rounded-lg text-red-400 hover:text-red-300 hover:border-red-400/50 transition-colors disabled:opacity-50"
+                        >
+                          End Story Here
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <h2 className="text-2xl font-bold text-white mb-4">Ready to begin your story?</h2>
+                <button
+                  onClick={() => handleChoiceSelect('begin')}
+                  disabled={isGeneratingSegment}
+                  className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl shadow-lg transition-all disabled:opacity-50"
+                >
+                  {isGeneratingSegment ? 'Starting...' : 'Begin Adventure'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-white/50 text-sm">
+            Created {new Date(story.created_at).toLocaleDateString()}
+          </p>
+        </div>
       </div>
 
       {/* Story Completion Modal */}
       {showCompletionModal && story && (
-        <div className="modal-backdrop">
-          <div className="modal-content p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-white/20 shadow-2xl max-w-md w-full p-6">
             {/* Close button */}
             <div className="flex justify-end mb-4">
               <button
@@ -738,24 +763,20 @@ const StoryReaderPage: React.FC = () => {
             </div>
 
             {/* Modal Content */}
-            <div className="text-center mb-4">
-              <div className="text-5xl mb-3">🎉</div>
-              <h2 className="title-section mb-2">Story Complete!</h2>
-              <h3 className="title-card-amber mb-1">
-                "{story.title}"
-              </h3>
-              <p className="text-body-sm">
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold text-white mb-2">Story Complete!</h2>
+              <h3 className="text-xl text-amber-400 mb-2">"{story.title}"</h3>
+              <p className="text-white/70">
                 Finished {story.segments?.length || 0} chapters!
               </p>
             </div>
 
-            <div>
-              <div className="glass-card p-4 mb-4 bg-green-500/10 border-green-400/20">
-                <div className="text-center">
-                  <div className="text-3xl mb-2">📚</div>
-                  <h3 className="title-card mb-1">Story saved!</h3>
-                  <p className="text-body-xs">You can revisit or share it anytime.</p>
-                </div>
+            <div className="space-y-4">
+              <div className="bg-green-500/20 border border-green-400/30 rounded-xl p-4 text-center">
+                <BookOpen className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                <h3 className="font-semibold text-green-400 mb-1">Story Saved!</h3>
+                <p className="text-green-400/80 text-sm">You can revisit or share it anytime.</p>
               </div>
 
               <div className="space-y-2">
@@ -764,17 +785,15 @@ const StoryReaderPage: React.FC = () => {
                     setCurrentSegmentIndex(0);
                     setShowCompletionModal(false);
                   }}
-                  className="btn btn-secondary w-full"
+                  className="w-full px-4 py-3 bg-blue-500/20 border border-blue-500/30 rounded-xl text-blue-400 hover:bg-blue-500/30 transition-colors flex items-center justify-center gap-2"
                 >
                   <span>🔁</span>
                   <span>Read Again</span>
                 </button>
 
                 <button
-                  onClick={() => {
-                    navigate(`/stories/${story.id}/complete`);
-                  }}
-                  className="btn btn-secondary w-full"
+                  onClick={() => navigate(`/stories/${story.id}/complete`)}
+                  className="w-full px-4 py-3 bg-purple-500/20 border border-purple-500/30 rounded-xl text-purple-400 hover:bg-purple-500/30 transition-colors flex items-center justify-center gap-2"
                 >
                   <span>📤</span>
                   <span>Share Story</span>
@@ -782,36 +801,35 @@ const StoryReaderPage: React.FC = () => {
 
                 <button
                   onClick={() => navigate('/create')}
-                  className="btn btn-primary w-full"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl shadow-lg transition-all"
                 >
                   Create New Story
                 </button>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/10">
-              <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="mt-6 pt-4 border-t border-white/10">
+              <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p className="stat-value">{story.segments?.length || 0}</p>
-                  <p className="stat-label">Chapters</p>
+                  <p className="text-2xl font-bold text-white">{story.segments?.length || 0}</p>
+                  <p className="text-white/60 text-sm">Chapters</p>
                 </div>
                 <div>
-                  <p className="stat-value">
+                  <p className="text-2xl font-bold text-white">
                     {Math.ceil((story.segments?.reduce((sum, seg) => sum + (seg.content?.split(' ').length || 0), 0) || 0) / 100)}
                   </p>
-                  <p className="stat-label">Credits</p>
+                  <p className="text-white/60 text-sm">Credits</p>
                 </div>
                 <div>
-                  <p className="stat-value">100%</p>
-                  <p className="stat-label">Done</p>
+                  <p className="text-2xl font-bold text-amber-400">100%</p>
+                  <p className="text-white/60 text-sm">Complete</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
-      </div>
-    </PageLayout>
+    </div>
   );
 };
 

@@ -8,7 +8,6 @@ import { goalService } from '@/services/goalService';
 import { toast } from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import StoryCompletionModal from '@/components/molecules/StoryCompletionModal';
-import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 
 interface StoryStats {
   totalWords: number;
@@ -57,46 +56,47 @@ const StoryCompletePage: React.FC = () => {
   }, []);
 
   // Track achievement and goal progress on story completion
-  useEffect(() => {
-    if (story && user?.id) {
-      const trackProgress = async () => {
-        try {
-          // Update achievement progress for story completion
-          await achievementService.updateUserProgress(user.id, {
-            stories_read: 1,
-            total_reading_time: parseInt(stats?.readingTime?.split(' ')[0] || '0'),
-            current_streak: 1
-          });
+  // DISABLED: Achievement system temporarily disabled
+  // useEffect(() => {
+  //   if (story && user?.id) {
+  //     const trackProgress = async () => {
+  //       try {
+  //         // Update achievement progress for story completion
+  //         await achievementService.updateUserProgress(user.id, {
+  //           stories_read: 1,
+  //           total_reading_time: parseInt(stats?.readingTime?.split(' ')[0] || '0'),
+  //           current_streak: 1
+  //         });
 
-          // Check for new achievements
-          await achievementService.checkAndAwardAchievements(user.id);
+  //         // Check for new achievements
+  //         await achievementService.checkAndAwardAchievements(user.id);
 
-          // Update goal progress
-          await goalService.updateGoalProgress(user.id, 'daily_story', 1);
+  //         // Update goal progress
+  //         await goalService.updateGoalProgress(user.id, 'daily_story', 1);
 
-          // Check for new achievements after a short delay to allow processing
-          setTimeout(async () => {
-            const newAchievementsData = await achievementService.getUnclaimedAchievements(user.id);
-            if (newAchievementsData.length > 0) {
-              setNewAchievements(newAchievementsData);
-              toast.success(`🏆 You unlocked ${newAchievementsData.length} new achievement${newAchievementsData.length > 1 ? 's' : ''}!`);
-            }
-          }, 1000);
+  //         // Check for new achievements after a short delay to allow processing
+  //         setTimeout(async () => {
+  //           const newAchievementsData = await achievementService.getUnclaimedAchievements(user.id);
+  //           if (newAchievementsData.length > 0) {
+  //             setNewAchievements(newAchievementsData);
+  //             toast.success(`🏆 You unlocked ${newAchievementsData.length} new achievement${newAchievementsData.length > 1 ? 's' : ''}!`);
+  //           }
+  //         }, 1000);
 
-          // Check for completed goals
-          const goalProgress = await goalService.getUserGoalsWithProgress(user.id);
-          const newlyCompleted = goalProgress.filter(g => g.goal.completed && !g.goal.completed_at);
-          if (newlyCompleted.length > 0) {
-            setCompletedGoals(newlyCompleted);
-          }
-        } catch (error) {
-          console.error('Error tracking story completion progress:', error);
-        }
-      };
+  //         // Check for completed goals
+  //         const goalProgress = await goalService.getUserGoalsWithProgress(user.id);
+  //         const newlyCompleted = goalProgress.filter(g => g.goal.completed && !g.goal.completed_at);
+  //         if (newlyCompleted.length > 0) {
+  //           setCompletedGoals(newlyCompleted);
+  //         }
+  //       } catch (error) {
+  //         console.error('Error tracking story completion progress:', error);
+  //       }
+  //     };
 
-      trackProgress();
-    }
-  }, [story, user?.id, stats]);
+  //     trackProgress();
+  //   }
+  // }, [story, user?.id, stats]);
 
   const handleShareToLibrary = async () => {
     if (!story) return;
@@ -177,32 +177,38 @@ const StoryCompletePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <PageLayout maxWidth="lg" showFloatingElements>
-        <div className="flex justify-center items-center min-h-96">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
-        </div>
-      </PageLayout>
+      <div className="page-container">
+        <section className="p-section">
+          <div className="container-lg">
+            <div className="glass-card text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400 mx-auto"></div>
+            </div>
+          </div>
+        </section>
+      </div>
     );
   }
 
   if (error || !story) {
     return (
-      <PageLayout maxWidth="lg" showFloatingElements>
-        <CardLayout variant="default" padding="xl" className="text-center max-w-md mx-auto">
-          <span className="text-6xl mb-4 block">😞</span>
-          <TypographyLayout variant="card" as="h2" align="center" className="mb-2">
-            Story not found
-          </TypographyLayout>
-          <Link to="/stories" className="btn btn-primary">
-            Back to Stories
-          </Link>
-        </CardLayout>
-      </PageLayout>
+      <div className="page-container">
+        <section className="p-section">
+          <div className="container-lg">
+            <div className="glass-card text-center max-w-md mx-auto">
+              <span className="text-6xl mb-4 block">😞</span>
+              <h2 className="title-card mb-6">Story not found</h2>
+              <Link to="/stories">
+                <Button variant="primary">Back to Stories</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
     );
   }
 
   return (
-    <PageLayout maxWidth="lg" showFloatingElements>
+    <div className="page-container">
       {/* Confetti Effect */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -223,189 +229,201 @@ const StoryCompletePage: React.FC = () => {
       )}
 
       {/* Hero Section */}
-      <CardLayout variant="default" padding="xl" className="text-center mb-8">
-        <div className="text-8xl mb-6 animate-pulse">🏆</div>
-        <TypographyLayout variant="hero" as="h1" align="center" className="mb-4">
-          Story Complete!
-        </TypographyLayout>
-        <TypographyLayout variant="section" as="h2" align="center" className="mb-6 text-amber-300">
-          "{story.title}"
-        </TypographyLayout>
-        <TypographyLayout variant="body" align="center" className="text-xl mb-8 max-w-2xl mx-auto">
-          🎉 Congratulations! You've created an incredible {story.genre} adventure.
-          Your creativity and choices brought this magical story to life!
-        </TypographyLayout>
+      <section className="p-section text-center">
+        <div className="container-lg">
+          <div className="glass-card">
+            <div className="text-8xl mb-6 animate-pulse">🏆</div>
+            <h1 className="title-hero mb-6">
+              Story Complete!
+            </h1>
+            <h2 className="title-section mb-6 text-amber-300">
+              "{story.title}"
+            </h2>
+            <p className="text-body text-xl mb-8 max-w-2xl mx-auto">
+              🎉 Congratulations! You've created an incredible {story.genre} adventure.
+              Your creativity and choices brought this magical story to life!
+            </p>
 
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-              <div className="stat-value">{stats.totalSegments}</div>
-              <div className="stat-label">Chapters</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-              <div className="stat-value">{stats.totalWords}</div>
-              <div className="stat-label">Words</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-              <div className="stat-value">{stats.readingTime}</div>
-              <div className="stat-label">Reading Time</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-white/5 border border-white/10">
-              <div className="stat-value">Today</div>
-              <div className="stat-label">Completed</div>
-            </div>
+            {stats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                <div className="glass-card text-center">
+                  <div className="stat-value">{stats.totalSegments}</div>
+                  <div className="stat-label">Chapters</div>
+                </div>
+                <div className="glass-card text-center">
+                  <div className="stat-value">{stats.totalWords}</div>
+                  <div className="stat-label">Words</div>
+                </div>
+                <div className="glass-card text-center">
+                  <div className="stat-value">{stats.readingTime}</div>
+                  <div className="stat-label">Reading Time</div>
+                </div>
+                <div className="glass-card text-center">
+                  <div className="stat-value">Today</div>
+                  <div className="stat-label">Completed</div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </CardLayout>
+        </div>
+      </section>
 
       {/* Action Cards Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        {/* Share to Library */}
-        <CardLayout variant="default" padding="lg">
-          <div className="text-4xl mb-4">🌟</div>
-          <TypographyLayout variant="card" as="h3" className="mb-3">
-            Share Your Story
-          </TypographyLayout>
-          <TypographyLayout variant="body" className="text-body-sm mb-4">
-            Share your amazing story with the Tale Forge community in our public library.
-          </TypographyLayout>
-          <Button
-            onClick={handleShareToLibrary}
-            disabled={isSharing}
-            className="w-full"
-            variant="primary"
-          >
-            {isSharing ? 'Sharing...' : '✨ Share to Library'}
-          </Button>
-        </CardLayout>
-
-        {/* Download Story */}
-        <CardLayout variant="default" padding="lg">
-          <div className="text-4xl mb-4">📥</div>
-          <TypographyLayout variant="card" as="h3" className="mb-3">
-            Download Story
-          </TypographyLayout>
-          <TypographyLayout variant="body" className="text-body-sm mb-4">
-            Download your complete story as a text file to keep forever.
-          </TypographyLayout>
-          <Button
-            onClick={handleDownloadStory}
-            variant="secondary"
-            className="w-full"
-          >
-            📄 Download Text
-          </Button>
-        </CardLayout>
-
-        {/* Generate Audio */}
-        <CardLayout variant="default" padding="lg">
-          <div className="text-4xl mb-4">🎧</div>
-          <TypographyLayout variant="card" as="h3" className="mb-3">
-            Audio Narration
-          </TypographyLayout>
-          <TypographyLayout variant="body" className="text-body-sm mb-4">
-            Add professional AI narration to bring your story to life for bedtime listening.
-          </TypographyLayout>
-          {audioUrl ? (
-            <div>
-              <audio controls className="w-full mb-3">
-                <source src={audioUrl} type="audio/mpeg" />
-              </audio>
-              <Button variant="outline" className="w-full" disabled>
-                ✅ Audio Available
+            {/* Share to Library */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">🌟</div>
+              <h3 className="title-card mb-3">
+                Share Your Story
+              </h3>
+              <p className="text-body-sm mb-4">
+                Share your amazing story with the Tale Forge community in our public library.
+              </p>
+              <Button
+                onClick={handleShareToLibrary}
+                disabled={isSharing}
+                className="w-full"
+                variant="primary"
+              >
+                {isSharing ? 'Sharing...' : '✨ Share to Library'}
               </Button>
             </div>
-          ) : (
-            <Button
-              onClick={handleOpenAudioModal}
-              variant="primary"
-              className="w-full"
-            >
-              🎙️ Add Narration
-            </Button>
-          )}
-        </CardLayout>
 
-        {/* Social Share */}
-        <CardLayout variant="default" padding="lg">
-          <div className="text-4xl mb-4">📱</div>
-          <TypographyLayout variant="card" as="h3" className="mb-3">
-            Social Share
-          </TypographyLayout>
-          <TypographyLayout variant="body" className="text-body-sm mb-4">
-            Share your creative achievement with friends and family.
-          </TypographyLayout>
-          <Button
-            onClick={handleSocialShare}
-            variant="ghost"
-            className="w-full"
-          >
-            🔗 Share Link
-          </Button>
-        </CardLayout>
+            {/* Download Story */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">📥</div>
+              <h3 className="title-card mb-3">
+                Download Story
+              </h3>
+              <p className="text-body-sm mb-4">
+                Download your complete story as a text file to keep forever.
+              </p>
+              <Button
+                onClick={handleDownloadStory}
+                variant="secondary"
+                className="w-full"
+              >
+                📄 Download Text
+              </Button>
+            </div>
 
-        {/* Create Another */}
-        <CardLayout variant="default" padding="lg">
-          <div className="text-4xl mb-4">✍️</div>
-          <TypographyLayout variant="card" as="h3" className="mb-3">
-            Create Another
-          </TypographyLayout>
-          <TypographyLayout variant="body" className="text-body-sm mb-4">
-            Ready for your next adventure? Create another magical story.
-          </TypographyLayout>
-          <Link to="/create">
-            <Button variant="secondary" className="w-full">
-              🎨 New Story
-            </Button>
-          </Link>
-        </CardLayout>
+            {/* Generate Audio */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">🎧</div>
+              <h3 className="title-card mb-3">
+                Audio Narration
+              </h3>
+              <p className="text-body-sm mb-4">
+                Add professional AI narration to bring your story to life for bedtime listening.
+              </p>
+              {audioUrl ? (
+                <div>
+                  <audio controls className="w-full mb-3">
+                    <source src={audioUrl} type="audio/mpeg" />
+                  </audio>
+                  <Button variant="ghost" className="w-full" disabled>
+                    ✅ Audio Available
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleOpenAudioModal}
+                  variant="primary"
+                  className="w-full"
+                >
+                  🎙️ Add Narration
+                </Button>
+              )}
+            </div>
 
-        {/* View Library */}
-        <CardLayout variant="default" padding="lg">
-          <div className="text-4xl mb-4">📚</div>
-          <TypographyLayout variant="card" as="h3" className="mb-3">
-            Your Library
-          </TypographyLayout>
-          <TypographyLayout variant="body" className="text-body-sm mb-4">
-            View all your created stories and discover new adventures.
-          </TypographyLayout>
-          <Link to="/stories">
-            <Button variant="ghost" className="w-full">
-              📖 View Stories
-            </Button>
-          </Link>
-        </CardLayout>
-      </div>
+            {/* Social Share */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">📱</div>
+              <h3 className="title-card mb-3">
+                Social Share
+              </h3>
+              <p className="text-body-sm mb-4">
+                Share your creative achievement with friends and family.
+              </p>
+              <Button
+                onClick={handleSocialShare}
+                variant="ghost"
+                className="w-full"
+              >
+                🔗 Share Link
+              </Button>
+            </div>
+
+            {/* Create Another */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">✍️</div>
+              <h3 className="title-card mb-3">
+                Create Another
+              </h3>
+              <p className="text-body-sm mb-4">
+                Ready for your next adventure? Create another magical story.
+              </p>
+              <Link to="/create">
+                <Button variant="secondary" className="w-full">
+                  🎨 New Story
+                </Button>
+              </Link>
+            </div>
+
+            {/* View Library */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">📚</div>
+              <h3 className="title-card mb-3">
+                Your Library
+              </h3>
+              <p className="text-body-sm mb-4">
+                View all your created stories and discover new adventures.
+              </p>
+              <Link to="/stories">
+                <Button variant="ghost" className="w-full">
+                  📖 View Stories
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Story Preview */}
-      <CardLayout variant="default" padding="lg">
-        <TypographyLayout variant="section" as="h3" align="center" className="mb-6">
-          Your Complete Story
-        </TypographyLayout>
-        <div className="max-h-96 overflow-y-auto space-y-4">
-          {story.segments.map((segment, index) => (
-            <div key={segment.id} className="border-l-4 border-amber-400 pl-4">
-              <TypographyLayout variant="body" className="text-amber-300 font-semibold mb-2">
-                Chapter {index + 1}
-              </TypographyLayout>
-              <TypographyLayout variant="body">{segment.content}</TypographyLayout>
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h3 className="title-section text-center mb-6">
+              Your Complete Story
+            </h3>
+            <div className="max-h-96 overflow-y-auto space-y-4">
+              {story.segments.map((segment, index) => (
+                <div key={segment.id} className="border-l-4 border-amber-400 pl-4">
+                  <p className="text-body text-amber-300 font-semibold mb-2">
+                    Chapter {index + 1}
+                  </p>
+                  <p className="text-body">{segment.content}</p>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      </CardLayout>
+      </section>
 
       {/* Share Success Modal */}
       {showShareSuccess && (
         <div className="modal-backdrop">
-          <CardLayout variant="default" padding="xl" className="max-w-md mx-auto text-center">
+          <div className="glass-card max-w-md mx-auto text-center">
             <div className="text-6xl mb-4">🌟</div>
-            <TypographyLayout variant="section" as="h3" align="center" className="mb-4">
+            <h3 className="title-section mb-4">
               Story Shared!
-            </TypographyLayout>
-            <TypographyLayout variant="body" align="center" className="mb-6">
+            </h3>
+            <p className="text-body mb-6">
               Your amazing story is now available in the public library for everyone to discover and enjoy!
-            </TypographyLayout>
+            </p>
             <div className="space-y-3">
               <Link to="/discover" className="block">
                 <Button className="w-full" variant="primary">
@@ -420,7 +438,7 @@ const StoryCompletePage: React.FC = () => {
                 Continue Celebrating
               </Button>
             </div>
-          </CardLayout>
+          </div>
         </div>
       )}
 
@@ -436,7 +454,7 @@ const StoryCompletePage: React.FC = () => {
           onAudioPurchased={handleAudioPurchased}
         />
       )}
-    </PageLayout>
+    </div>
   );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 
 const HelpPage: React.FC = () => {
   const faqs = [
@@ -35,60 +36,49 @@ const HelpPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Refined Floating Elements - Same as HomePage */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400/20 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-amber-500/25 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-amber-300/15 rounded-full animate-pulse delay-2000"></div>
-        <div className="absolute top-1/3 right-2/3 w-1 h-1 bg-amber-600/20 rounded-full animate-pulse delay-3000"></div>
-      </div>
-
+    <div className="page-container">
       {/* Hero Section */}
-      <section className="relative z-10 flex-1 flex items-center justify-center py-16 md:py-20 lg:py-24">
-        <div className="container text-center">
-          {/* Hero Container */}
-          <div className="glass-card rounded-2xl p-8 md:p-12 lg:p-16">
-            {/* Header */}
-            <h1 className="title-hero mb-6 sm:mb-8 text-center">
+      <section className="p-section text-center">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h1 className="title-hero mb-8">
               Help Center
             </h1>
-            <p className="text-body text-lg sm:text-xl md:text-2xl max-w-4xl mx-auto leading-relaxed mb-12 sm:mb-16 text-center">
+            <p className="text-body text-xl max-w-4xl mx-auto mb-12 text-slate-200">
               Find answers to common questions and learn how to make the most of Tale Forge
             </p>
             
-            {/* Quick Links Grid - Same structure as HomePage features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            {/* Quick Links Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {quickLinks.map((link, index) => (
                 <a 
                   key={index}
                   href={link.anchor} 
-                  className="glass-card rounded-lg p-6"
+                  className="glass-card hover:border-amber-400/40 transition-all duration-300"
                 >
-                  <h3 className="title-card mb-2">{link.title}</h3>
-                  <p className="text-body">{link.description}</p>
+                  <h3 className="title-card mb-3">{link.title}</h3>
+                  <p className="text-body text-slate-300">{link.description}</p>
                 </a>
               ))}
             </div>
           </div>
         </div>
       </section>
-        
       {/* FAQ Section */}
-      <div className="relative z-10 py-16 md:py-20 lg:py-24">
-        <div className="container-sm">
-          <div className="glass rounded-2xl p-8 md:p-12">
-            <h2 className="title-section text-center mb-12 text-amber-400">
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h2 className="title-section text-center mb-12">
               Frequently Asked Questions
             </h2>
             
-            <div className="space-y-6">
+            <div className="space-y-6 mb-12">
               {faqs.map((faq, index) => (
-                <div key={index} className="glass-card bg-white/5 border border-white/10 rounded-lg p-6">
-                  <h3 className="title-card mb-2">
+                <div key={index} className="glass-card">
+                  <h3 className="title-card mb-3">
                     {faq.question}
                   </h3>
-                  <p className="text-body">
+                  <p className="text-body text-slate-300">
                     {faq.answer}
                   </p>
                 </div>
@@ -96,31 +86,33 @@ const HelpPage: React.FC = () => {
             </div>
 
             {/* Contact Support Section */}
-            <div className="text-center mt-12">
-              <h3 className="title-section mb-4 text-amber-400">
+            <div className="text-center">
+              <h3 className="title-section mb-6">
                 Still Need Help?
               </h3>
-              <p className="text-body mb-8 leading-relaxed">
+              <p className="text-body mb-8 text-slate-200 max-w-2xl mx-auto">
                 Our support team is here to assist you with any questions or issues you may have.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/contact" 
-                  className="btn btn-primary btn-lg"
+                <Button 
+                  asChild
+                  variant="default"
+                  size="lg"
                 >
-                  Contact Support
-                </a>
-                <a 
-                  href="mailto:support@taleforge.com" 
-                  className="btn btn-secondary btn-lg"
+                  <a href="/contact">Contact Support</a>
+                </Button>
+                <Button 
+                  asChild
+                  variant="secondary"
+                  size="lg"
                 >
-                  Email Support
-                </a>
+                  <a href="mailto:support@taleforge.com">Email Support</a>
+                </Button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

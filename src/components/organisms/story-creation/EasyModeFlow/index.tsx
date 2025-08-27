@@ -185,6 +185,7 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
                 characterTraits={data.characterTraits}
                 storySeed={data.storySeed}
                 genre={data.genre || ''}
+                difficulty={data.difficulty}
                 onNameChange={(characterName) => setData({ ...data, characterName })}
                 onTraitsChange={(characterTraits) => setData({ ...data, characterTraits })}
                 onSeedChange={(storySeed) => setData({ ...data, storySeed })}
@@ -239,7 +240,6 @@ const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

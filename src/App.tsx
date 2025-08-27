@@ -39,7 +39,9 @@ const DashboardPage = lazy(() => import('@/pages/authenticated/DashboardPage'));
 const StoriesHubPage = lazy(() => import('@/pages/authenticated/stories/StoriesHubPage'));
 const StoryReaderPage = lazy(() => import('@/pages/authenticated/stories/StoryReaderPage'));
 const StoryCompletePage = lazy(() => import('@/pages/authenticated/stories/StoryCompletePage'));
-const CreateStoryPage = lazy(() => import('@/pages/authenticated/create/CreateStoryPage'));
+// Temporarily switch to direct import to debug
+import CreateStoryPageDirect from '@/pages/authenticated/create/CreateStoryPage';
+const CreateStoryPage = CreateStoryPageDirect;
 const TemplatesPage = lazy(() => import('@/pages/authenticated/TemplatesPage'));
 const AchievementsPage = lazy(() => import('@/pages/authenticated/AchievementsPage'));
 const AccountPage = lazy(() => import('@/pages/authenticated/account/AccountPage'));
@@ -148,6 +150,11 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           <Route path="/create" element={
+            <ProtectedRoute>
+              <AuthenticatedLayout><CreateStoryPage /></AuthenticatedLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/create/easy" element={
             <ProtectedRoute>
               <AuthenticatedLayout><CreateStoryPage /></AuthenticatedLayout>
             </ProtectedRoute>

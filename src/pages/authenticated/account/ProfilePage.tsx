@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/providers/AuthContext';
 import Icon from '@/components/atoms/Icon';
+import Button from '@/components/atoms/Button';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -33,22 +34,25 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+    <div className="page-container">
       {/* Header */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="glass-enhanced p-6 rounded-2xl">
-          <h1 className="fantasy-heading text-3xl font-bold mb-2">
-            My Profile
-          </h1>
-          <p className="text-white/70">
-            Manage your personal information and storytelling preferences
-          </p>
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card text-center max-w-2xl mx-auto">
+            <h1 className="title-hero mb-4">
+              My Profile
+            </h1>
+            <p className="text-body">
+              Manage your personal information and storytelling preferences
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto">
-        <div className="glass-enhanced p-8 rounded-2xl">
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card max-w-4xl mx-auto">
           {/* Avatar and Basic Info */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start mb-8">
             <div className="relative mb-4 sm:mb-0">
@@ -61,38 +65,41 @@ const ProfilePage: React.FC = () => {
             </div>
             
             <div className="sm:ml-6 text-center sm:text-left">
-              <h2 className="text-2xl font-bold text-white mb-1">
+              <h2 className="title-card mb-1">
                 {user?.full_name || user?.email}
               </h2>
-              <p className="text-amber-400 mb-2">
+              <p className="text-amber-400 mb-2 text-body">
                 @{user?.username || 'storyteller'}
               </p>
-              <p className="text-white/70 text-sm">
+              <p className="text-body-sm">
                 Member since {new Date(user?.created_at || Date.now()).toLocaleDateString()}
               </p>
             </div>
 
             <div className="sm:ml-auto mt-4 sm:mt-0">
               {!isEditing ? (
-                <button
+                <Button
                   onClick={() => setIsEditing(true)}
-                  className="fantasy-cta px-6 py-2 text-sm rounded-lg flex items-center"
+                  variant="primary"
+                  size="small"
                 >
                   <Icon name="edit" size={16} className="mr-2" />
                   Edit Profile
-                </button>
+                </Button>
               ) : (
                 <div className="flex space-x-2">
-                  <button
+                  <Button
                     onClick={handleCancel}
-                    className="glass-card text-white border-2 border-white/30 hover:border-white/50 px-4 py-2 text-sm rounded-lg transition-all duration-300"
+                    variant="ghost"
+                    size="small"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleSave}
                     disabled={loading}
-                    className="fantasy-cta px-4 py-2 text-sm rounded-lg flex items-center disabled:opacity-50"
+                    variant="primary"
+                    size="small"
                   >
                     {loading ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -100,7 +107,7 @@ const ProfilePage: React.FC = () => {
                       <Icon name="check" size={16} className="mr-2" />
                     )}
                     Save Changes
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -109,7 +116,7 @@ const ProfilePage: React.FC = () => {
           {/* Profile Form */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-body-sm font-medium mb-2">
                 Full Name
               </label>
               <input
@@ -117,26 +124,26 @@ const ProfilePage: React.FC = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 disabled={!isEditing}
-                className="w-full glass-card border border-white/20 focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/20 rounded-lg px-4 py-3 text-white placeholder-white/50 bg-transparent transition-all duration-300 disabled:opacity-60"
+                className="input-primary disabled:opacity-60"
                 placeholder="Enter your full name"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-body-sm font-medium mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 value={user?.email || ''}
                 disabled={true}
-                className="w-full glass-card border border-white/20 rounded-lg px-4 py-3 text-white/60 bg-transparent opacity-60 cursor-not-allowed"
+                className="input-primary opacity-60 cursor-not-allowed"
                 placeholder="Email cannot be changed"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-body-sm font-medium mb-2">
                 Username
               </label>
               <input
@@ -144,18 +151,18 @@ const ProfilePage: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={!isEditing}
-                className="w-full glass-card border border-white/20 focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/20 rounded-lg px-4 py-3 text-white placeholder-white/50 bg-transparent transition-all duration-300 disabled:opacity-60"
+                className="input-primary disabled:opacity-60"
                 placeholder="Choose a unique username"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-body-sm font-medium mb-2">
                 Account Type
               </label>
-              <div className="glass-card border border-amber-400/30 rounded-lg px-4 py-3 flex items-center">
+              <div className="glass-card border border-amber-400/30 px-4 py-3 flex items-center">
                 <Icon name="star" size={20} className="text-amber-400 mr-2" />
-                <span className="text-amber-300 font-medium">
+                <span className="text-amber-300 font-medium text-body">
                   {user?.role === 'admin' ? 'Administrator' : 'Storyteller'}
                 </span>
               </div>
@@ -163,7 +170,7 @@ const ProfilePage: React.FC = () => {
           </div>
 
           <div className="mb-8">
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-body-sm font-medium mb-2">
               Bio
             </label>
             <textarea
@@ -171,48 +178,49 @@ const ProfilePage: React.FC = () => {
               onChange={(e) => setBio(e.target.value)}
               disabled={!isEditing}
               rows={4}
-              className="w-full glass-card border border-white/20 focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/20 rounded-lg px-4 py-3 text-white placeholder-white/50 bg-transparent transition-all duration-300 disabled:opacity-60"
+              className="textarea-primary disabled:opacity-60"
               placeholder="Tell us about your storytelling journey..."
             />
           </div>
 
           {/* Storytelling Preferences */}
           <div className="border-t border-white/20 pt-8">
-            <h3 className="fantasy-heading text-xl font-bold mb-6">
+            <h3 className="title-section mb-6">
               Storytelling Preferences
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6 text-center">
+              <div className="glass-card text-center">
                 <div className="text-amber-400 mb-4">
                   <Icon name="book" size={32} />
                 </div>
-                <h4 className="text-lg font-semibold text-white mb-2">Stories Created</h4>
-                <p className="text-3xl font-bold text-amber-400">12</p>
-                <p className="text-white/60 text-sm">This month</p>
+                <h4 className="title-card mb-2">Stories Created</h4>
+                <p className="stat-value-large">12</p>
+                <p className="text-body-sm">This month</p>
               </div>
               
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6 text-center">
+              <div className="glass-card text-center">
                 <div className="text-amber-400 mb-4">
                   <Icon name="star" size={32} />
                 </div>
-                <h4 className="text-lg font-semibold text-white mb-2">Favorite Genre</h4>
-                <p className="text-xl font-bold text-amber-400">Fantasy</p>
-                <p className="text-white/60 text-sm">Adventure close 2nd</p>
+                <h4 className="title-card mb-2">Favorite Genre</h4>
+                <p className="stat-value text-amber-400">Fantasy</p>
+                <p className="text-body-sm">Adventure close 2nd</p>
               </div>
               
-              <div className="glass-card bg-white/5 border border-white/10 rounded-lg p-6 text-center">
+              <div className="glass-card text-center">
                 <div className="text-amber-400 mb-4">
                   <Icon name="user" size={32} />
                 </div>
-                <h4 className="text-lg font-semibold text-white mb-2">Reading Level</h4>
-                <p className="text-xl font-bold text-amber-400">All Ages</p>
-                <p className="text-white/60 text-sm">Stories for everyone</p>
+                <h4 className="title-card mb-2">Reading Level</h4>
+                <p className="stat-value text-amber-400">All Ages</p>
+                <p className="text-body-sm">Stories for everyone</p>
               </div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

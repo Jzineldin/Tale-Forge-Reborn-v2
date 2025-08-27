@@ -267,43 +267,50 @@ const PricingPage: React.FC = () => {
                   </Button>
                 </div>
               ))}
+              </div>
             </div>
-          </>
-        )}
+          </section>
+        </>
+      )}
 
-        {/* Extra Credit Bundles */}
-        {activeTab === 'subscription' && (
-          <>
-            {/* How Extra Credits Work */}
-            <div className="glass-card mb-12">
-              <h3 className="title-section text-center mb-8">Running Low? Top Up Anytime!</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-amber-400" />
+      {/* Extra Credit Bundles */}
+      {activeTab === 'subscription' && (
+        <>
+          <section className="p-section">
+            <div className="container-lg">
+              <div className="glass-card">
+                <h3 className="title-section text-center mb-12">Running Low? Top Up Anytime!</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                      <Zap className="w-8 h-8 text-amber-400" />
+                    </div>
+                    <h4 className="title-card mb-2">Instant Delivery</h4>
+                    <p className="text-body text-slate-300">Credits added to your account immediately</p>
                   </div>
-                  <h4 className="title-card mb-2">Instant Delivery</h4>
-                  <p className="text-body">Credits added to your account immediately</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8 text-green-400" />
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-8 h-8 text-green-400" />
+                    </div>
+                    <h4 className="title-card mb-2">Bulk Discounts</h4>
+                    <p className="text-body text-slate-300">Save up to 20% on larger bundles</p>
                   </div>
-                  <h4 className="title-card mb-2">Bulk Discounts</h4>
-                  <p className="text-body">Save up to 20% on larger bundles</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <CreditCard className="w-8 h-8 text-blue-400" />
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <CreditCard className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <h4 className="title-card mb-2">Works with All Plans</h4>
+                    <p className="text-body text-slate-300">Compatible with free and premium accounts</p>
                   </div>
-                  <h4 className="title-card mb-2">Works with All Plans</h4>
-                  <p className="text-body">Compatible with free and premium accounts</p>
                 </div>
               </div>
             </div>
+          </section>
 
-            {/* Extra Credits Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <section className="p-section">
+            <div className="container-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {extraCredits.map((pkg) => (
                 <div
                   key={pkg.id}
@@ -325,7 +332,7 @@ const PricingPage: React.FC = () => {
                     </div>
                     <div className="mb-2">
                       <span className="text-2xl font-semibold text-amber-400">{pkg.credits}</span>
-                      <span className="text-white/60 text-lg"> credits</span>
+                      <span className="text-body text-slate-300 text-lg"> credits</span>
                     </div>
                     {pkg.savings && (
                       <span className="inline-block px-3 py-1 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-400/30">
@@ -335,45 +342,52 @@ const PricingPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-3 mb-6">
-                    <div className="flex items-center text-white/90">
+                    <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span>{pkg.credits} story chapters</span>
+                      <span className="text-body">{pkg.credits} story chapters</span>
                     </div>
-                    <div className="flex items-center text-white/90">
+                    <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span>Add to any plan</span>
+                      <span className="text-body">Add to any plan</span>
                     </div>
-                    <div className="flex items-center text-white/90">
+                    <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
-                      <span>{pkg.price <= 10 ? 'No discount' : pkg.savings}</span>
+                      <span className="text-body">{pkg.price <= 10 ? 'No discount' : pkg.savings}</span>
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => handlePurchaseClick(pkg.stripeLink)}
-                    className={`btn w-full ${pkg.popular ? 'btn-primary' : 'btn-secondary'
-                      }`}
+                    variant={pkg.popular ? 'default' : 'secondary'}
+                    size="lg"
+                    className="w-full"
                   >
                     Buy Now
-                  </button>
+                  </Button>
                 </div>
               ))}
+              </div>
             </div>
-          </>
-        )}
+          </section>
+        </>
+      )}
 
-        {/* Security Notice */}
-        <div className="glass-card text-center">
-          <div className="flex items-center justify-center space-x-3 mb-3">
-            <CreditCard className="w-6 h-6 text-green-400" />
-            <p className="text-white/90 text-lg">
-              Secure payments powered by <span className="text-white font-semibold">Stripe</span>
+      {/* Security Notice */}
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card text-center">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <CreditCard className="w-6 h-6 text-green-400" />
+              <p className="text-body text-lg text-slate-200">
+                Secure payments powered by <span className="text-white font-semibold">Stripe</span>
+              </p>
+            </div>
+            <p className="text-body text-slate-300">
+              All transactions are encrypted and secure. We never store your payment information.
             </p>
           </div>
-          <p className="text-white/70">
-            All transactions are encrypted and secure. We never store your payment information.
-          </p>
         </div>
+      </section>
     </div>
   );
 };

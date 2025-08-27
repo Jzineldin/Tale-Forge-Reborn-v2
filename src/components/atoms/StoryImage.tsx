@@ -53,10 +53,12 @@ const StoryImage: React.FC<StoryImageProps> = ({
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative overflow-hidden ${className}`}>
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-lg">
-          <Skeleton />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-800 animate-pulse">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          </div>
         </div>
       )}
       <img
@@ -64,8 +66,8 @@ const StoryImage: React.FC<StoryImageProps> = ({
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
-        className={`w-full h-full object-cover rounded-lg transition-opacity duration-200 ${
-          isLoading ? 'opacity-0' : 'opacity-100'
+        className={`w-full h-full object-cover transition-all duration-500 ${
+          isLoading ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
         }`}
         style={{
           display: 'block',

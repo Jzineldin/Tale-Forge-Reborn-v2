@@ -31,8 +31,7 @@ const getAuthHeaders = async () => {
   };
   
   console.log('📡 Auth headers prepared:', {
-    hasAuthHeader: !!headers.Authorization,
-    authHeaderStart: headers.Authorization.substring(0, 20) + '...'
+    hasAuthHeader: !!headers.Authorization
   });
   
   return headers;

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@/components/atoms/Button';
-// Removed unused import: Text
-import { StandardPage } from '@/components/design-system';
+import { Button } from '@/components/ui/Button';
 
 // Define types for testimonials
 interface Testimonial {
@@ -93,215 +91,237 @@ const TestimonialsPage: React.FC = () => {
   };
 
   return (
-    <StandardPage 
-      title="💬 What Our Users Say"
-      subtitle="Discover how Tale Forge is creating magical experiences for families, educators, and children around the world."
-      icon="✨"
-      containerSize="large"
-    >
+    <div className="page-container">
+      {/* Hero Section */}
+      <section className="p-section text-center">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h1 className="title-hero mb-8">
+              💬 What Our Users Say
+            </h1>
+            <p className="text-body text-xl max-w-4xl mx-auto mb-12 text-slate-200">
+              Discover how Tale Forge is creating magical experiences for families, educators, and children around the world.
+            </p>
 
-      {/* Filter Controls */}
-      <div className="flex flex-wrap justify-center gap-4 mb-8">
-        <Button 
-          variant={filter === 'all' ? 'primary' : 'secondary'} 
-          onClick={() => setFilter('all')}
-        >
-          All Testimonials
-        </Button>
-        <Button 
-          variant={filter === 'parent' ? 'primary' : 'secondary'} 
-          onClick={() => setFilter('parent')}
-        >
-          Parents
-        </Button>
-        <Button 
-          variant={filter === 'educator' ? 'primary' : 'secondary'} 
-          onClick={() => setFilter('educator')}
-        >
-          Educators
-        </Button>
-        <Button 
-          variant={filter === 'child' ? 'primary' : 'secondary'} 
-          onClick={() => setFilter('child')}
-        >
-          Children
-        </Button>
-      </div>
-
-      {/* Testimonials Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {currentTestimonials.map((testimonial) => (
-          <div 
-            key={testimonial.id} 
-            className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105"
-            onClick={() => handleTestimonialClick(testimonial)}
-          >
-            <div className="relative pb-[100%]"> {/* Square container for image */}
-              <img 
-                src={`/images/testimonials/webp/${testimonial.filename.replace('.png', '.webp')}`} 
-                alt={testimonial.alt}
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <div className="p-4">
-              <p className="text-gray-900 font-medium">
-                {testimonial.userType.charAt(0).toUpperCase() + testimonial.userType.slice(1)}
-              </p>
-              <p className="mt-1 text-sm text-gray-600">
-                {testimonial.date}
-              </p>
+            {/* Filter Controls */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button 
+                variant={filter === 'all' ? 'default' : 'secondary'} 
+                onClick={() => setFilter('all')}
+              >
+                All Testimonials
+              </Button>
+              <Button 
+                variant={filter === 'parent' ? 'default' : 'secondary'} 
+                onClick={() => setFilter('parent')}
+              >
+                Parents
+              </Button>
+              <Button 
+                variant={filter === 'educator' ? 'default' : 'secondary'} 
+                onClick={() => setFilter('educator')}
+              >
+                Educators
+              </Button>
+              <Button 
+                variant={filter === 'child' ? 'default' : 'secondary'} 
+                onClick={() => setFilter('child')}
+              >
+                Children
+              </Button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
+
+      {/* Testimonials Grid */}
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentTestimonials.map((testimonial) => (
+              <div 
+                key={testimonial.id} 
+                className="glass-card cursor-pointer hover:border-amber-400/40 transition-all duration-300 hover:scale-105 overflow-hidden"
+                onClick={() => handleTestimonialClick(testimonial)}
+              >
+                <div className="relative pb-[100%]"> {/* Square container for image */}
+                  <img 
+                    src={`/images/testimonials/webp/${testimonial.filename.replace('.png', '.webp')}`} 
+                    alt={testimonial.alt}
+                    className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-4">
+                  <p className="title-card-small mb-1">
+                    {testimonial.userType.charAt(0).toUpperCase() + testimonial.userType.slice(1)}
+                  </p>
+                  <p className="text-body-xs text-slate-400">
+                    {testimonial.date}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-8">
-          <nav className="flex items-center space-x-2">
-            <Button 
-              variant="secondary" 
-              size="small"
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            
-            {[...Array(totalPages)].map((_, i) => (
-              <Button
-                key={i}
-                variant={currentPage === i + 1 ? 'primary' : 'secondary'}
-                size="small"
-                onClick={() => paginate(i + 1)}
-                className="mx-1"
-              >
-                {i + 1}
-              </Button>
-            ))}
-            
-            <Button 
-              variant="secondary" 
-              size="small"
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-          </nav>
-        </div>
+        <section className="p-section">
+          <div className="container-lg">
+            <div className="flex justify-center">
+              <nav className="flex items-center space-x-2">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                
+                {[...Array(totalPages)].map((_, i) => (
+                  <Button
+                    key={i}
+                    variant={currentPage === i + 1 ? 'default' : 'secondary'}
+                    size="sm"
+                    onClick={() => paginate(i + 1)}
+                    className="mx-1"
+                  >
+                    {i + 1}
+                  </Button>
+                ))}
+                
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </nav>
+            </div>
+          </div>
+        </section>
       )}
 
       {/* Submission Form */}
-      <div className="mt-16 bg-gray-50 rounded-lg p-8">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Share Your Experience
-        </h2>
-        <p className="text-center mb-6 max-w-2xl mx-auto text-gray-600">
-          We'd love to hear how Tale Forge has impacted your storytelling experience. Share your story with our community!
-        </p>
-        
-        <form onSubmit={handleSubmission} className="max-w-2xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Your Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="John Doe"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="john@example.com"
-              />
-            </div>
+      <section className="p-section">
+        <div className="container-lg">
+          <div className="glass-card">
+            <h2 className="title-section text-center mb-6">
+              Share Your Experience
+            </h2>
+            <p className="text-body text-center mb-8 max-w-2xl mx-auto text-slate-200">
+              We'd love to hear how Tale Forge has impacted your storytelling experience. Share your story with our community!
+            </p>
+            
+            <form onSubmit={handleSubmission} className="max-w-2xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label htmlFor="name" className="form-label">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    className="input-glass"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="input-glass"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="userType" className="form-label">
+                  I am a...
+                </label>
+                <select
+                  id="userType"
+                  className="select-primary"
+                >
+                  <option value="parent">Parent</option>
+                  <option value="educator">Educator</option>
+                  <option value="child">Child</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="testimonial" className="form-label">
+                  Your Testimonial
+                </label>
+                <textarea
+                  id="testimonial"
+                  rows={4}
+                  className="textarea-primary"
+                  placeholder="Tell us about your experience with Tale Forge..."
+                ></textarea>
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="image" className="form-label">
+                  Upload Screenshot (Optional)
+                </label>
+                <input
+                  type="file"
+                  id="image"
+                  accept="image/*"
+                  className="input-glass"
+                />
+              </div>
+              
+              <div className="text-center">
+                <Button variant="default" type="submit" size="lg">
+                  Submit Testimonial
+                </Button>
+              </div>
+            </form>
           </div>
-          
-          <div className="mb-6">
-            <label htmlFor="userType" className="block text-sm font-medium text-gray-700 mb-1">
-              I am a...
-            </label>
-            <select
-              id="userType"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="parent">Parent</option>
-              <option value="educator">Educator</option>
-              <option value="child">Child</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          
-          <div className="mb-6">
-            <label htmlFor="testimonial" className="block text-sm font-medium text-gray-700 mb-1">
-              Your Testimonial
-            </label>
-            <textarea
-              id="testimonial"
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Tell us about your experience with Tale Forge..."
-            ></textarea>
-          </div>
-          
-          <div className="mb-6">
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-              Upload Screenshot (Optional)
-            </label>
-            <input
-              type="file"
-              id="image"
-              accept="image/*"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          
-          <div className="text-center">
-            <Button variant="primary" type="submit" size="large">
-              Submit Testimonial
-            </Button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </section>
 
       {/* Lightbox */}
       {selectedTestimonial && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={closeLightbox}>
           <div className="relative max-w-4xl max-h-full" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="absolute top-2 right-2 text-white text-3xl bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center"
+            <Button 
+              className="absolute top-2 right-2 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70"
               onClick={closeLightbox}
+              variant="ghost"
+              size="icon"
             >
               &times;
-            </button>
+            </Button>
             <img 
               src={`/images/testimonials/webp/${selectedTestimonial.filename.replace('.png', '.webp')}`} 
               alt={selectedTestimonial.alt}
               className="max-w-full max-h-full object-contain"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
-              <p className="font-medium">
+              <p className="title-card-small">
                 {selectedTestimonial.alt}
               </p>
-              <p className="mt-1 text-sm">
+              <p className="text-body-sm mt-1">
                 {selectedTestimonial.userType.charAt(0).toUpperCase() + selectedTestimonial.userType.slice(1)} • {selectedTestimonial.date}
               </p>
             </div>
           </div>
         </div>
       )}
-    </StandardPage>
+    </div>
   );
 };
 
