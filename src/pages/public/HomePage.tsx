@@ -70,7 +70,7 @@ const HomePage: React.FC = () => {
       <section className="relative z-10 flex-1 flex items-center justify-center py-16 md:py-20 lg:py-24">
         <div className="container-lg text-center">
           {/* Hero Container */}
-          <div className="glass-card rounded-2xl p-8 md:p-12 lg:p-16">
+          <div className="glass rounded-2xl p-8 md:p-12 lg:p-16">
             {/* Main Title */}
             <h1 className="title-hero mb-8 text-center">
               TALE FORGE

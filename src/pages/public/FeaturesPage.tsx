@@ -55,10 +55,25 @@ const FeaturesPage: React.FC = () => {
   ];
 
   return (
-    <div className="page-container">
-      {/* Hero Section */}
-      <section className="p-section text-center">
-        <div className="container-lg">
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/images/backgrounds/magical-space-nebula-1.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center'
+        }}
+      />
+      
+      {/* Overlay for better text readability */}
+      <div className="fixed inset-0 bg-black/50" />
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <section className="p-section text-center">
+          <div className="container-lg">
           <div className="glass-card">
             <h1 className="title-hero mb-8">
               Powerful Features for Storytelling
@@ -79,52 +94,53 @@ const FeaturesPage: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Benefits Section */}
-      <section className="p-section">
-        <div className="container-lg">
-          <div className="glass-card">
-            <h2 className="title-section text-center mb-12">
-              Why Choose Tale Forge?
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="glass-card">
-                  <h3 className="title-card mb-3">{benefit.title}</h3>
-                  <p className="text-body text-slate-300">{benefit.description}</p>
-                </div>
-              ))}
+        {/* Benefits Section */}
+        <section className="p-section">
+          <div className="container-lg">
+            <div className="glass-card">
+              <h2 className="title-section text-center mb-12">
+                Why Choose Tale Forge?
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {benefits.map((benefit, index) => (
+                  <div key={index} className="glass-card">
+                    <h3 className="title-card mb-3">{benefit.title}</h3>
+                    <p className="text-body text-slate-300">{benefit.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Call-to-Action Section */}
-      <section className="p-section text-center">
-        <div className="container-lg">
-          <div className="glass-card">
-            <h2 className="title-section mb-6">
-              Ready to Start Creating Amazing Stories?
-            </h2>
-            
-            <p className="text-body text-xl mb-8 text-slate-200 max-w-2xl mx-auto">
-              Join thousands of families who are already using Tale Forge to create magical storytelling experiences.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="default" size="lg">
-                Start Creating Stories
-              </Button>
-              <Button variant="secondary" size="lg">
-                View Pricing Plans
-              </Button>
+        {/* Call-to-Action Section */}
+        <section className="p-section text-center">
+          <div className="container-lg">
+            <div className="glass-card">
+              <h2 className="title-section mb-6">
+                Ready to Start Creating Amazing Stories?
+              </h2>
+              
+              <p className="text-body text-xl mb-8 text-slate-200 max-w-2xl mx-auto">
+                Join thousands of families who are already using Tale Forge to create magical storytelling experiences.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button variant="default" size="lg">
+                  Start Creating Stories
+                </Button>
+                <Button variant="secondary" size="lg">
+                  View Pricing Plans
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };

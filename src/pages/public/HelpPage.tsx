@@ -36,10 +36,25 @@ const HelpPage: React.FC = () => {
   ];
 
   return (
-    <div className="page-container">
-      {/* Hero Section */}
-      <section className="p-section text-center">
-        <div className="container-lg">
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/images/backgrounds/cosmic-garden.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center'
+        }}
+      />
+      
+      {/* Overlay for better text readability */}
+      <div className="fixed inset-0 bg-black/50" />
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <section className="p-section text-center">
+          <div className="container-lg">
           <div className="glass-card">
             <h1 className="title-hero mb-8">
               Help Center
@@ -62,57 +77,58 @@ const HelpPage: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-      {/* FAQ Section */}
-      <section className="p-section">
-        <div className="container-lg">
-          <div className="glass-card">
-            <h2 className="title-section text-center mb-12">
-              Frequently Asked Questions
-            </h2>
-            
-            <div className="space-y-6 mb-12">
-              {faqs.map((faq, index) => (
-                <div key={index} className="glass-card">
-                  <h3 className="title-card mb-3">
-                    {faq.question}
-                  </h3>
-                  <p className="text-body text-slate-300">
-                    {faq.answer}
-                  </p>
-                </div>
-              ))}
-            </div>
+          </div>
+        </section>
+        {/* FAQ Section */}
+        <section className="p-section">
+          <div className="container-lg">
+            <div className="glass-card">
+              <h2 className="title-section text-center mb-12">
+                Frequently Asked Questions
+              </h2>
+              
+              <div className="space-y-6 mb-12">
+                {faqs.map((faq, index) => (
+                  <div key={index} className="glass-card">
+                    <h3 className="title-card mb-3">
+                      {faq.question}
+                    </h3>
+                    <p className="text-body text-slate-300">
+                      {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
 
-            {/* Contact Support Section */}
-            <div className="text-center">
-              <h3 className="title-section mb-6">
-                Still Need Help?
-              </h3>
-              <p className="text-body mb-8 text-slate-200 max-w-2xl mx-auto">
-                Our support team is here to assist you with any questions or issues you may have.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  asChild
-                  variant="default"
-                  size="lg"
-                >
-                  <a href="/contact">Contact Support</a>
-                </Button>
-                <Button 
-                  asChild
-                  variant="secondary"
-                  size="lg"
-                >
-                  <a href="mailto:support@taleforge.com">Email Support</a>
-                </Button>
+              {/* Contact Support Section */}
+              <div className="text-center">
+                <h3 className="title-section mb-6">
+                  Still Need Help?
+                </h3>
+                <p className="text-body mb-8 text-slate-200 max-w-2xl mx-auto">
+                  Our support team is here to assist you with any questions or issues you may have.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    asChild
+                    variant="default"
+                    size="lg"
+                  >
+                    <a href="/contact">Contact Support</a>
+                  </Button>
+                  <Button 
+                    asChild
+                    variant="secondary"
+                    size="lg"
+                  >
+                    <a href="mailto:support@taleforge.com">Email Support</a>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };

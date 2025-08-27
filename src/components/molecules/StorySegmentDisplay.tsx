@@ -66,7 +66,7 @@ const StorySegmentDisplay: React.FC<StorySegmentDisplayProps> = ({
       )}
 
       {/* Story Content */}
-      <div className="max-w-4xl mx-auto bg-slate-950/60 backdrop-blur-sm rounded-xl p-6">
+      <div className="max-w-4xl mx-auto bg-slate-950/60 backdrop-blur-sm rounded-xl p-8">
         
         <div className={`${getFontSizeClass(fontSize)} leading-relaxed text-gray-100 text-center space-y-4`}>
           {(segment.segment_text || segment.content)?.split('\n\n').map((paragraph: string, index: number) => (

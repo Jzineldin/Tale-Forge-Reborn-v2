@@ -259,9 +259,9 @@ const PricingPage: React.FC = () => {
 
                   <Button
                     onClick={() => pkg.id === 'free' ? window.location.href = '/signup' : handlePurchaseClick(pkg.stripeLink)}
-                    variant={pkg.popular ? 'default' : 'secondary'}
+                    variant="primary"
                     size="lg"
-                    className="w-full"
+                    className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''}`}
                   >
                     {pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
                   </Button>
@@ -358,9 +358,9 @@ const PricingPage: React.FC = () => {
 
                   <Button
                     onClick={() => handlePurchaseClick(pkg.stripeLink)}
-                    variant={pkg.popular ? 'default' : 'secondary'}
+                    variant="primary"
                     size="lg"
-                    className="w-full"
+                    className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''}`}
                   >
                     Buy Now
                   </Button>

@@ -160,11 +160,13 @@ const StoryReaderPage: React.FC = () => {
             onSettings={() => setShowSettings(true)}
           />
 
-          {/* Progress Bar */}
+          {/* Chapter Indicator */}
           <StoryProgress
-            currentSegment={currentSegmentIndex}
+            currentSegmentIndex={currentSegmentIndex}
             totalSegments={story.segments?.length || 0}
-            className="mb-8"
+            isStoryComplete={story.status === 'completed' || story.is_completed}
+            onSegmentClick={(index) => setCurrentSegmentIndex(index)}
+            className="mb-6"
           />
 
           {/* Main Story Content - Simplified without glass box */}
@@ -189,15 +191,23 @@ const StoryReaderPage: React.FC = () => {
               )}
 
               {/* Story Choices */}
-              {currentSegment?.choices && currentSegment.choices.length > 0 && (
+              {currentSegment?.choices && currentSegment.choices.length > 0 && !isLastSegment && (
                 <div className="mt-8">
                   <StoryChoices
                     choices={currentSegment.choices}
-                    onSelect={(choiceId) => {
-                      // Handle choice selection logic here
+                    onSelect={async (choiceId) => {
                       console.log('Choice selected:', choiceId);
+                      // Find which choice index was selected
+                      const choiceIndex = currentSegment.choices.findIndex((c: any) => c.id === choiceId);
+                      if (choiceIndex !== -1) {
+                        // Generate next segment based on the selected choice
+                        await handleGenerateSegment();
+                      }
                     }}
                     segmentCount={story.segments?.length || 0}
+                    onEndStory={handleGenerateEnding}
+                    isGeneratingEnding={isGenerating}
+                    disabled={isGenerating}
                   />
                 </div>
               )}

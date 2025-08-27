@@ -25,6 +25,7 @@ const SimplePricingPage = lazy(() => import('@/pages/public/SimplePricingPage'))
 const PaymentSuccessPage = lazy(() => import('@/pages/public/PaymentSuccessPage'));
 const PaymentCancelPage = lazy(() => import('@/pages/public/PaymentCancelPage'));
 const PaymentTestPage = lazy(() => import('@/pages/public/PaymentTestPage'));
+const StripeTestPage = lazy(() => import('@/pages/public/StripeTestPage'));
 const TestimonialsPage = lazy(() => import('@/pages/public/TestimonialsPage'));
 const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'));
 const TermsPage = lazy(() => import('@/pages/legal/TermsPage'));
@@ -115,6 +116,7 @@ const AppContent = () => {
           <Route path="/payment/success" element={<MainLayout><PaymentSuccessPage /></MainLayout>} />
           <Route path="/payment/cancel" element={<MainLayout><PaymentCancelPage /></MainLayout>} />
           <Route path="/payment/test" element={<MainLayout><PaymentTestPage /></MainLayout>} />
+          <Route path="/stripe-test" element={<MainLayout><StripeTestPage /></MainLayout>} />
           <Route path="/testimonials" element={<MainLayout><TestimonialsPage /></MainLayout>} />
           <Route path="/legal/privacy" element={<MainLayout><PrivacyPage /></MainLayout>} />
           <Route path="/legal/terms" element={<MainLayout><TermsPage /></MainLayout>} />

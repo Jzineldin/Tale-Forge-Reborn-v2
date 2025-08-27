@@ -32,17 +32,24 @@ serve(async (req: Request) => {
       throw new Error('Unauthorized');
     }
 
-    const { planId, successUrl, cancelUrl } = await req.json();
+    const { planId, mode = 'subscription', productId, successUrl, cancelUrl } = await req.json();
 
+    // Price IDs for subscriptions and credit packages
     const priceIds: Record<string, string> = {
-      'premium': Deno.env.get('STRIPE_PRICE_PREMIUM') ?? '',
+      // Subscriptions
+      'basic': Deno.env.get('STRIPE_PRICE_BASIC') ?? '',
       'pro': Deno.env.get('STRIPE_PRICE_PRO') ?? '',
-      'family': Deno.env.get('STRIPE_PRICE_FAMILY') ?? '',
+      // Credit packages
+      'small': Deno.env.get('STRIPE_PRICE_SMALL') ?? '',
+      'medium': Deno.env.get('STRIPE_PRICE_MEDIUM') ?? '',
+      'large': Deno.env.get('STRIPE_PRICE_LARGE') ?? '',
+      'mega': Deno.env.get('STRIPE_PRICE_MEGA') ?? '',
     };
 
-    const priceId = priceIds[planId];
+    // For one-time payments, use productId; for subscriptions, use planId
+    const priceId = mode === 'payment' ? priceIds[productId] : priceIds[planId];
     if (!priceId) {
-      throw new Error('Invalid plan ID');
+      throw new Error(`Invalid ${mode === 'payment' ? 'product' : 'plan'} ID`);
     }
 
     // Check if customer exists
@@ -84,7 +91,7 @@ serve(async (req: Request) => {
           quantity: 1,
         },
       ],
-      mode: 'subscription',
+      mode: mode as 'payment' | 'subscription',
       allow_promotion_codes: true,
       success_url: successUrl || `${req.headers.get('origin')}/account/billing?success=true`,
       cancel_url: cancelUrl || `${req.headers.get('origin')}/credits`,

@@ -116,13 +116,20 @@ IMPORTANT: Respond with valid JSON in this exact format:
 {
   "story_text": "Your story segment here (2-3 short paragraphs)",
   "choices": [
-    "Choice 1 (5-10 words)",
-    "Choice 2 (5-10 words)", 
-    "Choice 3 (5-10 words)"
+    "First choice that directly relates to the story segment you just wrote",
+    "Second choice that offers an alternative path based on the story content", 
+    "Third choice that presents a different option mentioned or implied in your story"
   ]
 }
 
-Make sure the story_text is engaging and age-appropriate, and the 3 choices continue the story in different directions.`;
+CRITICAL CHOICE REQUIREMENTS:
+- Each choice must be ONE SHORT SENTENCE (5-10 words maximum)
+- Keep choices simple and clear for children to understand
+- Choices MUST be directly relevant to what just happened in YOUR story segment
+- Reference specific characters or objects from your story
+- Offer three genuinely different story directions
+
+Make sure the story_text is engaging and age-appropriate, and the 3 choices are meaningful continuations that a child would understand.`;
 
     const requestBody = {
       model: providerConfig.model,

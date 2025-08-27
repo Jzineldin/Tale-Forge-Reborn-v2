@@ -20,14 +20,16 @@ export const GPT4O_OPTIMIZED = {
   // Optimized prompt templates
   prompts: {
     storySeeds: (params: { genre: string; childName: string }) => ({
-      system: `You are a children's story creator. Generate ONLY valid JSON array with no markdown formatting, no code blocks, no extra text.`,
-      user: `Create 3 unique ${params.genre} story seeds for a child named ${params.childName}. Each seed should be a complete story concept.
+      system: `You are a creative children's story writer. Generate ONLY valid JSON array with no markdown formatting, no code blocks, no extra text.`,
+      user: `Create 3 unique and varied ${params.genre} story concepts. The main character is named ${params.childName}.
+
+IMPORTANT: Each story should have a DIFFERENT opening and structure. Avoid starting with "The child's" or "${params.childName}'s" - use creative, varied beginnings.
 
 Return exactly this JSON format:
 [
-{"title":"Story title featuring ${params.childName}","teaser":"One sentence story hook","hiddenMoral":"Life lesson","conflict":"Main problem to solve","quest":"How to resolve the conflict"},
-{"title":"Second story title with ${params.childName}","teaser":"Different story hook","hiddenMoral":"Another lesson","conflict":"Different challenge","quest":"Resolution approach"},
-{"title":"Third story title for ${params.childName}","teaser":"Third story concept","hiddenMoral":"Third lesson","conflict":"Third problem","quest":"Third solution"}
+{"title":"Creative title here","teaser":"Engaging story hook that starts uniquely","hiddenMoral":"Life lesson learned","conflict":"Central challenge","quest":"Path to resolution"},
+{"title":"Different creative title","teaser":"Completely different opening and premise","hiddenMoral":"Different lesson","conflict":"Different type of challenge","quest":"Alternative resolution"},  
+{"title":"Third unique title","teaser":"Yet another unique story beginning","hiddenMoral":"Third distinct lesson","conflict":"Third type of problem","quest":"Third approach"}
 ]`
     }),
     

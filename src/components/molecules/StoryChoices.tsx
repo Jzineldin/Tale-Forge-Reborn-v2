@@ -55,28 +55,28 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
   });
 
   return (
-    <div className="space-y-3">
-      <p className="text-white/70 text-xs font-medium">
+    <div className="max-w-4xl mx-auto bg-slate-950/60 backdrop-blur-sm rounded-xl p-8 space-y-4">
+      <p className="text-gray-300 text-sm font-medium">
         What should happen next?
       </p>
       
-      {/* Story Choices - Enhanced glass effect to match theme */}
+      {/* Story Choices - Same container style as segment text with orange accent */}
       <div className="space-y-3">
         {validChoices.map((choice, index) => (
           <button
             key={choice.id}
-            className="w-full text-left py-4 px-5 glass-card hover:bg-white/10 rounded-xl transition-all duration-300 border border-amber-400/20 hover:border-amber-400/40 hover:shadow-lg hover:shadow-amber-500/10 group"
+            className="w-full text-left py-4 px-5 bg-slate-900/40 hover:bg-slate-900/60 rounded-lg transition-all duration-300 border border-orange-500/30 hover:border-orange-500/50 group"
             onClick={() => onSelect(choice.id)}
             disabled={disabled || loading}
           >
-            <div className="flex items-start gap-2.5">
-              <span className="text-amber-400 font-bold text-sm">
+            <div className="flex items-start gap-3">
+              <span className="text-orange-500 font-bold text-sm">
                 {String.fromCharCode(65 + index)}.
               </span>
-              <span className="text-white text-sm flex-grow">
+              <span className="text-gray-100 text-sm flex-grow">
                 {choice.text}
               </span>
-              <span className="text-amber-400/60 group-hover:text-amber-400 transition-colors text-sm">
+              <span className="text-orange-500/60 group-hover:text-orange-500 transition-colors text-sm">
                 →
               </span>
             </div>
@@ -86,12 +86,12 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
 
       {/* End Story Option - Matches main theme */}
       {showEndStoryOption && (
-        <div className="pt-3 mt-3 border-t border-white/10">
-          <p className="text-white/40 text-[11px] mb-2 text-center">
+        <div className="pt-3 mt-3 border-t border-slate-800/50">
+          <p className="text-gray-400 text-xs mb-2 text-center">
             Or wrap up your adventure:
           </p>
           <button
-            className="w-full py-4 px-5 glass-card bg-gradient-to-r from-amber-500/20 to-orange-600/20 hover:from-amber-500/30 hover:to-orange-600/30 rounded-xl transition-all duration-300 text-amber-400 font-medium border border-amber-400/30 hover:border-amber-400/50 shadow-lg hover:shadow-amber-500/20"
+            className="w-full py-4 px-5 bg-gradient-to-r from-orange-600/20 to-amber-600/20 hover:from-orange-600/30 hover:to-amber-600/30 rounded-lg transition-all duration-300 text-orange-400 font-medium border border-orange-500/30 hover:border-orange-500/50"
             onClick={() => {
               console.log('🎬 End Story button clicked');
               onEndStory?.();
