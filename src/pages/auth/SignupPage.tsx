@@ -235,9 +235,9 @@ const SignupPage: React.FC = () => {
               </Link>
             </p>
           </div>
-        </div>
+        </CardLayout>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

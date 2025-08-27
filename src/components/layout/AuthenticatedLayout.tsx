@@ -30,7 +30,6 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({ children, sho
   return (
     <div className="min-h-screen flex flex-col">
       <PrimaryNavigation />
-      {navContext !== 'none' && <SecondaryNavigation context={navContext} />}
       <MobileNavigation />
       
       <main className="flex-grow">

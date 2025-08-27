@@ -16,7 +16,11 @@ export interface EasyModeData {
   storySeed: string;
 }
 
-const EasyModeFlow: React.FC = () => {
+interface EasyModeFlowProps {
+  onBack?: () => void;
+}
+
+const EasyModeFlow: React.FC<EasyModeFlowProps> = ({ onBack }) => {
   const navigate = useNavigate();
   const { mutate: createStory, isLoading } = useCreateStory();
   
@@ -40,7 +44,11 @@ const EasyModeFlow: React.FC = () => {
       setStep(step - 1);
     } else {
       // Go back to mode selection
-      navigate('/create');
+      if (onBack) {
+        onBack();
+      } else {
+        navigate('/create');
+      }
     }
   };
 
@@ -79,10 +87,55 @@ const EasyModeFlow: React.FC = () => {
   };
 
   return (
-    <PageLayout maxWidth="xl" showFloatingElements>
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen">
+      {/* Floating magical elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({length: 12}).map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-pulse text-xl opacity-60"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`
+            }}
+          >
+            {['✨', '⭐', '🌟', '💫'][Math.floor(Math.random() * 4)]}
+          </div>
+        ))}
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 
+            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight"
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 25%, #f59e0b 50%, #d97706 75%, #f59e0b 100%)',
+              backgroundSize: '400% 400%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: 'gradient-shift 8s ease infinite'
+            }}
+          >
+            Easy Story Creation
+          </h1>
+          <p className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Create magical stories in just 3 simple steps. Perfect for busy parents who want personalized tales for their children.
+          </p>
+        </div>
+
         {/* Progress Indicator */}
-        <CardLayout variant="default" padding="lg" className="mb-8">
+        <div 
+          className="rounded-3xl p-6 mb-8 shadow-2xl border backdrop-blur-lg"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
+            borderColor: 'rgba(255,255,255,0.3)',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
+          }}
+        >
           <div className="flex items-center justify-between">
             {[1, 2, 3].map((stepNum) => (
               <div key={stepNum} className="flex-1 flex items-center">
@@ -117,14 +170,28 @@ const EasyModeFlow: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardLayout>
+        </div>
 
         {/* Step Content */}
-        <CardLayout variant="default" padding="xl" className="mb-8">
+        <div 
+          className="rounded-3xl p-8 mb-8 shadow-2xl border backdrop-blur-lg"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
+            borderColor: 'rgba(255,255,255,0.3)',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
+          }}
+        >
           {/* Loading Overlay */}
           {isLoading && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <CardLayout variant="default" padding="xl" className="flex flex-col items-center gap-4">
+              <div 
+                className="rounded-3xl p-8 shadow-2xl border backdrop-blur-lg flex flex-col items-center gap-4"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
+                }}
+              >
                 <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
                 <TypographyLayout variant="section" as="h3" align="center">
                   Creating Your Story...
@@ -137,7 +204,7 @@ const EasyModeFlow: React.FC = () => {
                   <TypographyLayout variant="body" className="text-body-sm text-white/70">🎨 Generating illustrations...</TypographyLayout>
                   <TypographyLayout variant="body" className="text-body-sm text-white/70">🎯 Personalizing for {data.characterName || 'your child'}...</TypographyLayout>
                 </div>
-              </CardLayout>
+              </div>
             </div>
           )}
 
@@ -174,7 +241,7 @@ const EasyModeFlow: React.FC = () => {
           <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/10">
             <button
               onClick={handleBack}
-              className="btn btn-secondary"
+              className="text-white/80 hover:text-white transition-all duration-300 px-6 py-3 rounded-2xl hover:bg-white/10 text-sm font-medium border border-white/20 hover:border-white/30 backdrop-blur-sm"
               disabled={isLoading}
             >
               ← Back
@@ -183,7 +250,7 @@ const EasyModeFlow: React.FC = () => {
             {step < 3 ? (
               <button
                 onClick={handleNext}
-                className="btn btn-primary"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 disabled={!isStepValid() || isLoading}
               >
                 Next →
@@ -191,7 +258,7 @@ const EasyModeFlow: React.FC = () => {
             ) : (
               <button
                 onClick={handleCreateStory}
-                className="btn btn-primary btn-lg group"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-4 rounded-2xl text-base font-medium transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group flex items-center gap-2"
                 disabled={!isStepValid() || isLoading}
               >
                 <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
@@ -200,18 +267,31 @@ const EasyModeFlow: React.FC = () => {
               </button>
             )}
           </div>
-        </CardLayout>
+        </div>
 
         {/* Help Text */}
         <div className="text-center">
-          <TypographyLayout variant="body" color="muted" align="center" className="text-body-sm">
-            {step === 1 && "Choose how long you want your story to be"}
-            {step === 2 && "Pick a genre that your child will love"}
-            {step === 3 && "Personalize the story with your child's name"}
-          </TypographyLayout>
+          <div 
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl backdrop-blur-sm"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}
+          >
+            <span className="text-amber-400 text-lg">
+              {step === 1 && "📚"}
+              {step === 2 && "🎭"}
+              {step === 3 && "👤"}
+            </span>
+            <TypographyLayout variant="body" className="text-white/90 font-medium">
+              {step === 1 && "Choose how long you want your story to be"}
+              {step === 2 && "Pick a genre that your child will love"}
+              {step === 3 && "Personalize the story with your child's name"}
+            </TypographyLayout>
+          </div>
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 };
 

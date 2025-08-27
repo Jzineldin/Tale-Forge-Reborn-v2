@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle, Zap, CreditCard } from 'lucide-react';
 
 interface CreditPackage {
@@ -14,6 +14,34 @@ interface CreditPackage {
 
 const PricingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'packages' | 'subscription'>('packages');
+
+  // Handle body background for this page
+  useEffect(() => {
+    const body = document.body;
+    const originalBackground = body.style.background;
+    const originalBackgroundImage = body.style.backgroundImage;
+    const originalBackgroundAttachment = body.style.backgroundAttachment;
+    const originalBackgroundSize = body.style.backgroundSize;
+    const originalBackgroundPosition = body.style.backgroundPosition;
+    const originalBackgroundRepeat = body.style.backgroundRepeat;
+    
+    body.style.background = 'none';
+    body.style.backgroundImage = 'url(/images/backgrounds/background-image.png)';
+    body.style.backgroundAttachment = 'fixed';
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundPosition = 'center';
+    body.style.backgroundRepeat = 'no-repeat';
+    
+    // Cleanup function to restore original background
+    return () => {
+      body.style.background = originalBackground;
+      body.style.backgroundImage = originalBackgroundImage;
+      body.style.backgroundAttachment = originalBackgroundAttachment;
+      body.style.backgroundSize = originalBackgroundSize;
+      body.style.backgroundPosition = originalBackgroundPosition;
+      body.style.backgroundRepeat = originalBackgroundRepeat;
+    };
+  }, []);
 
   // Monthly subscription plans
   const monthlyPlans: CreditPackage[] = [
@@ -93,66 +121,64 @@ const PricingPage: React.FC = () => {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="title-hero mb-4">
-          💰 Get Story Credits
-        </h1>
-        <p className="text-body text-lg sm:text-xl max-w-3xl mx-auto">
-          Purchase credits to create amazing AI-powered stories for your children
-        </p>
+      <h1 className="title-hero mb-4 text-center">
+        💰 Get Story Credits
+      </h1>
+      <p className="text-body text-lg sm:text-xl max-w-3xl mx-auto text-center mb-12">
+        Purchase credits to create amazing AI-powered stories for your children
+      </p>
+
+      {/* Tab Navigation */}
+      <div className="glass-card p-2 w-fit mx-auto mb-12">
+        <button
+          onClick={() => setActiveTab('packages')}
+          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'packages'
+            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+            }`}
+        >
+          Monthly Plans
+        </button>
+        <button
+          onClick={() => setActiveTab('subscription')}
+          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'subscription'
+            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+            }`}
+        >
+          Extra Credits
+        </button>
       </div>
-        {/* Tab Navigation */}
-        <div className="flex justify-center mb-12">
-          <div className="glass-card p-2">
-            <button
-              onClick={() => setActiveTab('packages')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'packages'
-                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-            >
-              Monthly Plans
-            </button>
-            <button
-              onClick={() => setActiveTab('subscription')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${activeTab === 'subscription'
-                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-            >
-              Extra Credits
-            </button>
-          </div>
-        </div>
 
         {/* Monthly Plans */}
         {activeTab === 'packages' && (
           <>
             {/* How It Works */}
-            <div className="glass-card mb-12">
-              <h3 className="title-section text-center mb-8">Simple Credit System</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-amber-400" />
-                  </div>
-                  <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
-                  <p className="text-body">Includes AI text + beautiful illustration</p>
+            <div className="glass-card mb-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <h3 className="title-section text-center mb-8 md:col-span-3">Simple Credit System</h3>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                  <Zap className="w-8 h-8 text-amber-400" />
                 </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8 text-green-400" />
-                  </div>
-                  <h4 className="title-card mb-2">Audio Narration</h4>
-                  <p className="text-body">1 credit per 100 words (premium only)</p>
+                <h4 className="title-card mb-2">1 Credit = 1 Chapter</h4>
+                <p className="text-body">Includes AI text + beautiful illustration</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-green-400" />
                 </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <CreditCard className="w-8 h-8 text-blue-400" />
-                  </div>
-                  <h4 className="title-card mb-2">Credits Don't Expire</h4>
-                  <p className="text-body">Use at your own pace, whenever you want</p>
+                <h4 className="title-card mb-2">Audio Narration</h4>
+                <p className="text-body">1 credit per 100 words (premium only)</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <CreditCard className="w-8 h-8 text-blue-400" />
                 </div>
+                <h4 className="title-card mb-2">Credits Don't Expire</h4>
+                <p className="text-body">Use at your own pace, whenever you want</p>
               </div>
             </div>
 

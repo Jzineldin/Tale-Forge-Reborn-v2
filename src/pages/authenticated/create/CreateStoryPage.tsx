@@ -77,6 +77,31 @@ const CreateStoryPage: React.FC = () => {
   // Use the create story hook
   const { mutate: createStory, isLoading: isCreatingStory } = useCreateStory();
 
+  // Handle body background for this page
+  useEffect(() => {
+    // Set the nebula background on body when component mounts
+    const body = document.body;
+    const originalBackground = body.style.background;
+    const originalBackgroundImage = body.style.backgroundImage;
+    const originalBackgroundAttachment = body.style.backgroundAttachment;
+    const originalBackgroundSize = body.style.backgroundSize;
+    
+    body.style.background = 'none';
+    body.style.backgroundImage = 'url(/images/backgrounds/magical-space-nebula-2.png)';
+    body.style.backgroundAttachment = 'fixed';
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundRepeat = 'no-repeat';
+    body.style.backgroundPosition = 'center';
+    
+    // Cleanup function to restore original background
+    return () => {
+      body.style.background = originalBackground;
+      body.style.backgroundImage = originalBackgroundImage;
+      body.style.backgroundAttachment = originalBackgroundAttachment;
+      body.style.backgroundSize = originalBackgroundSize;
+    };
+  }, []);
+
   // Update progress whenever story data changes
   useEffect(() => {
     const progress = calculateStoryProgress(storyData);
@@ -271,7 +296,10 @@ const CreateStoryPage: React.FC = () => {
   const renderStep = () => {
     // If using Easy Mode, render it instead of the step-by-step wizard
     if (usingEasyMode) {
-      return <EasyModeFlow />;
+      return <EasyModeFlow onBack={() => {
+        setUsingEasyMode(false);
+        setStep(0);
+      }} />;
     }
 
     switch (step) {
@@ -379,158 +407,122 @@ const CreateStoryPage: React.FC = () => {
   }
 
   return (
-    <PageLayout maxWidth="lg" showFloatingElements>
-      {/* Header */}
-      <CardLayout variant="default" padding="xl" className="mb-8 text-center">
-        <TypographyLayout variant="hero" as="h1" align="center" className="mb-4" id="create-story-heading">
-          Create Your Magical Story ✨
-        </TypographyLayout>
-        <TypographyLayout variant="body" align="center" className="text-xl max-w-3xl mx-auto mb-6">
-          {step === 0 ? 'Choose how you\'d like to create your story' : 'Follow our step-by-step wizard to craft a personalized interactive adventure'}
-        </TypographyLayout>
-      </CardLayout>
-
-        {/* Progress Bar */}
-        <CardLayout variant="default" padding="lg" className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            {progressSteps.map((stepInfo, index) => {
-              let stepNumber, isActive, isCompleted, isAccessible;
-
-              if (step === 0) {
-                // Template selection step
-                stepNumber = 0;
-                isActive = true;
-                isCompleted = false;
-                isAccessible = true;
-              } else if (usingTemplate) {
-                // Template flow: step 0 (completed) -> step 5 (active)
-                stepNumber = index === 0 ? 0 : 5;
-                isActive = (index === 0 && step === 0) || (index === 1 && step === 5);
-                isCompleted = index === 0 && step === 5;
-                isAccessible = true;
-              } else {
-                // Custom flow: normal 1-5 progression
-                stepNumber = index + 1;
-                isActive = step === stepNumber;
-                isCompleted = step > stepNumber;
-                isAccessible = step >= stepNumber;
-              }
-
-              return (
-                <div key={stepNumber} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300 ${isCompleted
-                        ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/25'
-                        : isActive
-                          ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25 animate-pulse'
-                          : isAccessible
-                            ? 'bg-slate-600/50 text-amber-200 border border-amber-400/30'
-                            : 'bg-slate-800/50 text-slate-400'
-                        }`}
-                      aria-current={isActive ? 'step' : undefined}
-                    >
-                      {isCompleted ? '✓' : stepInfo.icon}
-                    </div>
-                    <div className="mt-2 text-center">
-                      <div className={`text-body-sm font-semibold ${isActive ? 'text-amber-400' : isCompleted ? 'text-amber-300' : 'text-slate-300'}`}>
-                        {stepInfo.label}
-                      </div>
-                      <div className="text-body-xs text-white/50 max-w-20">{stepInfo.description}</div>
-                    </div>
-                  </div>
-                  {index < progressSteps.length - 1 && (
-                    <div
-                      className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${isCompleted ? 'bg-amber-400 shadow-sm' : 'bg-slate-600/30'}`}
-                    ></div>
-                  )}
-                </div>
-              );
-            })}
+    <div className="min-h-screen">
+      {/* Floating magical elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({length: 15}).map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-pulse text-2xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`
+            }}
+          >
+            {['✨', '⭐', '🌟', '💫', '🔮'][Math.floor(Math.random() * 5)]}
           </div>
+        ))}
+      </div>
+      
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-12">
+        {/* Amazing Header for Kids */}
+        <div className="text-center mb-12">
+          <div className="text-8xl mb-4 animate-bounce">📚</div>
+          <TypographyLayout variant="hero" as="h1" align="center" className="mb-6 text-6xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
+            Create Your Amazing Story!
+          </TypographyLayout>
+        </div>
 
-          {/* Progress percentage */}
-          <div className="mt-4">
-            <div className="flex justify-between mb-2">
-              <TypographyLayout variant="body" className="text-body-sm text-white/70">
-                Story Completion
-              </TypographyLayout>
-              <TypographyLayout variant="body" className="text-body-sm text-white/70">
-                {step === 0
-                  ? '0'
-                  : usingTemplate
-                    ? step === 5 ? storyProgress : '100'
-                    : storyProgress}% Complete
-              </TypographyLayout>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full transition-all duration-500"
-                style={{
-                  width: `${step === 0 ? 0 : usingTemplate ? (step === 5 ? storyProgress : 100) : storyProgress}%`
-                }}
-              ></div>
+        {/* Main Content Area */}
+        {step === 0 ? (
+          // Mode Selection - Let it shine without extra containers!
+          renderStep()
+        ) : (
+          // For wizard steps, add minimal progress and lighter container
+          <div className="space-y-8">
+            {/* Simple, fun progress indicator */}
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="flex justify-between items-center mb-3">
+                <TypographyLayout variant="body" className="text-white/90 font-bold text-lg">
+                  Step {step} of {usingTemplate ? '2' : '5'} 🎯
+                </TypographyLayout>
+                <TypographyLayout variant="body" className="text-amber-400 font-bold text-lg">
+                  {storyProgress}% Complete ⭐
+                </TypographyLayout>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-4 shadow-inner overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-pink-500 via-orange-500 to-amber-500 h-4 rounded-full transition-all duration-1000 shadow-lg animate-pulse"
+                  style={{ width: `${storyProgress}%` }}
+                ></div>
+              </div>
             </div>
 
-            {/* Validation errors display */}
+            {/* Wizard Content with brighter, more colorful container */}
+            <div 
+              className="max-w-4xl mx-auto rounded-3xl p-8 shadow-2xl border backdrop-blur-lg"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)',
+                borderColor: 'rgba(255,255,255,0.3)',
+                boxShadow: '0 25px 50px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3)'
+              }}
+            >
+              {renderStep()}
+            </div>
+
+            {/* Fun error messages */}
             {validationErrors.length > 0 && (
-              <div className="mt-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-red-400">⚠️</span>
-                  <TypographyLayout variant="body" className="text-red-200 font-medium text-sm">
-                    Please fix the following issues:
-                  </TypographyLayout>
+              <div className="max-w-2xl mx-auto">
+                <div 
+                  className="rounded-3xl p-6 border backdrop-blur-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(239,68,68,0.08) 100%)',
+                    borderColor: 'rgba(239,68,68,0.3)'
+                  }}
+                >
+                  <div className="flex items-center space-x-3 mb-4">
+                    <span className="text-4xl animate-bounce">🤔</span>
+                    <TypographyLayout variant="body" className="text-red-200 font-bold text-lg">
+                      Hmm, let's fix these things:
+                    </TypographyLayout>
+                  </div>
+                  <ul className="space-y-2">
+                    {validationErrors.filter(e => e.type === 'required').map((error, index) => (
+                      <li key={index} className="flex items-center space-x-3">
+                        <span className="text-red-300 text-2xl">→</span>
+                        <TypographyLayout variant="body" className="text-red-100 text-lg">
+                          {error.message}
+                        </TypographyLayout>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-1">
-                  {validationErrors.filter(e => e.type === 'required').map((error, index) => (
-                    <li key={index} className="flex items-center space-x-2">
-                      <span className="text-red-400">•</span>
-                      <TypographyLayout variant="body" className="text-red-200 text-sm">
-                        {error.message}
-                      </TypographyLayout>
-                    </li>
-                  ))}
-                </ul>
               </div>
             )}
 
-            {/* Success message */}
+            {/* Celebration message */}
             {validationErrors.length === 0 && storyProgress === 100 && (
-              <div className="mt-4 p-3 bg-green-900/30 border border-green-500/50 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <span className="text-green-400">✅</span>
-                  <TypographyLayout variant="body" className="text-green-200 font-medium text-sm">
-                    Your story is ready to generate!
+              <div className="max-w-2xl mx-auto text-center">
+                <div 
+                  className="rounded-3xl p-6 border backdrop-blur-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.08) 100%)',
+                    borderColor: 'rgba(34,197,94,0.3)'
+                  }}
+                >
+                  <div className="text-6xl mb-4 animate-bounce">🎉</div>
+                  <TypographyLayout variant="body" className="text-green-200 font-bold text-2xl">
+                    Awesome! Your story is ready to create! ✨
                   </TypographyLayout>
                 </div>
               </div>
             )}
           </div>
-        </CardLayout>
-
-        {/* Wizard Content */}
-        <CardLayout variant="default" padding="xl" className="mb-8">
-          {renderStep()}
-        </CardLayout>
-
-        {/* Help Section */}
-        <CardLayout variant="default" padding="lg">
-          <div className="flex items-center justify-center space-x-6 text-white/70">
-            <div className="flex items-center space-x-2">
-              <span className="text-amber-400">💡</span>
-              <TypographyLayout variant="body" className="text-sm">Need help? Hover over any option for tips</TypographyLayout>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-amber-400">🎯</span>
-              <TypographyLayout variant="body" className="text-sm">All steps are optional - create as you go</TypographyLayout>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-amber-400">⚡</span>
-              <TypographyLayout variant="body" className="text-sm">Story generates in ~30 seconds</TypographyLayout>
-            </div>
-          </div>
-        </CardLayout>
-    </PageLayout>
+        )}
+      </div>
+    </div>
   );
 };
 
