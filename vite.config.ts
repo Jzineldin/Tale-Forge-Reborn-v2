@@ -13,6 +13,10 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    hmr: {
+      port: 3000,
+      host: 'localhost',
+    },
     proxy: {
       '/api/health': {
         target: 'http://localhost:54321/functions/v1/api-health',

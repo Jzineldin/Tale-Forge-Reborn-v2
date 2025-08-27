@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStorySeedGeneration } from '@/hooks/useStorySeedGeneration';
 import CharacterNameInput from '@/components/molecules/CharacterNameInput';
 import TraitSelector from '@/components/molecules/TraitSelector';
-import StorySeedDisplay from '@/components/molecules/StorySeedDisplay';
+import StorySeedSelector from '@/components/molecules/StorySeedSelector';
 import CharacterPreview from '@/components/molecules/CharacterPreview';
 
 interface CharacterSetupProps {
@@ -28,38 +28,50 @@ const CharacterSetup: React.FC<CharacterSetupProps> = ({
 }) => {
   const {
     isGenerating,
-    generateNewSeed
+    availableSeeds,
+    selectedSeedIndex,
+    generateNewSeed,
+    selectSeed
   } = useStorySeedGeneration({ genre, difficulty, characterName });
+  
+  const hasInitialized = useRef(false);
 
-  // Auto-generate initial story seed when genre changes
+  // Auto-generate initial story seeds when genre is set
   useEffect(() => {
-    if (genre && !storySeed) {
-      handleGenerateNewSeed();
+    if (genre && availableSeeds.length === 0 && !isGenerating && !hasInitialized.current) {
+      hasInitialized.current = true;
+      generateNewSeed();
     }
-  }, [genre]);
+  }, [genre]); // Only depend on genre to avoid re-runs
 
-  const handleGenerateNewSeed = async () => {
-    const seeds = await generateNewSeed();
-    if (seeds.length > 0) {
-      onSeedChange(seeds[0]);
+  // Update parent when seed selection changes
+  useEffect(() => {
+    if (availableSeeds.length > 0 && availableSeeds[selectedSeedIndex]) {
+      onSeedChange(availableSeeds[selectedSeedIndex]);
     }
+  }, [selectedSeedIndex, availableSeeds]);
+
+  const handleSelectSeed = (index: number) => {
+    selectSeed(index);
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3 animate-fade-in">
-          ✨ Let's Create Your Hero! ✨
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Character Setup
         </h2>
-        <p className="text-gray-300 text-lg">
-          Time to make this story uniquely yours with personality and magic
+        <p className="text-gray-400 text-sm">
+          Customize your story's hero
         </p>
       </div>
 
-      <StorySeedDisplay
-        storySeed={storySeed}
+      <StorySeedSelector
+        availableSeeds={availableSeeds}
+        selectedSeedIndex={selectedSeedIndex}
         isGenerating={isGenerating}
-        onGenerateNewSeed={handleGenerateNewSeed}
+        onSelectSeed={handleSelectSeed}
+        onGenerateNewSeeds={generateNewSeed}
       />
 
       <CharacterNameInput

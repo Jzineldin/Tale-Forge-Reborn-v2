@@ -77,23 +77,16 @@ const genres = [
 const GenreSelector: React.FC<GenreSelectorProps> = ({ selected, onSelect }) => {
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">
-          🎭 What Adventure Awaits? 🎭
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Choose Your Genre
         </h2>
-        <p className="text-gray-300 text-lg">
-          Pick the perfect genre for your magical story adventure
+        <p className="text-gray-400 text-sm">
+          Pick your favorite story type
         </p>
-        {selected && (
-          <div className="mt-3">
-            <span className="px-4 py-2 bg-gradient-to-r from-amber-600/20 to-orange-600/20 rounded-full text-amber-400 text-sm font-medium border border-amber-600/30">
-              ✨ {selected} Adventure Selected!
-            </span>
-          </div>
-        )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {genres.map((genre) => {
           const isSelected = selected === genre.id;
           
@@ -101,100 +94,54 @@ const GenreSelector: React.FC<GenreSelectorProps> = ({ selected, onSelect }) => 
             <button
               key={genre.id}
               onClick={() => onSelect(genre.id)}
-              className={`
-                relative group text-left transition-all duration-300 transform
-                ${isSelected ? 'scale-105 z-10' : 'hover:scale-102 hover:z-20'}
-              `}
+              className="group"
             >
               <div className={`
-                relative p-6 rounded-xl border-2 transition-all duration-300 overflow-hidden
+                p-4 rounded-xl border transition-all duration-200
                 ${isSelected 
-                  ? `bg-gradient-to-br ${genre.gradient} border-transparent shadow-xl shadow-black/20` 
-                  : 'glass border-white/10 hover:border-white/20 hover:bg-white/5'
+                  ? `bg-gradient-to-br ${genre.gradient} border-transparent` 
+                  : 'bg-gray-900/40 border-gray-700 hover:border-gray-600'
                 }
               `}>
-                {/* Popular Badge */}
-                {genre.popular && !isSelected && (
-                  <div className="absolute top-2 right-2 z-20">
-                    <span className="px-2 py-1 text-xs font-bold bg-amber-600/80 text-white rounded-full">
-                      POPULAR
-                    </span>
-                  </div>
-                )}
 
-                {/* Background Pattern for selected state */}
-                {isSelected && (
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
-                  </div>
-                )}
-
-                <div className="relative z-10">
+                <div className="flex items-center gap-3">
                   {/* Icon */}
-                  <div className={`
-                    text-4xl mb-4 p-3 rounded-lg inline-block
-                    ${isSelected ? 'bg-white/20' : 'bg-white/10'}
-                    transition-all duration-300
-                  `}>
+                  <div className="text-2xl">
                     {genre.icon}
                   </div>
 
                   {/* Content */}
-                  <div>
+                  <div className="text-left flex-1">
                     <h3 className={`
-                      text-lg font-bold mb-2
+                      text-sm font-bold mb-0.5
                       ${isSelected ? 'text-white' : 'text-white/90'}
-                      transition-colors duration-300
                     `}>
                       {genre.name}
+                      {genre.popular && (
+                        <span className="ml-1 text-xs text-amber-400">★</span>
+                      )}
                     </h3>
                     
                     <p className={`
-                      text-sm leading-relaxed
-                      ${isSelected ? 'text-white/80' : 'text-gray-400'}
-                      transition-colors duration-300
+                      text-xs
+                      ${isSelected ? 'text-white/70' : 'text-gray-400'}
                     `}>
                       {genre.description}
                     </p>
                   </div>
 
-                  {/* Selection indicator */}
-                  <div className={`
-                    mt-4 flex items-center gap-2
-                    ${isSelected ? 'opacity-100' : 'opacity-0'}
-                    transition-all duration-300
-                  `}>
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-600/30">
-                      <span className="text-white text-xs font-bold">✨</span>
-                    </div>
-                    <span className="text-sm font-bold text-white">Adventure Chosen!</span>
-                  </div>
+                  {/* Check mark for selected */}
+                  {isSelected && (
+                    <span className="text-white">✓</span>
+                  )}
                 </div>
 
-                {/* Hover glow effect */}
-                <div className={`
-                  absolute inset-0 rounded-xl transition-opacity duration-300
-                  bg-gradient-to-br ${genre.gradient} opacity-0
-                  ${!isSelected && 'group-hover:opacity-3'}
-                `} />
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Popular Genres Highlight */}
-      <div className="mt-8 p-4 rounded-lg bg-blue-600/10 border border-blue-600/20">
-        <div className="flex gap-3">
-          <span className="text-blue-500 text-xl">⭐</span>
-          <div className="text-sm text-gray-300">
-            <p className="font-medium mb-1">Most popular with kids:</p>
-            <p className="text-gray-400">
-              Fantasy, Adventure, and Animals are the top choices that children love most!
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

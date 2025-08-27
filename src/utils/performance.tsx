@@ -85,7 +85,10 @@ export const useStories = (userId: string | null) => {
       onSuccess: (data) => {
         // Prefetch first story for each user
         if (data && data.length > 0) {
-          queryClient.prefetchQuery(['story', data[0].id]);
+          queryClient.prefetchQuery(['story', data[0].id], async () => {
+            // Return null for prefetch - actual fetch will happen when needed
+            return null;
+          });
         }
       },
       // Enhanced error boundary

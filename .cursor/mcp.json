@@ -10,10 +10,14 @@
 		},
 		"supabase": {
 			"command": "npx",
-			"args": ["-y", "@modelcontextprotocol/server-supabase"],
+			"args": [
+				"-y",
+				"@supabase/mcp-server-supabase@latest",
+				"--project-ref=fyihypkigbcmsxyvseca",
+				"--access-token=sbp_30bd78e5f26c5130346ed99385aadf574206baf0"
+			],
 			"env": {
-				"SUPABASE_URL": "https://fyihypkigbcmsxyvseca.supabase.co",
-				"SUPABASE_ANON_KEY": "${env.VITE_SUPABASE_ANON_KEY}"
+				"SUPABASE_ACCESS_TOKEN": "sbp_30bd78e5f26c5130346ed99385aadf574206baf0"
 			}
 		},
 		"elevenlabs": {

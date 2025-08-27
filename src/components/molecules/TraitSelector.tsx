@@ -97,27 +97,6 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
     }
   };
 
-  const getTraitButtonClass = (traitName: string) => {
-    const isSelected = selectedTraits.includes(traitName);
-    const baseClass = `
-      group relative flex items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-300
-      cursor-pointer hover:scale-105 transform backdrop-blur-sm
-      ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-    `;
-
-    if (isSelected) {
-      return baseClass + ` 
-        bg-gradient-to-r from-purple-500/20 to-pink-500/20 
-        border-purple-400/60 shadow-lg shadow-purple-500/20
-        hover:shadow-xl hover:shadow-purple-500/30
-      `;
-    }
-
-    return baseClass + `
-      bg-white/10 border-white/20 hover:border-white/40 
-      hover:bg-white/15
-    `;
-  };
 
   const getValidationMessage = () => {
     if (!validationResult || validationResult.issues.length === 0) return null;
@@ -158,36 +137,19 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-4">
+      {/* Simplified Header */}
       <div className="text-center">
-        <TypographyLayout variant="section" as="h3" className="mb-2 text-2xl font-bold text-white">
-          ⭐ Choose {characterName ? `${characterName}'s` : 'Your Hero\'s'} Special Traits ⭐
-        </TypographyLayout>
-        <TypographyLayout variant="body" className="text-gray-300 mb-4">
-          Pick up to {MAX_TRAITS} amazing qualities that make your character unique and special
-        </TypographyLayout>
-        
-        {/* Selection counter */}
-        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border ${
-          selectedTraits.length === MAX_TRAITS 
-            ? 'bg-amber-500/20 border-amber-400/50 text-amber-200'
-            : selectedTraits.length > 0
-            ? 'bg-purple-500/20 border-purple-400/50 text-purple-200'
-            : 'bg-white/10 border-white/20 text-gray-300'
-        }`}>
-          <Star className="w-4 h-4" />
-          <span className="font-medium">
-            {selectedTraits.length}/{MAX_TRAITS} traits selected
-          </span>
-          {selectedTraits.length === MAX_TRAITS && (
-            <span className="text-xs">(limit reached)</span>
-          )}
-        </div>
+        <h3 className="text-xl font-bold text-white mb-2">
+          Character Traits
+        </h3>
+        <p className="text-gray-400 text-sm">
+          Pick up to {MAX_TRAITS} traits • {selectedTraits.length} selected
+        </p>
       </div>
 
-      {/* Trait Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+      {/* Simplified Trait Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-3xl mx-auto">
         {APPROVED_TRAITS.map((trait) => {
           const isSelected = selectedTraits.includes(trait.name);
           const canSelect = selectedTraits.length < MAX_TRAITS || isSelected;
@@ -197,92 +159,47 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({
               key={trait.name}
               onClick={() => handleTraitToggle(trait.name)}
               disabled={disabled || (!canSelect && !isSelected)}
-              className={getTraitButtonClass(trait.name)}
-              title={trait.description}
-            >
-              {/* Selection indicator */}
-              <div className={`
-                absolute -top-2 -right-2 w-6 h-6 rounded-full border-2 
-                flex items-center justify-center transition-all duration-300
+              className={`
+                p-3 rounded-lg border transition-all duration-200 text-left
                 ${isSelected 
-                  ? 'bg-purple-500 border-purple-300 scale-100' 
-                  : 'bg-transparent border-transparent scale-0'
+                  ? 'bg-purple-600/30 border-purple-500' 
+                  : canSelect
+                  ? 'bg-gray-900/40 border-gray-700 hover:border-gray-600'
+                  : 'bg-gray-900/20 border-gray-800 opacity-50 cursor-not-allowed'
                 }
-              `}>
-                <CheckCircle className="w-4 h-4 text-white" />
-              </div>
-              
-              {/* Trait content */}
-              <div className="text-3xl">{trait.emoji}</div>
-              <div className="flex-1 text-left">
-                <div className={`font-semibold transition-colors ${
-                  isSelected ? 'text-purple-200' : 'text-white'
+              `}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{trait.emoji}</span>
+                <span className={`text-sm font-medium ${
+                  isSelected ? 'text-white' : 'text-gray-300'
                 }`}>
                   {trait.name}
-                </div>
-                <div className={`text-sm transition-colors ${
-                  isSelected ? 'text-purple-300' : 'text-gray-300'
-                }`}>
-                  {trait.description}
-                </div>
+                  {isSelected && <span className="ml-1 text-purple-400">✓</span>}
+                </span>
               </div>
-              
-              {/* Hover effect */}
-              {!isSelected && canSelect && !disabled && (
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              )}
             </button>
           );
         })}
       </div>
 
-      {/* Validation message */}
-      {getValidationMessage()}
 
-      {/* Selected traits preview */}
-      {selectedTraits.length > 0 && validationResult?.isValid && (
-        <div className="mt-6 p-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-400/30 backdrop-blur-sm">
-          <div className="text-center mb-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Shield className="w-5 h-5 text-green-400" />
-              <TypographyLayout variant="body" className="font-semibold text-green-300">
-                Perfect Traits Selected! ✨
-              </TypographyLayout>
-            </div>
-            <TypographyLayout variant="body" className="text-purple-200">
-              {characterName ? `${characterName} will be` : 'Your hero will be'}:
-            </TypographyLayout>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 justify-center">
-            {selectedTraits.map((trait, index) => {
+      {/* Simple Selected traits display */}
+      {selectedTraits.length > 0 && (
+        <div className="text-center">
+          <div className="inline-flex flex-wrap gap-2 justify-center">
+            {selectedTraits.map((trait) => {
               const traitData = APPROVED_TRAITS.find(t => t.name === trait);
               return (
-                <div key={trait} className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-full backdrop-blur-sm">
-                  <span className="text-lg">{traitData?.emoji}</span>
-                  <span className="font-medium text-white">{trait}</span>
-                  {index < selectedTraits.length - 1 && (
-                    <span className="text-purple-300 ml-1">+</span>
-                  )}
-                </div>
+                <span key={trait} className="px-3 py-1 bg-purple-600/20 text-purple-300 rounded-full text-sm">
+                  {traitData?.emoji} {trait}
+                </span>
               );
             })}
           </div>
         </div>
       )}
 
-      {/* Safety notice */}
-      <div className="text-center text-sm text-gray-400">
-        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 max-w-md mx-auto">
-          <div className="flex items-center gap-2 justify-center mb-2">
-            <Shield className="w-4 h-4 text-blue-400" />
-            <span className="text-blue-300 font-medium">Child-Safe Traits</span>
-          </div>
-          <div className="text-xs">
-            All traits are carefully selected to promote positive values and character development in children's stories.
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

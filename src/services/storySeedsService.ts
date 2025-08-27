@@ -40,35 +40,54 @@ export const generateStorySeeds = async ({
   childName = "the child"
 }: GenerateSeedsRequest): Promise<StorySeed[]> => {
   try {
-    console.log('🌱 Requesting story seeds:', { context, difficulty, genre });
+    console.log('🌱 Requesting story seeds:', { context, difficulty, genre, childName });
 
+    // Add cache-busting parameters to ensure fresh generation
     const { data, error } = await supabase.functions.invoke('generate-story-seeds', {
       body: {
         context,
         difficulty, 
         genre: genre.toUpperCase(), // Backend expects uppercase genres
-        childName
+        childName,
+        timestamp: Date.now(), // Cache buster
+        requestId: Math.random().toString(36).substring(7) // Unique request ID
       }
     });
 
     if (error) {
       console.error('❌ Error generating story seeds:', error);
-      throw new Error(`Failed to generate story seeds: ${error.message}`);
+      // Don't throw, use fallback instead
+      const fallback = getFallbackSeeds(genre);
+      // Shuffle fallback for variety
+      return fallback.sort(() => Math.random() - 0.5).slice(0, 3);
     }
 
     if (!data || !data.success) {
       console.error('❌ Invalid response from story seeds API:', data);
-      throw new Error('Invalid response from story seeds service');
+      const fallback = getFallbackSeeds(genre);
+      return fallback.sort(() => Math.random() - 0.5).slice(0, 3);
     }
 
-    console.log('✅ Story seeds generated:', data.seeds.length, 'seeds');
+    console.log('✅ Story seeds generated:', data.seeds.length, 'seeds', 'Using AI:', !data.metadata?.usingFallback);
+    
+    // Ensure we always return 3 seeds
+    if (data.seeds.length > 3) {
+      return data.seeds.slice(0, 3);
+    }
+    
     return data.seeds;
 
   } catch (error) {
     console.error('❌ Story seeds service error:', error);
     
-    // Return fallback seeds if API fails
-    return getFallbackSeeds(genre);
+    // Return shuffled fallback seeds if API fails  
+    const fallback = getFallbackSeeds(genre);
+    // Shuffle for variety
+    for (let i = fallback.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [fallback[i], fallback[j]] = [fallback[j], fallback[i]];
+    }
+    return fallback.slice(0, 3);
   }
 };
 

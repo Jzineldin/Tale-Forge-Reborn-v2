@@ -135,6 +135,10 @@ serve(async (req) => {
       imagePrompt // Pass image prompt to be saved
     );
     
+    // Update the position with the calculated value
+    newSegmentData.position = nextPosition;
+    newSegmentData.segment_number = nextPosition;
+    
     const newSegment = await database.saveSegment(newSegmentData, supabase);
 
     // 9. IMAGE GENERATION PHASE - Generate image for the new segment

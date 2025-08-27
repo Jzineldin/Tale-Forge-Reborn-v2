@@ -220,31 +220,16 @@ serve(async (req) => {
         const randomSeed = Math.random().toString(36).substring(7)
         const timestamp = new Date().getTime()
         
-        const prompt = `You are a creative children's story seed generator. Create exactly 3 completely unique and original story seeds for ${context} time.
+        const prompt = `Create 3 story seeds for ${genre} genre with ${childName} as the hero.
 
-IMPORTANT: Generate 3 BRAND NEW story concepts that haven't been created before. Each seed must be completely different from the others. Be creative and unique!
+Each seed needs:
+- title: Short title with ${childName}'s name
+- teaser: One sentence story hook
+- hiddenMoral: Life lesson (short)
+- conflict: Main problem (short)
+- quest: Solution action (short)
 
-Context: ${contextPrompts[context]}
-Difficulty: ${difficultyPrompts[difficulty]}
-Genre: ${genre}
-Child's name: ${childName}
-Random ID: ${randomSeed}_${timestamp}
-
-For each story seed, provide:
-- title: An engaging, unique title that incorporates ${childName}'s name
-- teaser: A 2-3 sentence description that hooks the reader and features ${childName} as the main character
-- hiddenMoral: The life lesson or value taught (not obvious to the child)
-- conflict: The main challenge or problem in the story that ${childName} must face
-- quest: What ${childName} needs to do to resolve the story
-
-Requirements:
-- Make ${childName} the main protagonist in all 3 seeds
-- Create 3 completely original story concepts that are different from each other
-- Ensure age-appropriate, inclusive, and positive content
-- Be creative and avoid common tropes
-- Each seed should offer a different type of adventure/challenge
-
-Respond with a valid JSON array containing exactly 3 story seed objects.`
+Return JSON array with 3 objects. Keep all text brief.`
         
         const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -254,11 +239,18 @@ Respond with a valid JSON array containing exactly 3 story seed objects.`
           },
           body: JSON.stringify({
             model: 'gpt-4o',
-            messages: [{ role: 'user', content: prompt }],
-            temperature: 0.9, // Increase randomness
-            max_tokens: 1600, // Increased for 3 seeds instead of 1
-            presence_penalty: 0.6, // Encourage new topics
-            frequency_penalty: 0.3 // Reduce repetition
+            messages: [
+              { 
+                role: 'system', 
+                content: 'You are a creative story seed generator. Always respond with ONLY a valid JSON array, no markdown, no extra text. Each request must produce NEW and UNIQUE story concepts.' 
+              },
+              { role: 'user', content: prompt + '\n\nIMPORTANT: Respond with ONLY the JSON array, no markdown code blocks, no extra text.' }
+            ],
+            temperature: 0.95, // Higher randomness for more variety
+            max_tokens: 1600,
+            presence_penalty: 0.8, // Strong encouragement for new topics
+            frequency_penalty: 0.5, // Reduce repetition even more
+            seed: Math.floor(Math.random() * 1000000) // Random seed for variation
           })
         })
         
@@ -268,16 +260,41 @@ Respond with a valid JSON array containing exactly 3 story seed objects.`
           
           if (content) {
             try {
-              const parsedSeeds = JSON.parse(content)
-              if (Array.isArray(parsedSeeds) && parsedSeeds.length === 3) {
-                seeds = parsedSeeds
+              // More robust JSON extraction
+              let cleanContent = content
+              
+              // Remove markdown code blocks
+              cleanContent = cleanContent.replace(/```json\s*/gi, '')
+              cleanContent = cleanContent.replace(/```\s*/g, '')
+              
+              // Find JSON array boundaries
+              const startIdx = cleanContent.indexOf('[')
+              const endIdx = cleanContent.lastIndexOf(']')
+              
+              if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+                cleanContent = cleanContent.substring(startIdx, endIdx + 1)
+              }
+              
+              // Clean up any trailing commas
+              cleanContent = cleanContent.replace(/,\s*([}\]])/g, '$1')
+              
+              // Parse the cleaned JSON
+              const parsedSeeds = JSON.parse(cleanContent)
+              
+              if (Array.isArray(parsedSeeds) && parsedSeeds.length >= 3) {
+                seeds = parsedSeeds.slice(0, 3) // Take only first 3 if more
                 console.log('✅ AI generation successful - 3 unique seeds created')
+              } else if (Array.isArray(parsedSeeds) && parsedSeeds.length > 0) {
+                // If we got fewer than 3, use what we got
+                seeds = parsedSeeds
+                console.log(`⚠️ AI generated only ${parsedSeeds.length} seeds, using them`)
               } else {
-                throw new Error(`Invalid AI response format - expected 3 seeds, got ${Array.isArray(parsedSeeds) ? parsedSeeds.length : 'not array'}`)
+                throw new Error(`Invalid AI response format - expected array of seeds`)
               }
             } catch (parseError) {
               console.log('❌ Failed to parse AI response:', parseError)
-              console.log('🔍 Raw AI response:', content)
+              console.log('🔍 Raw AI response (first 500 chars):', content.substring(0, 500))
+              console.log('🔍 Raw AI response (last 500 chars):', content.substring(content.length - 500))
               throw parseError
             }
           } else {

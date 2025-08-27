@@ -17,6 +17,19 @@ const DashboardPage: React.FC = () => {
   // Use React Query hook instead of manual API calls
   const { data: storiesData, isLoading: loading } = useStories(user?.id || null);
 
+  // Helper function to format time ago
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    if (diffHours > 0) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    return 'Less than an hour ago';
+  };
+
   // Handle body background for this page
   useEffect(() => {
     const body = document.body;
@@ -76,19 +89,6 @@ const DashboardPage: React.FC = () => {
       });
     }
   }, [storiesData]);
-
-  // Helper function to format time ago
-  const formatTimeAgo = (dateString: string) => {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays > 0) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-    if (diffHours > 0) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-    return 'Less than an hour ago';
-  };
 
   // Mock data as fallback (keeping the structure)
   const fallbackStories = [

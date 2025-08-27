@@ -65,7 +65,7 @@ export class Database implements DatabaseService {
     }
 
     if (prevSegment) {
-      console.log(`✅ Previous segment fetched: ${prevSegment.segment_text.substring(0, 50)}...`);
+      console.log(`✅ Previous segment fetched: ${prevSegment.content.substring(0, 50)}...`);
     }
 
     return prevSegment;
@@ -132,9 +132,9 @@ export class Database implements DatabaseService {
    */
   async saveSegment(segmentData: NewSegment, supabase: any): Promise<Segment> {
     console.log(`💾 Saving new segment for story ${segmentData.story_id}`);
-    console.log(`   📝 Text length: ${segmentData.segment_text.length} characters`);
+    console.log(`   📝 Text length: ${segmentData.content.length} characters`);
     console.log(`   🎯 Choices: ${segmentData.choices.length}`);
-    console.log(`   📊 Word count: ${segmentData.word_count}`);
+    console.log(`   📊 Position: ${segmentData.position}`);
     
     const { data: newSegment, error: segmentError } = await supabase
       .from('story_segments')
@@ -166,15 +166,15 @@ export class Database implements DatabaseService {
     previousSegmentId: string | null = null,
     imagePrompt: string | null = null
   ): NewSegment {
-    const wordCount = segmentText.split(' ').filter(word => word.trim().length > 0).length;
+    // Get next position
+    const position = 0; // Will be calculated in getNextPosition
     
     return {
       story_id: storyId,
-      segment_text: segmentText,
+      content: segmentText, // Changed from segment_text to content
       choices: choices,
-      is_end: false,
-      parent_segment_id: previousSegmentId,
-      word_count: wordCount,
+      position: position,
+      segment_number: position, // Same as position for now
       image_prompt: imagePrompt, // Include image prompt
       created_at: new Date().toISOString()
     };

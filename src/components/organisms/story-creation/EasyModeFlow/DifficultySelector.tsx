@@ -10,193 +10,136 @@ const difficulties = [
   {
     id: 'short' as const,
     icon: '🌟',
-    title: 'SHORT STORY',
+    title: 'Short Story',
     words: '40-80 words',
     age: 'Ages 4-6',
     time: '2-3 minutes',
     description: 'Perfect for bedtime',
     iconComponent: Sparkle,
-    gradient: 'from-green-700/60 to-emerald-800/60',
-    shadowColor: 'shadow-green-900/20'
+    gradient: 'from-green-400/20 via-emerald-500/15 to-green-600/20',
+    borderColor: 'border-green-400/30',
+    hoverBorder: 'hover:border-green-300/60',
+    shadowColor: 'hover:shadow-green-400/30',
+    iconGradient: 'from-green-400 to-emerald-500',
+    textGradient: 'from-green-300 via-emerald-300 to-green-400',
+    ctaGradient: 'from-green-500 to-emerald-600',
+    accentText: 'text-green-200',
+    bulletColor: 'bg-green-400',
+    bgAccent: 'bg-green-500/20',
+    borderAccent: 'border-green-400/30',
+    textAccent: 'text-green-300'
   },
   {
     id: 'medium' as const,
     icon: '📖',
-    title: 'MEDIUM STORY',
+    title: 'Medium Story',
     words: '100-150 words',
     age: 'Ages 6-9',
     time: '4-5 minutes',
     description: 'Great for reading practice',
     iconComponent: BookOpen,
-    gradient: 'from-blue-700/60 to-indigo-800/60',
-    shadowColor: 'shadow-blue-900/20',
+    gradient: 'from-blue-400/20 via-cyan-500/15 to-blue-600/20',
+    borderColor: 'border-blue-400/30',
+    hoverBorder: 'hover:border-blue-300/60',
+    shadowColor: 'hover:shadow-blue-400/30',
+    iconGradient: 'from-blue-400 to-cyan-500',
+    textGradient: 'from-blue-300 via-cyan-300 to-blue-400',
+    ctaGradient: 'from-blue-500 to-cyan-600',
+    accentText: 'text-blue-200',
+    bulletColor: 'bg-blue-400',
+    bgAccent: 'bg-blue-500/20',
+    borderAccent: 'border-blue-400/30',
+    textAccent: 'text-blue-300',
     recommended: true
   },
   {
     id: 'long' as const,
     icon: '📚',
-    title: 'LONG STORY',
+    title: 'Long Story',
     words: '160-200 words',
     age: 'Ages 9-12',
     time: '6-8 minutes',
     description: 'Chapter book style',
     iconComponent: Clock,
-    gradient: 'from-purple-700/60 to-pink-800/60',
-    shadowColor: 'shadow-purple-900/20'
+    gradient: 'from-orange-400/20 via-red-500/15 to-orange-600/20',
+    borderColor: 'border-orange-400/30',
+    hoverBorder: 'hover:border-orange-300/60',
+    shadowColor: 'hover:shadow-orange-400/30',
+    iconGradient: 'from-orange-400 to-red-500',
+    textGradient: 'from-orange-300 via-red-300 to-orange-400',
+    ctaGradient: 'from-orange-500 to-red-600',
+    accentText: 'text-orange-200',
+    bulletColor: 'bg-orange-400',
+    bgAccent: 'bg-orange-500/20',
+    borderAccent: 'border-orange-400/30',
+    textAccent: 'text-orange-300'
   }
 ];
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({ selected, onSelect }) => {
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">
-          How long should your story be?
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Story Length
         </h2>
-        <p className="text-gray-400">
-          Choose based on your child's attention span and reading level
+        <p className="text-gray-400 text-sm">
+          Choose based on reading time
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {difficulties.map((difficulty) => {
           const IconComponent = difficulty.iconComponent;
           const isSelected = selected === difficulty.id;
           
           return (
-            <button
-              key={difficulty.id}
-              onClick={() => onSelect(difficulty.id)}
-              className={`
-                group relative text-center transition-all duration-300
-                ${isSelected ? 'z-10' : ''}
-              `}
-            >
-              {/* Recommended Badge */}
-              {difficulty.recommended && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                  <div className={`
-                    px-4 py-1 text-xs font-black rounded-full border-2 shadow-lg
-                    ${isSelected 
-                      ? 'bg-white text-purple-700 border-white' 
-                      : 'bg-gradient-to-r from-amber-600 to-orange-600 text-white border-amber-500'
-                    }
-                  `}>
-                    ⭐ MOST POPULAR
-                  </div>
-                </div>
-              )}
-
-              <div className={`
-                relative p-8 rounded-2xl border-3 transition-all duration-500 overflow-hidden
-                ${isSelected 
-                  ? `bg-gradient-to-br ${difficulty.gradient} border-transparent shadow-2xl ${difficulty.shadowColor} ring-4 ring-white/20` 
-                  : 'bg-gradient-to-br from-white/5 to-white/10 border-white/20 hover:border-white/40 hover:shadow-xl hover:from-white/10 hover:to-white/15'
-                }
-              `}>
-                
-                {/* Animated background effect for selected */}
-                {isSelected && (
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-pulse"></div>
+            <div key={difficulty.id} className="relative">
+              <button
+                onClick={() => onSelect(difficulty.id)}
+                className={`w-full group relative rounded-2xl p-6 bg-gradient-to-br ${difficulty.gradient} backdrop-blur-sm border ${difficulty.borderColor} ${difficulty.hoverBorder} transition-all duration-300 hover:shadow-lg ${difficulty.shadowColor}`}
+              >
+                {/* Recommended badge */}
+                {difficulty.recommended && (
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    TOP PICK
                   </div>
                 )}
 
-                {/* Large Icon */}
-                <div className={`
-                  text-6xl mb-4 transition-all duration-300
-                  ${isSelected ? '' : 'group-hover:scale-110'}
-                `}>
-                  {difficulty.icon}
-                </div>
-
-                {/* Title with enhanced visibility */}
-                <h3 className={`
-                  text-2xl font-black mb-3 tracking-wide
-                  ${isSelected ? 'text-white drop-shadow-lg' : 'text-white/95 group-hover:text-white'}
-                `}>
-                  {difficulty.title}
-                </h3>
-                
-                {/* Enhanced stats display */}
-                <div className="space-y-2 mb-4">
-                  <div className={`
-                    text-lg font-bold px-4 py-2 rounded-xl
-                    ${isSelected 
-                      ? 'bg-white/20 text-white backdrop-blur-sm' 
-                      : 'bg-white/10 text-white/90 group-hover:bg-white/15'
-                    }
-                  `}>
-                    {difficulty.words}
-                  </div>
+                <div className="text-center">
+                    {/* Icon and Title in one line */}
+                    <div className="flex items-center justify-center gap-3 mb-3">
+                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${difficulty.iconGradient} flex items-center justify-center`}>
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">
+                        {difficulty.title}
+                      </h3>
+                    </div>
+                    
+                    {/* Simplified info */}
+                    <p className="text-white/80 text-sm mb-2">
+                      {difficulty.words}
+                    </p>
+                    <p className="text-white/60 text-xs">
+                      {difficulty.time} • {difficulty.age}
+                    </p>
+                    
                   
-                  <div className={`
-                    text-base font-semibold
-                    ${isSelected ? 'text-white/95' : 'text-amber-400 group-hover:text-amber-300'}
-                  `}>
-                    {difficulty.age}
-                  </div>
-                </div>
-
-                {/* Reading time with icon */}
-                <div className={`
-                  flex items-center justify-center gap-2 text-base font-medium mb-4
-                  ${isSelected ? 'text-white/90' : 'text-gray-300 group-hover:text-white/80'}
-                `}>
-                  <IconComponent className="w-5 h-5" />
-                  <span>{difficulty.time}</span>
-                </div>
-
-                {/* Description */}
-                <p className={`
-                  text-sm font-medium italic
-                  ${isSelected ? 'text-white/80' : 'text-gray-400 group-hover:text-gray-300'}
-                `}>
-                  "{difficulty.description}"
-                </p>
-
-                {/* Selection indicator - enhanced */}
-                <div className={`
-                  absolute bottom-4 right-4 transition-all duration-300
-                  ${isSelected ? 'opacity-100 scale-100' : 'opacity-0 scale-50 group-hover:opacity-60 group-hover:scale-75'}
-                `}>
-                  <div className={`
-                    w-8 h-8 rounded-full flex items-center justify-center
-                    ${isSelected 
-                      ? 'bg-white/30 ring-2 ring-white/50' 
-                      : 'bg-white/20 ring-1 ring-white/30'
-                    }
-                  `}>
-                    {isSelected ? (
-                      <span className="text-white font-bold text-lg">✓</span>
-                    ) : (
-                      <div className="w-3 h-3 rounded-full bg-white/60" />
+                    {/* Simple selection indicator */}
+                    {isSelected && (
+                      <div className="mt-3 inline-flex items-center gap-1 text-white/90 text-sm">
+                        <span className="text-base">✓</span>
+                        <span>Selected</span>
+                      </div>
                     )}
-                  </div>
                 </div>
-
-                {/* Hover glow effect */}
-                {!isSelected && (
-                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 bg-gradient-to-br from-amber-600/30 to-orange-600/30 transition-opacity duration-300 pointer-events-none"></div>
-                )}
-              </div>
-            </button>
+              </button>
+            </div>
           );
         })}
       </div>
 
-      {/* Info Box */}
-      <div className="mt-8 p-4 rounded-lg bg-amber-600/10 border border-amber-600/20">
-        <div className="flex gap-3">
-          <span className="text-amber-600 text-xl">💡</span>
-          <div className="text-sm text-gray-300">
-            <p className="font-medium mb-1">Not sure which to choose?</p>
-            <p className="text-gray-400">
-              Start with a medium story - it's perfect for most children and you can adjust next time based on their engagement!
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

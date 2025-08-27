@@ -17,13 +17,16 @@ export interface Story {
 export interface Segment {
   id: string;
   story_id: string;
-  segment_text: string;
+  content: string; // Changed from segment_text
   choices: Choice[];
-  is_end: boolean;
-  parent_segment_id: string | null;
-  word_count: number;
-  position?: number;
+  position: number;
+  segment_number: number;
+  image_url?: string;
+  image_prompt?: string;
+  audio_url?: string;
+  title?: string;
   created_at: string;
+  updated_at: string;
 }
 
 export interface Choice {
@@ -42,11 +45,12 @@ export interface Character {
 
 export interface NewSegment {
   story_id: string;
-  segment_text: string;
+  content: string; // Changed from segment_text
   choices: Choice[];
-  is_end: boolean;
-  parent_segment_id: string | null;
-  word_count: number;
+  position: number;
+  segment_number: number;
+  image_prompt?: string;
+  title?: string;
   created_at: string;
 }
 

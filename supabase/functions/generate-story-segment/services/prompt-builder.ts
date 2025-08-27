@@ -179,7 +179,7 @@ export class PromptBuilder implements PromptBuilderService {
    * Build context section for story continuation
    */
   private buildContextSection(previousSegment: Segment, userChoice?: string): string {
-    let contextSection = `\n\nPrevious story segment: ${previousSegment.segment_text}`;
+    let contextSection = `\n\nPrevious story segment: ${previousSegment.content}`;
     
     if (userChoice) {
       contextSection += `\n\nUser chose: ${userChoice}`;
