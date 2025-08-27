@@ -49,7 +49,7 @@ const DashboardPage: React.FC = () => {
       if (!user) return;
 
       try {
-        console.log('Fetching dashboard data for user:', user.id);
+        console.log('🏠 Dashboard: Fetching user data');
 
         // Fetch recent stories
         const { data: stories, error: storiesError } = await supabase
@@ -63,7 +63,7 @@ const DashboardPage: React.FC = () => {
           console.error('Error fetching stories:', storiesError);
           setRecentStories([]);
         } else {
-          console.log('Fetched stories:', stories);
+          console.log('📚 Dashboard: Stories loaded -', stories?.length || 0, 'items');
 
           // Transform stories to match the expected format
           const transformedStories = stories?.map(story => ({

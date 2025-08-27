@@ -40,7 +40,7 @@ export const generateStorySeeds = async ({
   childName = "the child"
 }: GenerateSeedsRequest): Promise<StorySeed[]> => {
   try {
-    console.log('🌱 Requesting story seeds:', { context, difficulty, genre, childName });
+    console.log('🌱 Requesting story seeds:', { context, difficulty, genre });
 
     const { data, error } = await supabase.functions.invoke('generate-story-seeds', {
       body: {

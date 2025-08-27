@@ -46,7 +46,7 @@ export const useStories = (userId: string | null) => {
         return [];
       }
       
-      console.log('Fetching stories for user:', userId);
+      console.log('📖 Performance: Loading user stories');
       
       // Fetch from Supabase directly
       const { data: stories, error } = await supabase
