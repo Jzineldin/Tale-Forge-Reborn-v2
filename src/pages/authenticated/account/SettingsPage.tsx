@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 import { supabase } from '@/lib/supabase';
+import { stripeService } from '@/services/stripeService';
+import toast from 'react-hot-toast';
+import FounderBadge from '@/components/atoms/FounderBadge';
 
 interface SubscriptionData {
   plan: 'free' | 'starter' | 'premium';
@@ -11,6 +14,11 @@ interface SubscriptionData {
   creditsUsed: number;
   nextBillingDate?: string;
   stripeCustomerId?: string;
+  // Founder status
+  isFounder?: boolean;
+  founderTier?: 'elite' | 'pioneer';
+  founderNumber?: number;
+  founderDiscount?: number;
 }
 
 const SettingsPage: React.FC = () => {
@@ -23,6 +31,7 @@ const SettingsPage: React.FC = () => {
     creditsUsed: 0
   });
   const [activeTab, setActiveTab] = useState<'account' | 'subscription' | 'preferences'>('account');
+  const [processingStripe, setProcessingStripe] = useState(false);
 
   useEffect(() => {
     const body = document.body;
@@ -34,7 +43,7 @@ const SettingsPage: React.FC = () => {
     const originalBackgroundRepeat = body.style.backgroundRepeat;
     
     body.style.background = 'none';
-    body.style.backgroundImage = 'url(/images/backgrounds/cosmic-profile.png)';
+    body.style.backgroundImage = 'url(/images/backgrounds/magical-space-nebula-1.png)';
     body.style.backgroundAttachment = 'fixed';
     body.style.backgroundSize = 'cover';
     body.style.backgroundPosition = 'center';
@@ -58,28 +67,90 @@ const SettingsPage: React.FC = () => {
     if (!user) return;
     
     try {
-      // TODO: Fetch actual subscription data from Supabase
-      // For now, using mock data
-      setSubscription({
-        plan: 'starter',
-        credits: 75,
-        creditsUsed: 25,
-        nextBillingDate: '2025-02-27'
+      // Fetch user's subscription status
+      const userSubscription = await stripeService.getUserSubscription();
+      
+      // Fetch user's credit balance
+      const { data: creditData } = await supabase
+        .from('user_credits')
+        .select('balance, lifetime_spent')
+        .eq('user_id', user.id)
+        .single();
+      
+      // Fetch founder status
+      const { data: founderData } = await supabase.rpc('get_user_founder_status', {
+        user_uuid: user.id
       });
+      
+      if (userSubscription) {
+        setSubscription({
+          plan: userSubscription.planId as 'free' | 'starter' | 'premium',
+          credits: userSubscription.creditsIncluded,
+          creditsUsed: creditData?.lifetime_spent || 0,
+          nextBillingDate: userSubscription.currentPeriodEnd,
+          stripeCustomerId: userSubscription.planId,
+          // Founder status
+          isFounder: founderData?.is_founder || false,
+          founderTier: founderData?.founder_tier || undefined,
+          founderNumber: founderData?.founder_number || undefined,
+          founderDiscount: founderData?.discount_percentage || undefined
+        });
+      } else {
+        // Free tier user
+        setSubscription({
+          plan: 'free',
+          credits: 10,
+          creditsUsed: creditData?.lifetime_spent || 0,
+          // Founder status (free users can't be founders)
+          isFounder: false
+        });
+      }
     } catch (error) {
       console.error('Error fetching subscription:', error);
+      // Default to free tier on error
+      setSubscription({
+        plan: 'free',
+        credits: 10,
+        creditsUsed: 0,
+        isFounder: false
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleManageSubscription = () => {
-    // TODO: Redirect to Stripe customer portal
-    window.open('https://billing.stripe.com/p/login/test', '_blank');
+  const handleManageSubscription = async () => {
+    setProcessingStripe(true);
+    try {
+      const portalUrl = await stripeService.openCustomerPortal();
+      window.open(portalUrl, '_blank');
+    } catch (error: any) {
+      console.error('Error opening customer portal:', error);
+      toast.error(error.message || 'Failed to open subscription management');
+    } finally {
+      setProcessingStripe(false);
+    }
   };
 
-  const handleUpgrade = () => {
-    navigate('/pricing');
+  const handleUpgrade = async () => {
+    // Determine which plan to upgrade to
+    const targetPlan = subscription.plan === 'free' ? 'starter' : 'premium';
+    
+    setProcessingStripe(true);
+    try {
+      const { sessionUrl } = await stripeService.createCheckoutSession(
+        targetPlan,
+        `${window.location.origin}/payment/success`,
+        `${window.location.origin}/settings`
+      );
+      
+      // Redirect to Stripe checkout
+      window.location.href = sessionUrl;
+    } catch (error: any) {
+      console.error('Error creating checkout session:', error);
+      toast.error(error.message || 'Failed to start upgrade process');
+      setProcessingStripe(false);
+    }
   };
 
   const getPlanDetails = (plan: string) => {
@@ -219,7 +290,19 @@ const SettingsPage: React.FC = () => {
           {/* Current Plan */}
           <div className="bg-slate-900/60 backdrop-blur-sm rounded-xl p-8 border border-white/10 mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Current Plan</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-white">Current Plan</h2>
+                {subscription.isFounder && subscription.founderTier && (
+                  <FounderBadge 
+                    tier={subscription.founderTier}
+                    number={subscription.founderNumber}
+                    showNumber={true}
+                    showDiscount={true}
+                    discountPercentage={subscription.founderDiscount}
+                    size="small"
+                  />
+                )}
+              </div>
               {subscription.plan === 'premium' ? (
                 <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium rounded-full">
                   PREMIUM
@@ -277,10 +360,17 @@ const SettingsPage: React.FC = () => {
                   variant="primary" 
                   size="medium"
                   onClick={handleUpgrade}
+                  disabled={processingStripe}
                   className="flex-1"
                 >
-                  <Icon name="star" size={16} className="mr-2" />
-                  Upgrade Plan
+                  {processingStripe ? (
+                    <>Processing...</>
+                  ) : (
+                    <>
+                      <Icon name="star" size={16} className="mr-2" />
+                      Upgrade Plan
+                    </>
+                  )}
                 </Button>
               )}
               {subscription.plan !== 'free' && (
@@ -288,12 +378,28 @@ const SettingsPage: React.FC = () => {
                   variant="secondary" 
                   size="medium"
                   onClick={handleManageSubscription}
+                  disabled={processingStripe}
                   className="flex-1"
                 >
-                  <Icon name="settings" size={16} className="mr-2" />
-                  Manage Subscription
+                  {processingStripe ? (
+                    <>Processing...</>
+                  ) : (
+                    <>
+                      <Icon name="settings" size={16} className="mr-2" />
+                      Manage Subscription
+                    </>
+                  )}
                 </Button>
               )}
+              <Button 
+                variant="secondary" 
+                size="medium"
+                onClick={() => navigate('/pricing')}
+                className="flex-1"
+              >
+                <Icon name="plus" size={16} className="mr-2" />
+                Buy More Credits
+              </Button>
             </div>
           </div>
 
@@ -330,7 +436,7 @@ const SettingsPage: React.FC = () => {
                 <Icon name="check" size={20} className="text-green-400 mr-3 mt-1" />
                 <div>
                   <p className="text-white font-medium">Voice Narration</p>
-                  <p className="text-gray-400 text-sm">Professional TTS (3 credits per chapter)</p>
+                  <p className="text-gray-400 text-sm">Professional TTS (1 credit per 100 words)</p>
                 </div>
               </div>
 

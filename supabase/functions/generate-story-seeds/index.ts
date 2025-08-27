@@ -18,9 +18,6 @@ interface RequestBody {
 interface StorySeed {
   title: string
   teaser: string
-  hiddenMoral: string
-  conflict: string
-  quest: string
 }
 
 const corsHeaders = {
@@ -36,83 +33,61 @@ function createCorsResponse(data: any, status = 200) {
   })
 }
 
-// Fallback story seeds for when AI generation fails - now with randomization and child name integration
+// Fallback story seeds - simple one-sentence ideas
 const getFallbackSeeds = (context: string, difficulty: string, genre: string, childName: string = 'the child'): StorySeed[] => {
   const fallbackSeeds: Record<string, StorySeed[]> = {
     fantasy: [
       {
-        title: `${childName}'s Magical Garden Discovery`,
-        teaser: `${childName} finds a secret garden where flowers sing and trees dance, but the magic is slowly fading away.`,
-        hiddenMoral: "Taking care of nature helps it flourish and brings joy to everyone.",
-        conflict: "The magical garden is losing its power because people have forgotten to care for it.",
-        quest: "Find the three magical seeds hidden throughout the garden to restore its power."
+        title: "Magic Garden",
+        teaser: `${childName} finds a garden where flowers can talk.`
       },
       {
-        title: "The Dragon Who Lost His Roar",
-        teaser: `A friendly dragon can't roar anymore and feels too embarrassed to play with ${childName} and other friends.`,
-        hiddenMoral: "Everyone has unique talents, and true friends accept you as you are.",
-        conflict: "The dragon thinks he's not a real dragon without his roar.",
-        quest: "Help the dragon discover his new special ability - the power to create beautiful melodies."
+        title: "Dragon Friend",
+        teaser: `${childName} meets a tiny dragon who loves cookies.`
       },
       {
-        title: "The Wishing Well's Last Wish",
-        teaser: `An ancient wishing well grants ${childName} one final wish before its magic runs out forever.`,
-        hiddenMoral: "The best wishes are those made for others, not ourselves.",
-        conflict: "Many people want to use the last wish for themselves.",
-        quest: "Decide who deserves the final wish and why selflessness matters most."
+        title: "Wishing Star",
+        teaser: `${childName} catches a falling star that grants wishes.`
       },
       {
-        title: `${childName} and the Starlight Express`,
-        teaser: `${childName} boards a magical train made of starlight that travels through constellation kingdoms.`,
-        hiddenMoral: "Every journey teaches us something new about ourselves.",
-        conflict: "The constellations are fading and losing their magic.",
-        quest: "Restore the light to each constellation kingdom."
+        title: "Rainbow Bridge",
+        teaser: `${childName} discovers a rainbow that leads to a cloud castle.`
       }
     ],
     adventure: [
       {
-        title: `${childName}'s Lost Treasure Map`,
-        teaser: `${childName} discovers an old treasure map that leads to an island where X marks the spot, but the real treasure isn't gold.`,
-        hiddenMoral: "The greatest treasures are the friendships we make along the way.",
-        conflict: "Pirates and explorers are racing to find the treasure first.",
-        quest: "Navigate through challenges and discover what the real treasure truly is."
+        title: "Treasure Hunt",
+        teaser: `${childName} finds a treasure map in the backyard.`
       },
       {
-        title: "The Secret of Rainbow Falls",
-        teaser: `${childName} searches for a hidden waterfall that creates rainbows even on cloudy days, but only those pure of heart can find it.`,
-        hiddenMoral: "Kindness and honesty open doors that cannot be unlocked any other way.",
-        conflict: "Many have searched for Rainbow Falls but returned empty-handed.",
-        quest: "Prove your pure heart through acts of kindness to reveal the secret path."
+        title: "Rainbow Falls",
+        teaser: `${childName} searches for a magical waterfall.`
       },
       {
-        title: `${childName}'s Playground Olympics`,
-        teaser: `${childName} and friends compete in the most epic playground games ever, learning that winning isn't everything.`,
-        hiddenMoral: "Good sportsmanship and having fun matter more than winning.",
-        conflict: "Some kids are more focused on winning than having fun.",
-        quest: "Bring back the spirit of fun and fair play to the games."
+        title: "Playground Games",
+        teaser: `${childName} organizes the best playground olympics ever.`
+      },
+      {
+        title: "Secret Cave",
+        teaser: `${childName} discovers a hidden cave full of crystals.`
       }
     ],
     mystery: [
       {
-        title: `${childName} and the Case of the Missing Cookies`,
-        teaser: `Every night, freshly baked cookies disappear from ${childName}'s kitchen without a trace.`,
-        hiddenMoral: "Sometimes the most obvious answer is right in front of us.",
-        conflict: "Everyone in the house is suspected, causing family tension.",
-        quest: "Follow the clues and solve the mystery without hurting anyone's feelings."
+        title: "Missing Cookies",
+        teaser: `${childName} solves the case of disappearing cookies.`
       },
       {
-        title: `Detective ${childName}'s Library Mystery`,
-        teaser: `Books keep disappearing from the school library, and ${childName} is determined to solve the case.`,
-        hiddenMoral: "Understanding why someone does something is more important than catching them.",
-        conflict: "The librarian is worried and students are being blamed unfairly.",
-        quest: "Find the real reason behind the disappearing books and help everyone involved."
+        title: "Library Mystery",
+        teaser: `${childName} investigates missing library books.`
       },
       {
-        title: `${childName} and the Secret of the Old Clock Tower`,
-        teaser: `Strange sounds come from the old clock tower at midnight, and ${childName} decides to investigate.`,
-        hiddenMoral: "Courage means facing your fears to help others.",
-        conflict: "Everyone is afraid of the clock tower and won't go near it.",
-        quest: "Discover what's really making the sounds and help solve the mystery."
+        title: "Clock Tower Secret",
+        teaser: `${childName} discovers what makes the clock tower chime at midnight.`
+      },
+      {
+        title: "Hidden Room",
+        teaser: `${childName} finds a secret room in the old house.`
       }
     ]
   }

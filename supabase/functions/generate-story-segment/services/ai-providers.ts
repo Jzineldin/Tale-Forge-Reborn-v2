@@ -112,24 +112,38 @@ export class AIProviders implements AIProviderService {
     
     const structuredPrompt = `${prompt}
 
-IMPORTANT: Respond with valid JSON in this exact format:
+IMPORTANT: You are writing for children. The story must be engaging and the choices must be clear and directly related to what happens in your story.
+
+Respond with valid JSON in this exact format:
 {
-  "story_text": "Your story segment here (2-3 short paragraphs)",
+  "story_text": "Your story segment here (2-3 short paragraphs that advance the story)",
   "choices": [
-    "First choice that directly relates to the story segment you just wrote",
-    "Second choice that offers an alternative path based on the story content", 
-    "Third choice that presents a different option mentioned or implied in your story"
+    "First choice that directly relates to the story segment",
+    "Second choice that offers a different path from your story", 
+    "Third choice that presents another option from your story"
   ]
 }
 
-CRITICAL CHOICE REQUIREMENTS:
-- Each choice must be ONE SHORT SENTENCE (5-10 words maximum)
-- Keep choices simple and clear for children to understand
-- Choices MUST be directly relevant to what just happened in YOUR story segment
-- Reference specific characters or objects from your story
-- Offer three genuinely different story directions
+CRITICAL STORY REQUIREMENTS:
+- Write 2-3 engaging paragraphs that advance the story
+- Include the main character doing something specific  
+- End with a moment where the character must make a decision
+- Make it age-appropriate and exciting
 
-Make sure the story_text is engaging and age-appropriate, and the 3 choices are meaningful continuations that a child would understand.`;
+CRITICAL CHOICE REQUIREMENTS:
+- Each choice must be 4-8 words maximum
+- Choices MUST directly relate to what happens in your story segment
+- Use simple words children can understand
+- Each choice should lead to a different story direction
+- Reference specific actions, characters, or objects from YOUR story text
+
+EXAMPLE of good choices based on story content:
+If your story mentions "a locked door and a small window", choices could be:
+- "Try to unlock the door"
+- "Climb through the window" 
+- "Look for another way"
+
+Make sure your story_text creates a situation that naturally leads to your 3 choices.`;
 
     const requestBody = {
       model: providerConfig.model,
@@ -169,17 +183,13 @@ Make sure the story_text is engaging and age-appropriate, and the 3 choices are 
     
     console.log(`📥 ${providerName} raw response: ${rawResponse.substring(0, 200)}...`);
     
-    // Enhanced JSON sanitization (from the updated file)
-    let cleanedResponse = rawResponse
-      .replace(/[\x00-\x1F\x7F]/g, '') // Remove all control characters
-      .replace(/\n/g, '\\n') // Escape newlines in story text
-      .replace(/\r/g, '\\r') // Escape carriage returns
-      .replace(/\t/g, '\\t') // Escape tabs
-      .replace(/\"/g, '\\"') // Escape quotes in content
-      .replace(/\\\"/g, '"') // Fix over-escaped quotes
-      .trim();
+    // Enhanced JSON sanitization - fix the corrupted parsing
+    let cleanedResponse = rawResponse.trim();
     
-    // Try to extract JSON if it's wrapped in other text
+    // Remove markdown code blocks if present
+    cleanedResponse = cleanedResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    
+    // Extract JSON object from response
     const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       cleanedResponse = jsonMatch[0];

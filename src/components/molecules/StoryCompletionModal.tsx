@@ -10,6 +10,7 @@ interface StoryCompletionModalProps {
   originalStoryCost: number;
   chapterCount: number;
   onAudioPurchased?: (audioUrl: string) => void;
+  onPlayStory?: () => void;
 }
 
 const StoryCompletionModal: React.FC<StoryCompletionModalProps> = ({
@@ -19,7 +20,8 @@ const StoryCompletionModal: React.FC<StoryCompletionModalProps> = ({
   storyTitle,
   originalStoryCost,
   chapterCount,
-  onAudioPurchased
+  onAudioPurchased,
+  onPlayStory
 }) => {
   const { balance, refreshBalance } = useCredits();
   const [purchasing, setPurchasing] = useState(false);
@@ -166,6 +168,19 @@ const StoryCompletionModal: React.FC<StoryCompletionModalProps> = ({
 
             {/* Story Actions */}
             <div className="space-y-3">
+              {onPlayStory && (
+                <button 
+                  onClick={() => {
+                    onPlayStory();
+                    onClose();
+                  }}
+                  className="w-full glass-card hover:glass-enhanced border border-white/20 hover:border-purple-400/50 py-3 rounded-lg text-white hover:text-purple-400 transition-all duration-300 flex items-center justify-center space-x-2"
+                >
+                  <span>🎬</span>
+                  <span>Play Story</span>
+                </button>
+              )}
+              
               <button className="w-full glass-card hover:glass-enhanced border border-white/20 hover:border-amber-400/50 py-3 rounded-lg text-white hover:text-amber-400 transition-all duration-300 flex items-center justify-center space-x-2">
                 <span>📖</span>
                 <span>Read Again</span>

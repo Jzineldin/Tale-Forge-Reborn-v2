@@ -11,6 +11,31 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', {
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
+// Helper function to create or retrieve founder discount coupon
+async function createFounderCoupon(discountPercentage: number): Promise<string> {
+  const couponId = `founder-discount-${discountPercentage}`;
+  
+  try {
+    // Try to retrieve existing coupon
+    const existingCoupon = await stripe.coupons.retrieve(couponId);
+    return existingCoupon.id;
+  } catch (error) {
+    // Coupon doesn't exist, create it
+    const coupon = await stripe.coupons.create({
+      id: couponId,
+      name: `Founder Discount ${discountPercentage}%`,
+      percent_off: discountPercentage,
+      duration: 'once',
+      max_redemptions: 1000, // Generous limit for founders
+      metadata: {
+        type: 'founder_discount',
+        discount_percentage: discountPercentage.toString(),
+      },
+    });
+    return coupon.id;
+  }
+}
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -33,6 +58,14 @@ serve(async (req: Request) => {
     }
 
     const { planId, mode = 'subscription', productId, successUrl, cancelUrl } = await req.json();
+
+    // Check if user is already a founder
+    const { data: founderStatus } = await supabase.rpc('get_user_founder_status', {
+      user_uuid: user.id
+    });
+    
+    const isExistingFounder = founderStatus?.is_founder || false;
+    const founderDiscount = founderStatus?.discount_percentage || 0;
 
     // Price IDs for subscriptions and credit packages
     const priceIds: Record<string, string> = {
@@ -81,8 +114,8 @@ serve(async (req: Request) => {
         });
     }
 
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    // Prepare session configuration
+    const sessionConfig: any = {
       customer: stripeCustomerId,
       payment_method_types: ['card'],
       line_items: [
@@ -97,9 +130,22 @@ serve(async (req: Request) => {
       cancel_url: cancelUrl || `${req.headers.get('origin')}/credits`,
       metadata: {
         user_id: user.id,
-        plan_id: planId,
+        plan_id: planId || productId,
+        is_existing_founder: isExistingFounder.toString(),
+        founder_discount: founderDiscount.toString(),
       },
-    });
+    };
+
+    // Apply founder discount if user is an existing founder
+    if (isExistingFounder && founderDiscount > 0 && mode === 'payment') {
+      // For one-time payments, apply founder discount as a coupon
+      sessionConfig.discounts = [{
+        coupon: await createFounderCoupon(founderDiscount),
+      }];
+    }
+
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return new Response(
       JSON.stringify({ 

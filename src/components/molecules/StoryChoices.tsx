@@ -84,23 +84,46 @@ const StoryChoices: React.FC<StoryChoicesProps> = ({
         ))}
       </div>
 
-      {/* End Story Option - Matches main theme */}
+      {/* End Story Option - Enhanced with clear explanation */}
       {showEndStoryOption && (
-        <div className="pt-3 mt-3 border-t border-slate-800/50">
-          <p className="text-gray-400 text-xs mb-2 text-center">
-            Or wrap up your adventure:
-          </p>
+        <div className="pt-4 mt-4 border-t border-slate-800/50">
+          <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg p-4 mb-3">
+            <p className="text-amber-400 text-sm font-semibold mb-1 text-center">
+              Ready to wrap up your adventure?
+            </p>
+            <p className="text-gray-300 text-xs text-center">
+              The AI will create a satisfying conclusion that brings your story to a beautiful ending
+            </p>
+          </div>
           <button
-            className="w-full py-4 px-5 bg-gradient-to-r from-orange-600/20 to-amber-600/20 hover:from-orange-600/30 hover:to-amber-600/30 rounded-lg transition-all duration-300 text-orange-400 font-medium border border-orange-500/30 hover:border-orange-500/50"
+            className="w-full py-4 px-5 bg-gradient-to-r from-amber-600/30 to-orange-600/30 hover:from-amber-600/40 hover:to-orange-600/40 rounded-lg transition-all duration-300 text-amber-400 font-bold border-2 border-amber-500/40 hover:border-amber-500/60 shadow-lg hover:shadow-amber-500/20 group"
             onClick={() => {
               console.log('🎬 End Story button clicked');
               onEndStory?.();
             }}
             disabled={disabled || loading || isGeneratingEnding}
           >
-            <span className="text-sm">
-              {isGeneratingEnding ? 'Creating Finale...' : '✨ End Story & Create Finale'}
-            </span>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-base flex items-center gap-2">
+                {isGeneratingEnding ? (
+                  <>
+                    <span className="animate-spin">✨</span>
+                    Creating Your Story Finale...
+                  </>
+                ) : (
+                  <>
+                    <span className="group-hover:animate-pulse">🎭</span>
+                    Create Story Finale
+                    <span className="group-hover:animate-pulse">✨</span>
+                  </>
+                )}
+              </span>
+              {!isGeneratingEnding && (
+                <span className="text-xs text-amber-400/70">
+                  AI will craft the perfect ending
+                </span>
+              )}
+            </div>
           </button>
         </div>
       )}

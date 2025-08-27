@@ -70,10 +70,11 @@ const PrimaryNavigation: React.FC = () => {
                 <CreditBalanceIndicator size="sm" />
                 <Link
                   to="/account/settings"
-                  className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
+                  className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors duration-200 px-3 py-1.5 rounded-lg hover:bg-white/10 text-sm font-medium"
                   title="Settings"
                 >
                   <Icon name="settings" size={18} />
+                  <span>Settings</span>
                 </Link>
                 <Link
                   to="/notifications"

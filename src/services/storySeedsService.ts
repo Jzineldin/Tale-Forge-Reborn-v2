@@ -4,9 +4,6 @@ import { edgeFunctionsClient } from '@/lib/supabase';
 export interface StorySeed {
   title: string;
   teaser: string;
-  hiddenMoral: string;
-  conflict: string;
-  quest: string;
 }
 
 export interface StorySeedsResponse {
@@ -104,94 +101,58 @@ const getFallbackSeeds = (genre: string): StorySeed[] => {
   const fallbackSeeds: Record<string, StorySeed[]> = {
     FANTASY: [
       {
-        title: "Luna's Moonbeam Adventure",
-        teaser: "A little girl discovers that moonbeams can carry her to magical places where she helps sleepy animals find their dreams.",
-        hiddenMoral: "Even small acts of kindness can make a big difference",
-        conflict: "The dream animals have lost their way home",
-        quest: "Help each animal find their perfect dream"
+        title: "Moonbeam Magic",
+        teaser: "A girl rides moonbeams to visit sleepy cloud animals."
       },
       {
-        title: "The Sleepy Dragon's Lullaby",
-        teaser: "A gentle dragon who's forgotten how to sleep learns the most beautiful lullaby from a wise old owl.",
-        hiddenMoral: "Sometimes we need help from friends to solve our problems",
-        conflict: "The dragon's insomnia is keeping the whole forest awake",
-        quest: "Learn the ancient lullaby that brings peaceful sleep"
+        title: "Dragon's Lullaby",
+        teaser: "A dragon learns to sleep with help from an owl."
       },
       {
-        title: "Starlight Express",
-        teaser: "Twin siblings board a magical train made of starlight that takes them on a journey through constellation kingdoms.",
-        hiddenMoral: "Family bonds give us strength to overcome any challenge",
-        conflict: "The constellations are fading and losing their magic",
-        quest: "Restore the light to each constellation kingdom"
+        title: "Star Train",
+        teaser: "Twins ride a magical train through the stars."
       }
     ],
     'SCI-FI': [
       {
-        title: "The Curious Inventor",
-        teaser: "A young inventor creates a machine that can solve any problem, but learns that some challenges are best solved with friends.",
-        hiddenMoral: "Teamwork and cooperation are more powerful than any invention",
-        conflict: "The invention causes more problems than it solves",
-        quest: "Fix the mistakes and learn to work with others"
+        title: "Robot Friend",
+        teaser: "A child builds a robot that becomes their best friend."
       },
       {
-        title: "Professor Puzzle's Mystery School",
-        teaser: "Students at a special school solve magical puzzles that teach them about the world around them.",
-        hiddenMoral: "Learning is an adventure when you're curious and persistent",
-        conflict: "The school's magic is fading because students have stopped being curious",
-        quest: "Rediscover the joy of learning and asking questions"
+        title: "Puzzle School",
+        teaser: "Students solve fun puzzles in a magical school."
       },
       {
-        title: "The Library of Living Books",
-        teaser: "Books come alive in a magical library, but they need help organizing their stories and sharing their wisdom.",
-        hiddenMoral: "Knowledge becomes powerful when we share it with others",
-        conflict: "The books are scattered and their stories are getting mixed up",
-        quest: "Help the books find their place and organize the library"
+        title: "Living Books",
+        teaser: "Books come alive in a special library."
       }
     ],
     MYSTERY: [
       {
-        title: "The Case of the Missing Cookies",
-        teaser: "When cookies disappear every night from the kitchen, a young detective must solve the sweetest mystery.",
-        hiddenMoral: "Sometimes the answer is simpler than we think",
-        conflict: "Everyone is a suspect and feelings are getting hurt",
-        quest: "Follow the crumb trail to find the real cookie culprit"
+        title: "Cookie Mystery",
+        teaser: "A detective solves the case of missing cookies."
       },
       {
-        title: "The Secret of the Singing Garden",
-        teaser: "A mysterious melody echoes through the garden at midnight, leading to an enchanting discovery.",
-        hiddenMoral: "Nature has its own magic if we listen carefully",
-        conflict: "The garden's music is fading and no one knows why",
-        quest: "Uncover the source of the music before it disappears forever"
+        title: "Singing Garden",
+        teaser: "A garden sings mysterious melodies at midnight."
       },
       {
-        title: "The Library's Hidden Door",
-        teaser: "Behind the oldest bookshelf lies a door that only opens for those who truly love stories.",
-        hiddenMoral: "Reading opens doors to endless possibilities",
-        conflict: "The door is closing and the magical library beyond may be lost",
-        quest: "Solve three literary puzzles to keep the door open"
+        title: "Hidden Door",
+        teaser: "A secret door appears behind the library bookshelf."
       }
     ],
     DEFAULT: [
       {
-        title: "The Playground Olympics",
-        teaser: "Kids from different schools compete in the most epic playground games ever, learning that winning isn't everything.",
-        hiddenMoral: "Good sportsmanship and having fun matter more than winning",
-        conflict: "Some kids are more focused on winning than having fun",
-        quest: "Bring back the spirit of fun and fair play to the games"
+        title: "Playground Games",
+        teaser: "Kids organize the best playground Olympics ever."
       },
       {
-        title: "Adventure Island Treasure Hunt",
-        teaser: "A group of friends discovers a mysterious map leading to treasure on a secret island in their local park.",
-        hiddenMoral: "The best treasures are the friendships we make along the way",
-        conflict: "The friends disagree about how to find the treasure",
-        quest: "Work together to solve the treasure map's clues"
+        title: "Treasure Map",
+        teaser: "Friends find a treasure map in the park."
       },
       {
-        title: "The Super Playground Squad",
-        teaser: "Ordinary kids discover they have special powers, but only when they're playing together and including everyone.",
-        hiddenMoral: "Everyone has unique talents that make the group stronger",
-        conflict: "A new kid feels left out and the group's powers start to fade",
-        quest: "Include everyone and discover each person's special ability"
+        title: "Super Squad",
+        teaser: "Kids discover they have superpowers when playing together."
       }
     ]
   };

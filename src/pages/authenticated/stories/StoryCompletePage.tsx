@@ -8,6 +8,7 @@ import { goalService } from '@/services/goalService';
 import { toast } from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import StoryCompletionModal from '@/components/molecules/StoryCompletionModal';
+import StoryPlayer from '@/components/organisms/StoryPlayer';
 
 interface StoryStats {
   totalWords: number;
@@ -27,6 +28,7 @@ const StoryCompletePage: React.FC = () => {
   const [stats, setStats] = useState<StoryStats | null>(null);
   const [newAchievements, setNewAchievements] = useState<any[]>([]);
   const [completedGoals, setCompletedGoals] = useState<any[]>([]);
+  const [showStoryPlayer, setShowStoryPlayer] = useState(false);
 
   // Get story data
   const { data: story, isLoading, error } = useStory(id || null);
@@ -357,6 +359,24 @@ const StoryCompletePage: React.FC = () => {
               </Button>
             </div>
 
+            {/* Story Player */}
+            <div className="glass-card">
+              <div className="text-4xl mb-4">🎬</div>
+              <h3 className="title-card mb-3">
+                Story Player
+              </h3>
+              <p className="text-body-sm mb-4">
+                Experience your story as a beautiful slideshow with images, text, and audio.
+              </p>
+              <Button
+                onClick={() => setShowStoryPlayer(true)}
+                variant="primary"
+                className="w-full"
+              >
+                ▶️ Play Story
+              </Button>
+            </div>
+
             {/* Create Another */}
             <div className="glass-card">
               <div className="text-4xl mb-4">✍️</div>
@@ -452,6 +472,23 @@ const StoryCompletePage: React.FC = () => {
           originalStoryCost={story.cost || 10} // Use story cost from database or fallback
           chapterCount={story.segments?.length || 0}
           onAudioPurchased={handleAudioPurchased}
+          onPlayStory={() => setShowStoryPlayer(true)}
+        />
+      )}
+
+      {/* Story Player */}
+      {showStoryPlayer && story && story.segments && (
+        <StoryPlayer
+          segments={story.segments.map(segment => ({
+            id: segment.id,
+            segment_text: segment.segment_text,
+            image_url: segment.image_url,
+            audio_url: segment.audio_url,
+            chapter_number: segment.chapter_number || 0
+          }))}
+          storyTitle={story.title}
+          onClose={() => setShowStoryPlayer(false)}
+          autoPlay={false}
         />
       )}
     </div>

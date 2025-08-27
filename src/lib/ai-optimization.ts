@@ -46,8 +46,8 @@ Max 100 words per seed.`,
 Child: ${params.childName}, Age: ${params.age}
 Context: ${params.context}
 
-JSON format:
-[{"title":"","teaser":"","moral":"","conflict":"","quest":""}]`
+Return 3 simple story ideas in JSON:
+[{"title":"Short Title","teaser":"One sentence story idea"}]`
   },
   
   STORY_SEGMENT: {

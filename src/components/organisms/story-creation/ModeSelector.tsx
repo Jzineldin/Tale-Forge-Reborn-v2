@@ -78,15 +78,14 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
             </button>
           </div>
 
-          {/* Template Mode */}
-          <div className="relative transform hover:scale-105 transition-all duration-500">
-            <button
-              onClick={onTemplateMode}
-              className="w-full h-full group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-blue-400/20 via-cyan-500/15 to-blue-600/20 backdrop-blur-xl border border-blue-400/30 hover:border-blue-300/60 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-400/30 flex flex-col"
+          {/* Template Mode - COMING SOON */}
+          <div className="relative transform transition-all duration-500">
+            <div
+              className="w-full h-full group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-blue-400/20 via-cyan-500/15 to-blue-600/20 backdrop-blur-xl border border-blue-400/30 cursor-not-allowed flex flex-col"
             >
-              {/* Beta badge */}
+              {/* Coming Soon badge */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-400 to-cyan-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                BETA
+                COMING SOON
               </div>
 
               <div className="text-center pt-8 flex-1 flex flex-col justify-between">
@@ -97,7 +96,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
                   </div>
                   
                   {/* Title */}
-                  <TypographyLayout variant="section" as="h3" align="center" className="mb-3 text-xl font-bold text-white group-hover:text-blue-300 transition-colors bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">
+                  <TypographyLayout variant="section" as="h3" align="center" className="mb-3 text-xl font-bold text-white bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">
                     Template Mode
                   </TypographyLayout>
                   
@@ -124,29 +123,28 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
                 </div>
                 
                 <div>
-                  {/* CTA */}
-                  <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white py-3 px-6 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-blue-400/50 transition-all duration-300 mb-4">
-                    <TypographyLayout variant="body" className="font-bold text-lg drop-shadow-md">Browse Templates! 📚</TypographyLayout>
+                  {/* CTA - Disabled */}
+                  <div className="bg-gradient-to-r from-blue-500/60 to-cyan-600/60 text-white py-3 px-6 rounded-full shadow-xl mb-4 cursor-not-allowed">
+                    <TypographyLayout variant="body" className="font-bold text-lg drop-shadow-md">Coming Soon! 🔜</TypographyLayout>
                   </div>
                   
-                  {/* Speed indicator */}
+                  {/* Status indicator */}
                   <div className="bg-blue-500/20 border border-blue-400/30 rounded-full py-2 px-4">
-                    <TypographyLayout variant="body" className="text-blue-300 text-sm font-semibold">⚡ Fastest option</TypographyLayout>
+                    <TypographyLayout variant="body" className="text-blue-300 text-sm font-semibold">🚧 In Development</TypographyLayout>
                   </div>
                 </div>
               </div>
-            </button>
+            </div>
           </div>
 
-          {/* Advanced Mode */}
-          <div className="relative transform hover:scale-105 transition-all duration-500">
-            <button
-              onClick={onCustomMode}
-              className="w-full h-full group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-orange-400/20 via-red-500/15 to-orange-600/20 backdrop-blur-xl border border-orange-400/30 hover:border-orange-300/60 transition-all duration-500 hover:shadow-2xl hover:shadow-orange-400/30 flex flex-col"
+          {/* Advanced Mode - COMING SOON */}
+          <div className="relative transform transition-all duration-500">
+            <div
+              className="w-full h-full group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-orange-400/20 via-red-500/15 to-orange-600/20 backdrop-blur-xl border border-orange-400/30 cursor-not-allowed flex flex-col"
             >
-              {/* NEW badge */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-3 py-1 rounded-full shadow-lg animate-pulse">
-                <TypographyLayout variant="body" className="text-xs font-bold tracking-wide">✨ NEW!</TypographyLayout>
+              {/* Coming Soon badge */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                COMING SOON
               </div>
 
               <div className="text-center pt-8 flex-1 flex flex-col justify-between">
@@ -157,7 +155,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
                   </div>
                   
                   {/* Title */}
-                  <TypographyLayout variant="section" as="h3" align="center" className="mb-3 text-xl font-bold text-white group-hover:text-orange-300 transition-colors bg-gradient-to-r from-orange-300 via-red-300 to-orange-400 bg-clip-text text-transparent drop-shadow-lg">
+                  <TypographyLayout variant="section" as="h3" align="center" className="mb-3 text-xl font-bold text-white bg-gradient-to-r from-orange-300 via-red-300 to-orange-400 bg-clip-text text-transparent drop-shadow-lg">
                     Advanced Mode
                   </TypographyLayout>
                   
@@ -184,18 +182,18 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
                 </div>
                 
                 <div>
-                  {/* CTA */}
-                  <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 px-6 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-orange-400/50 transition-all duration-300 mb-4">
-                    <TypographyLayout variant="body" className="font-bold text-lg drop-shadow-md">Go Advanced! 🎯</TypographyLayout>
+                  {/* CTA - Disabled */}
+                  <div className="bg-gradient-to-r from-orange-500/60 to-red-600/60 text-white py-3 px-6 rounded-full shadow-xl mb-4 cursor-not-allowed">
+                    <TypographyLayout variant="body" className="font-bold text-lg drop-shadow-md">Coming Soon! 🔜</TypographyLayout>
                   </div>
                   
-                  {/* Creativity indicator */}
+                  {/* Status indicator */}
                   <div className="bg-orange-500/20 border border-orange-400/30 rounded-full py-2 px-4">
-                    <TypographyLayout variant="body" className="text-orange-300 text-sm font-semibold">🎨 Maximum creativity</TypographyLayout>
+                    <TypographyLayout variant="body" className="text-orange-300 text-sm font-semibold">🚧 In Development</TypographyLayout>
                   </div>
                 </div>
               </div>
-            </button>
+            </div>
           </div>
         </div>
 

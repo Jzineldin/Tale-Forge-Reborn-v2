@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Zap, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { stripeService } from '@/services/stripeService';
+import { supabase } from '@/lib/supabase';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/providers/AuthContext';
+import toast from 'react-hot-toast';
+import FounderProgramBanner from '@/components/molecules/FounderProgramBanner';
 
 interface CreditPackage {
   id: string;
@@ -15,6 +21,9 @@ interface CreditPackage {
 
 const PricingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'packages' | 'subscription'>('packages');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Handle body background for this page
   useEffect(() => {
@@ -60,7 +69,7 @@ const PricingPage: React.FC = () => {
       credits: 100,
       price: 9.99,
       displayPrice: '$9.99/mo',
-      stripeLink: 'https://buy.stripe.com/monthly_starter_placeholder'
+      stripeLink: '#' // Will use stripeService
     },
     {
       id: 'premium',
@@ -70,7 +79,7 @@ const PricingPage: React.FC = () => {
       displayPrice: '$19.99/mo',
       popular: true,
       savings: 'Best Value - 3X More Credits!',
-      stripeLink: 'https://buy.stripe.com/monthly_premium_placeholder'
+      stripeLink: '#' // Will use stripeService
     }
   ];
 
@@ -114,9 +123,63 @@ const PricingPage: React.FC = () => {
     }
   ];
 
-  const handlePurchaseClick = (stripeLink: string) => {
-    // Direct navigation to Stripe checkout
-    window.location.href = stripeLink;
+  const handleSubscriptionClick = async (planId: string) => {
+    // Check if user is authenticated
+    if (!user) {
+      // Save the intended plan and redirect to signup
+      localStorage.setItem('intendedPlan', planId);
+      navigate('/signup');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { sessionUrl } = await stripeService.createCheckoutSession(
+        planId,
+        `${window.location.origin}/payment/success`,
+        `${window.location.origin}/pricing`
+      );
+      
+      // Redirect to Stripe checkout
+      window.location.href = sessionUrl;
+    } catch (error: any) {
+      console.error('Error creating checkout session:', error);
+      toast.error(error.message || 'Failed to start checkout process');
+      setLoading(false);
+    }
+  };
+
+  const handleCreditPurchase = async (productId: string) => {
+    // Check if user is authenticated
+    if (!user) {
+      // Save the intended product and redirect to signup
+      localStorage.setItem('intendedProduct', productId);
+      navigate('/signup');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          productId,
+          mode: 'payment', // One-time payment for credits
+          successUrl: `${window.location.origin}/payment/success`,
+          cancelUrl: `${window.location.origin}/pricing`
+        }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = response.data.sessionUrl;
+    } catch (error: any) {
+      console.error('Error creating checkout session:', error);
+      toast.error(error.message || 'Failed to start checkout process');
+      setLoading(false);
+    }
   };
 
   return (
@@ -132,7 +195,7 @@ const PricingPage: React.FC = () => {
               Create unlimited AI-powered stories with our flexible credit system
             </p>
             <p className="text-body text-lg max-w-2xl mx-auto mb-8 text-amber-300">
-              📖 1 credit = 1 chapter • 🎙️ +3 credits for voice narration
+              📖 1 credit = 1 chapter • 🎙️ TTS narration: 1 credit per 100 words
             </p>
 
             {/* Tab Navigation */}
@@ -153,6 +216,13 @@ const PricingPage: React.FC = () => {
               </Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Founder Program Banner */}
+      <section className="p-section">
+        <div className="container-lg">
+          <FounderProgramBanner />
         </div>
       </section>
 
@@ -178,7 +248,7 @@ const PricingPage: React.FC = () => {
                       <CheckCircle className="w-8 h-8 text-green-400" />
                     </div>
                     <h4 className="title-card mb-2">Voice Narration</h4>
-                    <p className="text-body text-slate-300">+3 credits to add professional TTS narration</p>
+                    <p className="text-body text-slate-300">1 credit per 100 words of narration</p>
                   </div>
                   
                   <div className="text-center">
@@ -230,9 +300,9 @@ const PricingPage: React.FC = () => {
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                       <span className="text-body">
-                        {pkg.id === 'free' ? '10 chapters or 2 narrated stories' :
-                          pkg.id === 'starter' ? '100 chapters or 25 with narration' :
-                            '300 chapters or 75 with narration'}
+                        {pkg.id === 'free' ? '10 chapters (or ~5 with narration)' :
+                          pkg.id === 'starter' ? '100 chapters (or ~50 with narration)' :
+                            '300 chapters (or ~150 with narration)'}
                       </span>
                     </div>
                     <div className="flex items-center text-slate-200">
@@ -269,12 +339,12 @@ const PricingPage: React.FC = () => {
                   </div>
 
                   <Button
-                    onClick={() => pkg.id === 'free' ? window.location.href = '/signup' : handlePurchaseClick(pkg.stripeLink)}
-                    variant="primary"
+                    onClick={() => pkg.id === 'free' ? navigate('/signup') : handleSubscriptionClick(pkg.id)}
                     size="lg"
-                    className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''}`}
+                    disabled={loading}
+                    className={`w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
-                    {pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
+                    {loading ? 'Processing...' : pkg.id === 'free' ? 'Start Free' : 'Subscribe Now'}
                   </Button>
                 </div>
               ))}
@@ -356,7 +426,7 @@ const PricingPage: React.FC = () => {
                     <div className="flex items-center text-slate-200">
                       <CheckCircle className="w-4 h-4 text-green-400 mr-3 flex-shrink-0" />
                       <span className="text-body text-sm">
-                        {pkg.credits} chapters or {Math.floor(pkg.credits / 4)} with TTS
+                        {pkg.credits} chapters (or ~{Math.floor(pkg.credits / 2)} with TTS)
                       </span>
                     </div>
                     <div className="flex items-center text-slate-200">
@@ -370,12 +440,13 @@ const PricingPage: React.FC = () => {
                   </div>
 
                   <Button
-                    onClick={() => handlePurchaseClick(pkg.stripeLink)}
+                    onClick={() => handleCreditPurchase(pkg.id)}
                     variant="primary"
                     size="lg"
-                    className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''}`}
+                    disabled={loading}
+                    className={`w-full ${!pkg.popular ? 'opacity-90 hover:opacity-100' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
-                    Buy Now
+                    {loading ? 'Processing...' : 'Buy Now'}
                   </Button>
                 </div>
               ))}

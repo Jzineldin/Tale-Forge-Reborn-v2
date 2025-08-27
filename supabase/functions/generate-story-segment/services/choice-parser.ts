@@ -133,31 +133,45 @@ export class ChoiceParser implements ChoiceParserService {
     const storyLower = storyText.toLowerCase();
     let fallbacks: string[] = [];
     
-    // Context-aware fallbacks based on story content
-    if (storyLower.includes('door') || storyLower.includes('entrance')) {
-      fallbacks = ['Go through the door', 'Look for another way', 'Wait and listen first'];
-    } else if (storyLower.includes('magic') || storyLower.includes('spell')) {
-      fallbacks = ['Use magic to help', 'Be careful with the magic', 'Ask about the magic'];
-    } else if (storyLower.includes('forest') || storyLower.includes('woods')) {
-      fallbacks = ['Follow the forest path', 'Look for hidden trails', 'Call out for help'];
-    } else if (storyLower.includes('castle') || storyLower.includes('tower')) {
-      fallbacks = ['Explore the castle', 'Find another entrance', 'Look for a way up'];
-    } else if (storyLower.includes('dragon') || storyLower.includes('creature')) {
-      fallbacks = ['Approach carefully', 'Try to communicate', 'Find a safe distance'];
-    } else if (storyLower.includes('treasure') || storyLower.includes('chest')) {
-      fallbacks = ['Open the treasure', 'Check for traps first', 'Look around more'];
-    } else if (storyLower.includes('friend') || storyLower.includes('friendship')) {
+    // Context-aware fallbacks based on story content - improved to be more specific and engaging
+    if (storyLower.includes('door') && (storyLower.includes('locked') || storyLower.includes('closed'))) {
+      fallbacks = ['Try to open the door', 'Look for a key', 'Find another way around'];
+    } else if (storyLower.includes('door') || storyLower.includes('entrance')) {
+      fallbacks = ['Go through the door', 'Peek inside first', 'Walk around instead'];
+    } else if (storyLower.includes('magic') || storyLower.includes('spell') || storyLower.includes('wand')) {
+      fallbacks = ['Use the magic carefully', 'Ask about the magic', 'Keep the magic safe'];
+    } else if (storyLower.includes('forest') || storyLower.includes('woods') || storyLower.includes('trees')) {
+      fallbacks = ['Follow the forest path', 'Look for animal friends', 'Listen to forest sounds'];
+    } else if (storyLower.includes('castle') || storyLower.includes('tower') || storyLower.includes('palace')) {
+      fallbacks = ['Explore the castle', 'Knock on the door', 'Look up at the tower'];
+    } else if (storyLower.includes('dragon') || storyLower.includes('monster') || storyLower.includes('creature')) {
+      fallbacks = ['Approach very carefully', 'Try to be friendly', 'Hide and watch'];
+    } else if (storyLower.includes('treasure') || storyLower.includes('chest') || storyLower.includes('gold')) {
+      fallbacks = ['Open the treasure chest', 'Look for traps first', 'Share with others'];
+    } else if (storyLower.includes('friend') || storyLower.includes('friendship') || storyLower.includes('help')) {
       fallbacks = ['Help your friend', 'Ask for help', 'Work together'];
-    } else if (storyLower.includes('scared') || storyLower.includes('afraid')) {
-      fallbacks = ['Take a deep breath', 'Find courage within', 'Ask for support'];
-    } else if (storyLower.includes('lost') || storyLower.includes('confused')) {
+    } else if (storyLower.includes('water') || storyLower.includes('river') || storyLower.includes('lake')) {
+      fallbacks = ['Cross the water', 'Swim carefully', 'Find a bridge'];
+    } else if (storyLower.includes('mountain') || storyLower.includes('hill') || storyLower.includes('climb')) {
+      fallbacks = ['Climb up carefully', 'Find an easier path', 'Rest before climbing'];
+    } else if (storyLower.includes('book') || storyLower.includes('read') || storyLower.includes('story')) {
+      fallbacks = ['Read the book', 'Turn the page', 'Close the book'];
+    } else if (storyLower.includes('lost') || storyLower.includes('confused') || storyLower.includes('where')) {
       fallbacks = ['Look for clues', 'Ask for directions', 'Stay calm and think'];
-    } else if (storyLower.includes('adventure') || storyLower.includes('journey')) {
-      fallbacks = ['Continue exploring', 'Look for new paths', 'Be brave and curious'];
     } else {
-      // Final generic fallbacks
-      console.log('🚨 USING FINAL GENERIC FALLBACKS - AI parsing completely failed');
-      fallbacks = ['Continue the adventure', 'Look around carefully', 'Make a thoughtful choice'];
+      // Improved generic fallbacks based on common story patterns
+      console.log('🚨 Using improved generic fallbacks - analyzing story patterns');
+      
+      // Try to detect action words and create relevant choices
+      if (storyLower.includes('walk') || storyLower.includes('go')) {
+        fallbacks = ['Keep walking ahead', 'Stop and look around', 'Turn back safely'];
+      } else if (storyLower.includes('see') || storyLower.includes('look') || storyLower.includes('found')) {
+        fallbacks = ['Look more closely', 'Touch it carefully', 'Step back cautiously'];
+      } else if (storyLower.includes('hear') || storyLower.includes('sound') || storyLower.includes('voice')) {
+        fallbacks = ['Listen more carefully', 'Call out softly', 'Move toward the sound'];
+      } else {
+        fallbacks = ['Continue the adventure', 'Be brave and explore', 'Think carefully first'];
+      }
     }
     
     console.log(`🎯 Generated contextual fallbacks for story content: ${JSON.stringify(fallbacks)}`);

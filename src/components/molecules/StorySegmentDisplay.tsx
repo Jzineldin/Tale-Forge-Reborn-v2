@@ -76,24 +76,24 @@ const StorySegmentDisplay: React.FC<StorySegmentDisplayProps> = ({
           ))}
         </div>
 
-        {/* Audio Controls */}
-        <div className="mt-6 flex justify-center">
+        {/* Audio Controls - Simplified and consistent */}
+        <div className="mt-4 flex justify-center">
           {hasAudio ? (
             <button
               onClick={onPlayAudio}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 rounded-lg transition-colors text-sm border border-green-500/30"
             >
-              <Play className="w-4 h-4" />
+              <Play className="w-3 h-3" />
               Play Audio
             </button>
           ) : (
             <button
               onClick={() => onGenerateAudio(segmentIndex, segment.segment_text || segment.content)}
               disabled={isGeneratingAudio}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-purple-400 rounded-lg transition-colors text-sm border border-purple-500/30"
             >
-              <Volume2 className="w-4 h-4" />
-              {isGeneratingAudio ? 'Generating Audio...' : 'Generate Audio'}
+              <Volume2 className="w-3 h-3" />
+              {isGeneratingAudio ? 'Generating...' : 'Generate Audio'}
             </button>
           )}
         </div>

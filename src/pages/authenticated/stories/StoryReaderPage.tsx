@@ -7,6 +7,7 @@ import { TTSPlayer } from '@/components/molecules/TTSPlayer';
 import StoryReaderHeader from '@/components/molecules/StoryReaderHeader';
 import StorySegmentDisplay from '@/components/molecules/StorySegmentDisplay';
 import StorySettingsPanel from '@/components/molecules/StorySettingsPanel';
+import StoryPlayer from '@/components/organisms/StoryPlayer';
 import { useGenerateStorySegment, useGenerateStoryEnding } from '@/utils/performance.tsx';
 import { PageLayout, CardLayout, TypographyLayout } from '@/components/layout';
 import { Sparkles } from 'lucide-react';
@@ -21,6 +22,7 @@ const StoryReaderPage: React.FC = () => {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showStoryPlayer, setShowStoryPlayer] = useState(false);
 
   // Custom hooks for story functionality
   const {
@@ -191,7 +193,7 @@ const StoryReaderPage: React.FC = () => {
               )}
 
               {/* Story Choices */}
-              {currentSegment?.choices && currentSegment.choices.length > 0 && !isLastSegment && (
+              {currentSegment?.choices && currentSegment.choices.length > 0 && story.status !== 'completed' && !story.is_completed && (
                 <div className="mt-8">
                   <StoryChoices
                     choices={currentSegment.choices}
@@ -235,8 +237,16 @@ const StoryReaderPage: React.FC = () => {
                 Next
               </button>
             ) : story.status === 'completed' || story.is_completed ? (
-              <div className="px-6 py-3 text-white/60 text-center rounded-lg">
-                Story is complete
+              <div className="flex flex-col gap-3 items-center">
+                <div className="px-6 py-3 text-white/60 text-center rounded-lg">
+                  ✨ Story is complete
+                </div>
+                <button
+                  onClick={() => setShowStoryPlayer(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                >
+                  🎬 Play Story
+                </button>
               </div>
             ) : (
               <div className="space-x-4">
@@ -321,6 +331,22 @@ const StoryReaderPage: React.FC = () => {
         <TTSPlayer
           audioUrl={segmentAudioUrls[currentSegmentIndex]}
           onClose={() => setShowAudioPlayer(false)}
+        />
+      )}
+
+      {/* Story Player */}
+      {showStoryPlayer && story && story.segments && (
+        <StoryPlayer
+          segments={story.segments.map(segment => ({
+            id: segment.id,
+            segment_text: segment.segment_text,
+            image_url: segment.image_url,
+            audio_url: segment.audio_url,
+            chapter_number: segment.chapter_number || 0
+          }))}
+          storyTitle={story.title}
+          onClose={() => setShowStoryPlayer(false)}
+          autoPlay={false}
         />
       )}
     </div>
